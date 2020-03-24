@@ -43,7 +43,8 @@ private:
     PNGRenderer *pngRenderer;
     ofxPanel gui;
     ofxPanel guiGlobal;
-
+    float mouseMoveSpeed = 10.0;
+    
     bool showGui;
 
     void RenderPasses();

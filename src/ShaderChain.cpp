@@ -225,8 +225,8 @@ void ShaderChain::UpdateCamera() {
         float xDelta = ofGetMouseX() - ofGetPreviousMouseX();
         float yDelta = ofGetMouseY() - ofGetPreviousMouseY();
 
-        camera.panDeg(xDelta * ofGetLastFrameTime());
-        camera.tiltDeg(yDelta * ofGetLastFrameTime());
+        camera.panDeg(xDelta * ofGetLastFrameTime() * mouseMoveSpeed);
+        camera.tiltDeg(yDelta * ofGetLastFrameTime() * mouseMoveSpeed);
     }
 }
 
@@ -250,8 +250,8 @@ void ShaderChain::WriteToJson() {
         ofMatrix4x4 mat = ofMatrix4x4();
 
         for (uint j = 0; j < this->passes[i]->params.size(); j++) {
-            this->result["data"][i]["params"][j]["name"] = this->passes[i]->params[j]->uniform;
-            this->passes[i]->params[j]->UpdateJson((this->result["data"][i]["params"][j]));
+            this->result["data"][i]["parameters"][j]["name"] = this->passes[i]->params[j]->uniform;
+            this->passes[i]->params[j]->UpdateJson((this->result["data"][i]["parameters"][j]));
         }
     }
 

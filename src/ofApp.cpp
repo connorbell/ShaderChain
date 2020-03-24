@@ -14,7 +14,7 @@ void ofApp::setup(){
     glm::vec2 res = glm::vec2(150, 150);
     ofSetWindowShape(1920, 1080);
     this->shaderChain.Setup(res);
-    this->shaderChain.ReadFromJson("comps/terrain.json");
+    this->shaderChain.ReadFromJson("comps/struct.json");
     this->shaderChain.SetupGui();
 }
 
