@@ -1,4 +1,4 @@
-    #include "ShaderChain.h"
+#include "ShaderChain.h"
 
 void ShaderChain::Setup(glm::vec2 res) {
     this->pngRenderer = new PNGRenderer(3.14159, 30, res);
@@ -142,15 +142,21 @@ void ShaderChain::newMidiMessage(ofxMidiMessage& msg) {
     }
 }
 
+void ShaderChain::UpdateCamera() {
+    if (isMouseDown) {
+        float xDelta = ofGetMouseX() - ofGetPreviousMouseX();
+        float yDelta = ofGetMouseY() - ofGetPreviousMouseY();
+
+        camera.panDeg(xDelta * ofGetLastFrameTime() * mouseMoveSpeed);
+        camera.tiltDeg(yDelta * ofGetLastFrameTime() * mouseMoveSpeed);
+    }
+}
+
 void ShaderChain::ReadFromJson(std::string path) {
     bool parsingSuccessful = result.open(path);
     this->pngRenderer->presetNameParam = path;
 
-    if (parsingSuccessful)
-    {
-        int resX = result["res"]["x"].asInt();
-        int resY = result["res"]["y"].asInt();
-
+    if (parsingSuccessful) {
         float rotX = result["camrot"]["x"].asFloat();
         float rotY = result["camrot"]["y"].asFloat();
         float rotZ = result["camrot"]["z"].asFloat();
@@ -161,72 +167,14 @@ void ShaderChain::ReadFromJson(std::string path) {
         float camZ = result["campos"]["z"].asFloat();
         this->camera.setPosition(camX, camY, camZ);
 
-        this->pngRenderer->UpdateResolution(resX, resY);
-
-        for (int i = 0; i < result["data"].size(); i++)
-        {
-            std::string shaderName = result["data"][i]["shaderName"].asString();
-            bool wantsLastBuffer = result["data"][i]["wantsLastBuffer"].asBool();
-
-            ShaderPass *pass = new ShaderPass(shaderName, glm::vec2(this->pngRenderer->resolutionX, this->pngRenderer->resolutionY));
-            pass->wantsLastBuffer = wantsLastBuffer;
-
-            for (int j = 0; j < result["data"][i]["parameters"].size(); j++)
-            {
-                int type = result["data"][i]["parameters"][j]["type"].asInt();
-
-                // floats
-                if (type == 0) {
-                    float val = result["data"][i]["parameters"][j]["value"].asFloat();
-                    std::string name = result["data"][i]["parameters"][j]["name"].asString();
-                    float x = result["data"][i]["parameters"][j]["range"]["x"].asFloat();
-                    float y = result["data"][i]["parameters"][j]["range"]["y"].asFloat();
-                    bool show = result["data"][i]["parameters"][j]["show"].asBool();
-                    int midi = -1;
-                    if (result["data"][i]["parameters"][j].isMember("midi")) {
-                        midi = result["data"][i]["parameters"][j]["midi"].asInt();
-                    }
-
-                    pass->AddFloatParameter(name, val, glm::vec2(x, y), show, midi);
-                }
-                // vec3s
-                else if (type == 1) {
-                    float valx = result["data"][i]["parameters"][j]["value"]["x"].asFloat();
-                    float valy = result["data"][i]["parameters"][j]["value"]["y"].asFloat();
-                    float valz = result["data"][i]["parameters"][j]["value"]["z"].asFloat();
-
-                    std::string name = result["data"][i]["parameters"][j]["name"].asString();
-                    float x = result["data"][i]["parameters"][j]["range"]["x"].asFloat();
-                    float y = result["data"][i]["parameters"][j]["range"]["y"].asFloat();
-                    bool show = result["data"][i]["parameters"][j]["show"].asBool();
-
-                    int midi[] = {-1, -1, -1};
-
-                    if (result["data"][i]["parameters"][j].isMember("midi")) {
-                        midi[0] = result["data"][i]["parameters"][j]["midi"]["x"].asInt();
-                        midi[1] = result["data"][i]["parameters"][j]["midi"]["y"].asInt();
-                        midi[2] = result["data"][i]["parameters"][j]["midi"]["z"].asInt();
-                    }
-                    pass->AddVector3Parameter(name, glm::vec3(valx, valy, valz), show, glm::vec2(x, y), midi);
-                }
-            }
-
+        for (int i = 0; i < result["data"].size(); i++) {
+            ShaderPass *pass = new ShaderPass();
+            pass->LoadFromJson(result["data"][i], this->pngRenderer->resolutionX, this->pngRenderer->resolutionY);
             this->passes.push_back(pass);
         }
     }
-    else
-    {
+    else {
         ofLogError("ofApp::setup")  << "Failed to parse JSON" << endl;
-    }
-
-}
-void ShaderChain::UpdateCamera() {
-    if (isMouseDown) {
-        float xDelta = ofGetMouseX() - ofGetPreviousMouseX();
-        float yDelta = ofGetMouseY() - ofGetPreviousMouseY();
-
-        camera.panDeg(xDelta * ofGetLastFrameTime() * mouseMoveSpeed);
-        camera.tiltDeg(yDelta * ofGetLastFrameTime() * mouseMoveSpeed);
     }
 }
 
@@ -246,12 +194,9 @@ void ShaderChain::WriteToJson() {
         this->result["camrot"]["y"] = rot.y;
         this->result["camrot"]["z"] = rot.z;
 
-
-        ofMatrix4x4 mat = ofMatrix4x4();
-
         for (uint j = 0; j < this->passes[i]->params.size(); j++) {
             this->result["data"][i]["parameters"][j]["name"] = this->passes[i]->params[j]->uniform;
-            this->passes[i]->params[j]->UpdateJson((this->result["data"][i]["parameters"][j]));
+                this->passes[i]->params[j]->UpdateJson((this->result["data"][i]["parameters"][j]));
         }
     }
 
