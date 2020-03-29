@@ -77,3 +77,48 @@ void ShaderPass::SetInputTexture(ofFbo buffer) {
 void ShaderPass::UpdateTime(float time) {
     this->shader.setUniform1f("_Time", time);
 }
+
+void ShaderPass::LoadFromJson(Json::Value &json, float width, float height) {
+    std::string shaderName = json["shaderName"].asString();
+    Load(shaderName, glm::vec2(width, height));
+    this->wantsLastBuffer = json["wantsLastBuffer"].asBool();
+    for (int j = 0; j < json["parameters"].size(); j++)
+    {
+        int type = json["parameters"][j]["type"].asInt();
+
+        // floats
+        if (type == 0) {
+            float val = json["parameters"][j]["value"].asFloat();
+            std::string name = json["parameters"][j]["name"].asString();
+            float x = json["parameters"][j]["range"]["x"].asFloat();
+            float y = json["parameters"][j]["range"]["y"].asFloat();
+            bool show = json["parameters"][j]["show"].asBool();
+            int midi = -1;
+            if (json["parameters"][j].isMember("midi")) {
+                midi = json["parameters"][j]["midi"].asInt();
+            }
+
+            AddFloatParameter(name, val, glm::vec2(x, y), show, midi);
+        }
+        // vec3s
+        else if (type == 1) {
+            float valx = json["parameters"][j]["value"]["x"].asFloat();
+            float valy = json["parameters"][j]["value"]["y"].asFloat();
+            float valz = json["parameters"][j]["value"]["z"].asFloat();
+
+            std::string name = json["parameters"][j]["name"].asString();
+            float x = json["parameters"][j]["range"]["x"].asFloat();
+            float y = json["parameters"][j]["range"]["y"].asFloat();
+            bool show = json["parameters"][j]["show"].asBool();
+
+            int midi[] = {-1, -1, -1};
+
+            if (json["parameters"][j].isMember("midi")) {
+                midi[0] = json["parameters"][j]["midi"]["x"].asInt();
+                midi[1] = json["parameters"][j]["midi"]["y"].asInt();
+                midi[2] = json["parameters"][j]["midi"]["z"].asInt();
+            }
+            AddVector3Parameter(name, glm::vec3(valx, valy, valz), show, glm::vec2(x, y), midi);
+        }
+    }
+}
