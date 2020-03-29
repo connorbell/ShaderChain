@@ -4,12 +4,13 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->pngRenderer = new PNGRenderer(3.14159, 30, res);
     this->isRunning = true;
     this->gui.setup("Params");
-    this->guiGlobal.setup("Global", "GlobalSettings.xml", 1000, 0);
+    this->guiGlobal.setup("Global", "GlobalSettings.xml", ofGetWidth()-250, 0);
     this->pngRenderer->AddToGui(&(this->guiGlobal));
     this->pngRenderer->resolutionXParam.addListener(this, &ShaderChain::ResolutionDidChange);
     this->pngRenderer->resolutionYParam.addListener(this, &ShaderChain::ResolutionDidChange);
     this->pngRenderer->savePresetButton.addListener(this, &ShaderChain::WriteToJson);
     this->showGui = true;
+    this->fft.Start();
     SetupMidi();
 }
 
@@ -46,7 +47,7 @@ void ShaderChain::BeginSaveFrames() {
 }
 
 void ShaderChain::Update() {
-
+    fft.Update();
     bool capturingThisFrame = pngRenderer->isCapturing;
 
     if (capturingThisFrame) {
@@ -79,6 +80,7 @@ void ShaderChain::Update() {
     if (this->showGui) {
         this->gui.draw();
         this->guiGlobal.draw();
+        this->passesGui.Draw();
     }
 
     if (capturingThisFrame) {
@@ -96,7 +98,7 @@ void ShaderChain::RenderPasses() {
           this->passes[i]->SetInputTexture(passes[i-1]->buffer);
         }
 
-        this->passes[i]->Render(this->time, &camera);
+        this->passes[i]->Render(this->time, &camera, &fft);
     }
 }
 
@@ -213,6 +215,7 @@ void ShaderChain::ReadFromJson(std::string path) {
 
             this->passes.push_back(pass);
         }
+        this->passesGui.Setup(this->passes);
     }
     else
     {

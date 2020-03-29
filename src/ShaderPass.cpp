@@ -38,7 +38,7 @@ void ShaderPass::AddVector3Parameter(std::string s, glm::vec3 val, bool show, gl
     this->params.push_back(std::move(ptr));
 }
 
-void ShaderPass::Render(float time, ofNode *cam) {
+void ShaderPass::Render(float time, ofNode *cam, FFTManager *fft) {
     this->buffer.begin();
     this->shader.begin();
 
@@ -51,6 +51,7 @@ void ShaderPass::Render(float time, ofNode *cam) {
 
     if (this->wantsLastBuffer) {
         this->shader.setUniformTexture("_LastTexture", this->lastBuffer.getTexture(), 1);
+        this->shader.setUniformTexture("_AudioTexture", fft->audioTexture, 2);
     }
 
     for (uint i = 0; i < params.size(); i++) {

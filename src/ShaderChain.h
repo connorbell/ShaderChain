@@ -7,11 +7,11 @@
 
 #include "ShaderPass.h"
 #include "PNGRenderer.h"
+#include "FFTManager.h"
+#include "PassesGui.h"
 
 class ShaderChain: public ofxMidiListener {
 public:
-    ofParameter<int> resolutionX;
-    ofParameter<int> resolutionY;
     std::vector<ShaderPass*> passes;
     float time;
     bool isRunning;
@@ -43,8 +43,11 @@ private:
     PNGRenderer *pngRenderer;
     ofxPanel gui;
     ofxPanel guiGlobal;
+    PassesGui passesGui;
+
     float mouseMoveSpeed = 10.0;
-    
+    FFTManager fft;
+
     bool showGui;
 
     void RenderPasses();

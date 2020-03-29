@@ -8,6 +8,7 @@
 #include "Parameters/FloatParameter.h"
 #include "Parameters/Vector3Parameter.h"
 #include "ofxAutoReloadedShader.h"
+#include "FFTManager.h"
 
 class ShaderPass {
   public:
@@ -27,7 +28,7 @@ class ShaderPass {
     void Load(std::string shaderPath, glm::vec2 res);
     void AddFloatParameter(std::string s, float startValue, glm::vec2 range, bool show, int midi);
     void AddVector3Parameter(std::string s, glm::vec3 val, bool show, glm::vec2 range, int midi[]);
-    void Render(float time, ofNode *cam);
+    void Render(float time, ofNode *cam, FFTManager *fft);
     void SetInputTexture(ofFbo buffer);
     void UpdateTime(float time);
     void UpdateResolution(int x, int y);

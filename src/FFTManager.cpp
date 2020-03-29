@@ -18,13 +18,17 @@ void FFTManager::Update() {
         int audioIndex = 0;
 
         for (int i = 0; i < n; i+=3) {
-            float v = buffer.at(audioIndex)*255; // FFT
-            signal[i] = (unsigned char) v ;
+            float v = MIN(255,buffer.at(audioIndex) * 255 + (float)lastBuffer[i] * 0.85 ); // FFT
+            signal[i] = (unsigned char) v;
             signal[i+1] = (unsigned char)v;
             signal[i+2] = (unsigned char)v;
             audioIndex++;
         }
         audioTexture.loadData(signal, 1024, 1, GL_RGB);
+
+        for (int i = 0; i < n; i+=3) {
+            lastBuffer[i] = signal[i];
+        }
     }
 }
 
