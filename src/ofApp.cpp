@@ -14,7 +14,7 @@ void ofApp::setup(){
     glm::vec2 res = glm::vec2(150, 150);
     ofSetWindowShape(1920, 1080);
     this->shaderChain.Setup(res);
-    this->shaderChain.ReadFromJson("comps/struct.json");
+    this->shaderChain.ReadFromJson("comps/terrain.json");
     this->shaderChain.SetupGui();
 }
 
@@ -26,6 +26,13 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     this->shaderChain.Update();
+}
+
+//--------------------------------------------------------------
+void ofApp::dragEvent(ofDragInfo info) {
+    if (info.files.size() > 0) {
+		this->shaderChain.ReadFromJson(info.files[0]);
+    }
 }
 
 //--------------------------------------------------------------
@@ -65,10 +72,5 @@ void ofApp::windowResized(int w, int h){
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){
 
 }
