@@ -1,7 +1,10 @@
 #include "PassesGui.h"
 
+PassesGui::PassesGui() {
+    this->gui.setup("Passes");    
+}
+
 void PassesGui::Setup(std::vector<ShaderPass*> passes) {
-    this->gui.setup("Passes");
 
     for (uint i = 0; i < passes.size(); i++) {
         ofxButton *button = new ofxButton();

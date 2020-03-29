@@ -29,6 +29,13 @@ void ofApp::draw(){
 }
 
 //--------------------------------------------------------------
+void ofApp::dragEvent(ofDragInfo info) {
+    if (info.files.size() > 0) {
+		this->shaderChain.ReadFromJson(info.files[0]);
+    }
+}
+
+//--------------------------------------------------------------
 void ofApp::keyPressed(int key){
   this->shaderChain.KeyPressed(key);
 }
@@ -65,10 +72,5 @@ void ofApp::windowResized(int w, int h){
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){
 
 }
