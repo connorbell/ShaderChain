@@ -4,6 +4,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->pngRenderer = new PNGRenderer(3.14159, 30, res);
     this->isRunning = true;
     this->gui.setup("Params");
+    this->gui.setPosition(10, 150);
     this->guiGlobal.setup("Global", "GlobalSettings.xml", ofGetWidth()-250, 0);
     this->pngRenderer->AddToGui(&(this->guiGlobal));
     this->pngRenderer->resolutionXParam.addListener(this, &ShaderChain::ResolutionDidChange);
@@ -101,6 +102,17 @@ void ShaderChain::RenderPasses() {
         this->passes[i]->Render(this->time, &camera, &fft);
     }
 }
+void ShaderChain::dragEvent(ofDragInfo info) {
+    if (info.files.size() > 0) {
+        auto extension = info.files[0].substr(info.files[0].find_last_of(".") + 1);
+
+        if (extension == "json") {
+            ReadFromJson(info.files[0]);
+        } else if (extension == "frag") {
+
+        }
+    }
+}
 
 void ShaderChain::KeyPressed(int key) {
     if (key == ' ') {
@@ -127,6 +139,7 @@ void ShaderChain::KeyPressed(int key) {
 }
 
 void ShaderChain::SetupGui() {
+    this->gui.clear();
     for (uint i = 0; i < this->passes.size(); i++) {
         for (uint j = 0; j < this->passes[i]->params.size(); j++) {
             this->passes[i]->params[j]->AddToGui(&gui);
@@ -158,6 +171,11 @@ void ShaderChain::ReadFromJson(std::string path) {
     bool parsingSuccessful = result.open(path);
     this->pngRenderer->presetNameParam = path;
 
+    for (uint i = 0; i < this->passes.size(); i++) {
+        delete this->passes[i];
+    }
+    this->passes.clear();
+
     if (parsingSuccessful) {
         float rotX = result["camrot"]["x"].asFloat();
         float rotY = result["camrot"]["y"].asFloat();
@@ -175,6 +193,7 @@ void ShaderChain::ReadFromJson(std::string path) {
             this->passes.push_back(pass);
         }
         this->passesGui.Setup(this->passes);
+        SetupGui();
     }
     else {
         ofLogError("ofApp::setup")  << "Failed to parse JSON" << endl;
@@ -199,7 +218,7 @@ void ShaderChain::WriteToJson() {
 
         for (uint j = 0; j < this->passes[i]->params.size(); j++) {
             this->result["data"][i]["parameters"][j]["name"] = this->passes[i]->params[j]->uniform;
-                this->passes[i]->params[j]->UpdateJson((this->result["data"][i]["parameters"][j]));
+            this->passes[i]->params[j]->UpdateJson((this->result["data"][i]["parameters"][j]));
         }
     }
 

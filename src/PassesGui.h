@@ -6,6 +6,8 @@
 
 class PassesGui {
 public:
+
+    PassesGui();
     std::vector<ofxButton*> passButtons;
     ofxButton addPassButton;
 

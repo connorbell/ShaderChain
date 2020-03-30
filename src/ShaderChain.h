@@ -38,6 +38,7 @@ public:
     void ResolutionDidChange(string &val);
     void AudioTextureUpdate(ofTexture *audioTexture);
     void UpdateFft();
+    void dragEvent(ofDragInfo info);
 
 private:
     PNGRenderer *pngRenderer;

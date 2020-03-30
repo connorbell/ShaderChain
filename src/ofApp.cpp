@@ -14,7 +14,7 @@ void ofApp::setup(){
     glm::vec2 res = glm::vec2(150, 150);
     ofSetWindowShape(1920, 1080);
     this->shaderChain.Setup(res);
-    this->shaderChain.ReadFromJson("comps/2d_kifs_audio.json");
+    this->shaderChain.ReadFromJson("comps/terrain.json");
     this->shaderChain.SetupGui();
 }
 
@@ -30,9 +30,7 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo info) {
-    if (info.files.size() > 0) {
-		this->shaderChain.ReadFromJson(info.files[0]);
-    }
+	this->shaderChain.dragEvent(info);
 }
 
 //--------------------------------------------------------------
