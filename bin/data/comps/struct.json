@@ -1,0 +1,162 @@
+{
+   "campos" : {
+      "x" : 0.2044158726930618,
+      "y" : 0.4873000383377075,
+      "z" : -2.022054195404053
+   },
+   "camrot" : {
+      "x" : 15.8124942779541,
+      "y" : -4.350628852844238,
+      "z" : -16.42038345336914
+   },
+   "data" : [
+      {
+         "parameters" : [
+            {
+               "midi" : 1,
+               "name" : "focalLength",
+               "range" : {
+                  "x" : 0,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 3.350000143051147
+            },
+            {
+               "name" : "minDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 0.1
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0
+            },
+            {
+               "name" : "maxDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 15
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 15
+            },
+            {
+               "name" : "bgColor",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : 1,
+               "value" : {
+                  "x" : 0.08673469722270966,
+                  "y" : 0.09183673560619354,
+                  "z" : 0.09183673560619354
+               }
+            },
+            {
+               "midi" : 2,
+               "name" : "r1",
+               "range" : {
+                  "x" : 0,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 3.849999904632568
+            },
+            {
+               "midi" : 3,
+               "name" : "r2",
+               "range" : {
+                  "x" : 0,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0.75
+            },
+            {
+               "midi" : 4,
+               "name" : "o1",
+               "range" : {
+                  "x" : 0,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 3.300000190734863
+            },
+            {
+               "midi" : 5,
+               "name" : "o2",
+               "range" : {
+                  "x" : 0,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 4.799999713897705
+            },
+            {
+               "midi" : 6,
+               "name" : "startScale",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0.2283464521169662
+            },
+            {
+               "midi" : 7,
+               "name" : "scaleFactor",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0.4000000059604645
+            },
+            {
+               "midi" : 7,
+               "name" : "offsetScalar",
+               "range" : {
+                  "x" : 0,
+                  "y" : 2
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 1.740000009536743
+            }
+         ],
+         "shaderName" : "shadersGL3/structshader",
+         "wantsLastBuffer" : false
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "scale",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0.75
+            }
+         ],
+         "shaderName" : "shadersGL3/feedbackShader",
+         "wantsLastBuffer" : true
+      }
+   ],
+   "res" : {
+      "x" : 500,
+      "y" : 500
+   }
+}
