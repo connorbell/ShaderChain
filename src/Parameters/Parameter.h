@@ -14,7 +14,7 @@ public:
   bool show;
 
   virtual void UpdateShader(ofxAutoReloadedShader *shader) {}
-  virtual void AddToGui(ofxPanel *gui) {}
+  virtual void AddToGui(ofParameterGroup *gui) {}
   virtual void UpdateJson(Json::Value &val) {}
   virtual void UpdateMidi(int midiIndex, float value) {}
   virtual void BindMidi(int midiIndices[]) {}

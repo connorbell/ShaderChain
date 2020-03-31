@@ -1,11 +1,11 @@
 #include "ShaderChain.h"
+namespace fs = std::filesystem;
 
 void ShaderChain::Setup(glm::vec2 res) {
     this->pngRenderer = new PNGRenderer(3.14159, 30, res);
     this->isRunning = true;
     this->gui.setup("Params");
-    this->gui.setPosition(10, 150);
-    this->guiGlobal.setup("Global", "GlobalSettings.xml", ofGetWidth()-250, 0);
+    this->guiGlobal.setup("Global", "GlobalSettings.xml", ofGetScreenWidth()-250, 0);
     this->pngRenderer->AddToGui(&(this->guiGlobal));
     this->pngRenderer->resolutionXParam.addListener(this, &ShaderChain::ResolutionDidChange);
     this->pngRenderer->resolutionYParam.addListener(this, &ShaderChain::ResolutionDidChange);
@@ -109,7 +109,13 @@ void ShaderChain::dragEvent(ofDragInfo info) {
         if (extension == "json") {
             ReadFromJson(info.files[0]);
         } else if (extension == "frag") {
+            auto relativeFileName = info.files[0].substr(info.files[0].find("data") + 5);
+            auto relativeFileNameWithoutExtension = relativeFileName.substr(0,relativeFileName.find("frag")-1);
 
+            ShaderPass *pass = new ShaderPass(relativeFileNameWithoutExtension, glm::vec2(this->pngRenderer->resolutionX,this->pngRenderer->resolutionY) );
+            pass->ParseUniforms(relativeFileName);
+            this->passes.push_back(pass);
+            SetupGui();
         }
     }
 }
@@ -140,11 +146,13 @@ void ShaderChain::KeyPressed(int key) {
 
 void ShaderChain::SetupGui() {
     this->gui.clear();
+    this->parameterGroups.clear();
     for (uint i = 0; i < this->passes.size(); i++) {
-        for (uint j = 0; j < this->passes[i]->params.size(); j++) {
-            this->passes[i]->params[j]->AddToGui(&gui);
-        }
+        this->parameterGroups.add(passes[i]->parameterGroup);
     }
+    this->gui.setup(parameterGroups);
+    this->gui.setPosition(10, 150);
+    this->gui.setName("Parameters");
 }
 
 void ShaderChain::newMidiMessage(ofxMidiMessage& msg) {

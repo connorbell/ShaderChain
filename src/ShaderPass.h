@@ -20,6 +20,7 @@ class ShaderPass {
     std::vector<std::unique_ptr<Parameter>> params;
     float scale;
     ofxAutoReloadedShader shader;
+    ofParameterGroup parameterGroup;
     ofFbo buffer;
     ofFbo lastBuffer;
     ofPlanePrimitive plane;
@@ -31,6 +32,8 @@ class ShaderPass {
 
     void Load(std::string shaderPath, glm::vec2 res);
     void LoadFromJson(Json::Value &json, float width, float height);
+    void ParseUniforms(string path);
+
     void AddFloatParameter(std::string s, float startValue, glm::vec2 range, bool show, int midi);
     void AddVector3Parameter(std::string s, glm::vec3 val, bool show, glm::vec2 range, int midi[]);
     void Render(float time, ofNode *cam, FFTManager *fft);

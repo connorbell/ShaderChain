@@ -11,7 +11,7 @@ public:
 
   Vector3Parameter(std::string uniform, glm::vec3 defaultVal, bool show, glm::vec2 range, int *midi);
   virtual void UpdateShader(ofxAutoReloadedShader *shader) override;
-  virtual void AddToGui(ofxPanel *gui) override;
+  virtual void AddToGui(ofParameterGroup *gui) override;
   virtual void UpdateJson(Json::Value &val) override;
   virtual void UpdateMidi(int index, float val) override;
 };

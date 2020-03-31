@@ -45,6 +45,7 @@ private:
     ofxPanel gui;
     ofxPanel guiGlobal;
     PassesGui passesGui;
+    ofParameterGroup parameterGroups;
 
     float mouseMoveSpeed = 10.0;
     FFTManager fft;

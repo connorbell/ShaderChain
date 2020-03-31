@@ -15,7 +15,7 @@ void Vector3Parameter::UpdateShader(ofxAutoReloadedShader *shader) {
   shader->setUniform3f(this->uniform, this->value->x, this->value->y, this->value->z);
 }
 
-void Vector3Parameter::AddToGui(ofxPanel *gui) {
+void Vector3Parameter::AddToGui(ofParameterGroup *gui) {
     if (this->show) {
         gui->add(value.set(this->uniform,glm::vec3(this->value->x, this->value->y, this->value->z),glm::vec3(range.x,range.x,range.x),glm::vec3(range.y,range.y,range.y)));
     }
@@ -25,6 +25,8 @@ void Vector3Parameter::UpdateJson(Json::Value &val) {
     val["value"]["x"] = this->value->x;
     val["value"]["y"] = this->value->y;
     val["value"]["z"] = this->value->z;
+    val["show"] = this->show;
+    val["type"] = 1;
 }
 
 void Vector3Parameter::UpdateMidi(int index, float val) {

@@ -12,7 +12,7 @@ void FloatParameter::UpdateShader(ofxAutoReloadedShader *shader) {
   shader->setUniform1f(this->uniform, this->value);
 }
 
-void FloatParameter::AddToGui(ofxPanel *gui) {
+void FloatParameter::AddToGui(ofParameterGroup *gui) {
     if (this->show) {
         gui->add(value.set(this->uniform,this->value,this->range.x,this->range.y));
     }
@@ -20,6 +20,8 @@ void FloatParameter::AddToGui(ofxPanel *gui) {
 
 void FloatParameter::UpdateJson(Json::Value &val) {
     val["value"] = (float)this->value;
+    val["show"] = this->show;
+    val["type"] = 0;
 }
 
 void FloatParameter::UpdateMidi(int index, float value) {
