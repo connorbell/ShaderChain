@@ -25,6 +25,8 @@ void Vector3Parameter::UpdateJson(Json::Value &val) {
     val["value"]["x"] = this->value->x;
     val["value"]["y"] = this->value->y;
     val["value"]["z"] = this->value->z;
+    val["range"]["x"] = this->range.x;
+    val["range"]["y"] = this->range.y;
     val["show"] = this->show;
     val["type"] = 1;
 }

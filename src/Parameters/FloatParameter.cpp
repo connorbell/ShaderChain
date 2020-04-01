@@ -22,6 +22,8 @@ void FloatParameter::UpdateJson(Json::Value &val) {
     val["value"] = (float)this->value;
     val["show"] = this->show;
     val["type"] = 0;
+    val["range"]["x"] = this->range.x;
+    val["range"]["y"] = this->range.y;
 }
 
 void FloatParameter::UpdateMidi(int index, float value) {
