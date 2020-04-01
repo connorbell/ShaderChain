@@ -83,7 +83,7 @@ void main()
         for (int k = 0; k < AA; k++)
         {
             vec2 o = vec2(float(j), float(k)) / float(AA);
-            vec2 uv = (texCoordVarying + o*0.0025) * 2. - 1. ;
+            vec2 uv = (texCoordVarying + o/_Resolution) * 2. - 1. ;
             uv.x *= _Resolution.x/_Resolution.y;
             vec3 ray = normalize ((_CamRight) * uv.x +
                                   (_CamUp) * uv.y +

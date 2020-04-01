@@ -30,7 +30,7 @@ void main()
     //create the 1-D kernel
     float mid = startFocusDist + distance(startFocusDist, endFocusDist) * 0.5;
 
-    float sigma = 4.*(1. - smoothstep(startFocusDist, mid, depth) - smoothstep(mid, endFocusDist, depth));
+    float sigma = 4.*(1.-(smoothstep(startFocusDist, mid, depth) - smoothstep(mid, endFocusDist, depth)));
     float Z = .0;
     for (int j = 0; j <= kSize; ++j)
     {
