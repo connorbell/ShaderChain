@@ -5,9 +5,9 @@
       "z" : -0.03688040748238564
    },
    "camrot" : {
-      "x" : 8.633339881896973,
-      "y" : 4.610356330871582,
-      "z" : 1.10783052444458
+      "x" : 8.657327651977539,
+      "y" : 4.391750812530518,
+      "z" : 1.788524150848389
    },
    "data" : [
       {
@@ -27,7 +27,7 @@
                "name" : "minDist",
                "range" : {
                   "x" : 0,
-                  "y" : 0.1
+                  "y" : 0.1000000014901161
                },
                "show" : false,
                "type" : 0,
@@ -109,26 +109,52 @@
          "parameters" : [
             {
                "name" : "startFocusDist",
-               "show" : true,
-               "type" : 0,
-               "value" : 0.5,
                "range" : {
                   "x" : 0,
                   "y" : 10
-               }
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0.3571428656578064
             },
             {
                "name" : "endFocusDist",
-               "show" : true,
-               "type" : 0,
-               "value" : 1.0,
                "range" : {
                   "x" : 0,
                   "y" : 10
-               }
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 1.275510191917419
             }
          ],
          "shaderName" : "shadersGL3/bokehShader",
+         "wantsLastBuffer" : false
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "strength",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0.6326530575752258
+            },
+            {
+               "name" : "power",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0.5
+            }
+         ],
+         "shaderName" : "shadersGL3/vignetteShader",
          "wantsLastBuffer" : false
       }
    ],
@@ -137,3 +163,4 @@
       "y" : 150
    }
 }
+
