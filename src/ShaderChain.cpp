@@ -11,6 +11,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->pngRenderer->resolutionYParam.addListener(this, &ShaderChain::ResolutionDidChange);
     this->pngRenderer->savePresetButton.addListener(this, &ShaderChain::WriteToJson);
     this->showGui = true;
+    this->isMouseDown = false;
     this->fft.Start();
     SetupMidi();
 }

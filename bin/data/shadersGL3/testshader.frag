@@ -62,7 +62,7 @@ vec3 calcNormal(in vec3 pos) {
                      map(pos + eps.yzx) - map(pos - eps.yzx)));
 }
 
-vec3 render(in vec3 camPos, in vec3 rayDir) {
+vec4 render(in vec3 camPos, in vec3 rayDir) {
 
     float dist = march(camPos, rayDir);
     vec3 fPos = camPos + rayDir * dist;
@@ -72,7 +72,7 @@ vec3 render(in vec3 camPos, in vec3 rayDir) {
     col *= fres;
     //col = pow(col, vec3(0.666));
     col = mix(col, bgColor, clamp(dist/maxDist, 0.0, 1.0));
-    return col;
+    return vec4(col, dist);
 }
 #define AA 1
 
@@ -89,7 +89,7 @@ void main()
                                   (_CamUp) * uv.y +
                                   (_CamForward) * focalLength);
 
-            color += vec4(render(_CamPos, ray), 1.0);
+            color += vec4(render(_CamPos, ray));
         }
     }
 
