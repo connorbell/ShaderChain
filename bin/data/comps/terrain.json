@@ -5,9 +5,9 @@
       "z" : -0.03688040748238564
    },
    "camrot" : {
-      "x" : 8.657327651977539,
-      "y" : 4.391750812530518,
-      "z" : 1.788524150848389
+      "x" : 8.685134887695312,
+      "y" : 3.659535646438599,
+      "z" : 3.016655445098877
    },
    "data" : [
       {
@@ -56,28 +56,26 @@
                   "y" : 0,
                   "z" : 0
                }
-            }
-         ],
-         "params" : [
-            {
-               "name" : "focalLength",
-               "value" : 2.5
             },
             {
-               "name" : "minDist",
-               "value" : 0.001000000047497451
+               "name" : "noiseX",
+               "range" : {
+                  "x" : -10,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0
             },
             {
-               "name" : "maxDist",
-               "value" : 2.5
-            },
-            {
-               "name" : "bgColor",
-               "value" : {
-                  "x" : 0,
-                  "y" : 0,
-                  "z" : 0
-               }
+               "name" : "noiseY",
+               "range" : {
+                  "x" : -10,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0
             }
          ],
          "shaderName" : "shadersGL3/testshader",
@@ -156,6 +154,22 @@
          ],
          "shaderName" : "shadersGL3/vignetteShader",
          "wantsLastBuffer" : false
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "shift",
+               "range" : {
+                  "x" : 0,
+                  "y" : 6.28318
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 1.0
+            }
+         ],
+         "shaderName" : "shadersGL3/hueShader",
+         "wantsLastBuffer" : true
       }
    ],
    "res" : {
@@ -163,4 +177,3 @@
       "y" : 150
    }
 }
-
