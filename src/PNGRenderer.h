@@ -14,6 +14,7 @@ public:
     ofxButton savePresetButton;
     ofParameter<string> presetNameParam;
     ofParameter<float> displayScaleParam;
+    ofParameter<int> frameskip;
 
     PNGRenderer(float duration, int fps, glm::vec2 resolution);
     std::string filePath;
@@ -33,7 +34,7 @@ private:
     int currentFrame;
     int totalFrames;
     int renderedFrames;
-    
+
     ofxButton saveButton;
     ofParameter<string> durationParam;
     ofParameter<string> fpsParam;

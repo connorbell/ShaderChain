@@ -13,6 +13,7 @@ PNGRenderer::PNGRenderer(float duration, int fps, glm::vec2 resolution) {
     this->filePath = "renders/cool";
     this->displayScaleParam = 1.0;
     this->renderedFrames = 1;
+    this->frameskip = 1;
 }
 
 void PNGRenderer::AddToGui(ofxPanel *panel) {
@@ -33,13 +34,14 @@ void PNGRenderer::AddToGui(ofxPanel *panel) {
 
     panel->add(savePresetButton.setup("Save Preset"));
     panel->add(presetNameParam.set("preset name", presetNameParam));
-    panel->add(displayScaleParam.set("Display resolution", displayScaleParam,1.0, 5.0));
+    panel->add(displayScaleParam.set("Display resolution", displayScaleParam, 1.0, 5.0));
 
     panel->add(preview.set("Preview", preview));
     panel->add(durationParam.set("duration", durationString.str()));
     panel->add(fpsParam.set("fps", fpsString.str()));
     panel->add(saveButton.setup("Save Frames"));
 
+    panel->add(frameskip.set("Frameskip", frameskip, 1, 10));
     this->saveButton.addListener(this, &PNGRenderer::Start);
 }
 
@@ -62,7 +64,7 @@ void PNGRenderer::WritePNG(ofFbo *buffer) {
   int totalZeros = (int)floor(log10 (((float)this->totalFrames)));
   int totalZerosNeeded = totalZeros - (int)floor(log10 (((float)this->currentFrame)));
   if (this->currentFrame == 0) totalZerosNeeded = totalZeros;
-  
+
   std::string s = "";
   for (int i = 0; i < totalZerosNeeded; i++) s += "0";
 

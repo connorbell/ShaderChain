@@ -13,6 +13,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->showGui = true;
     this->isMouseDown = false;
     this->fft.Start();
+    this->frame = 0;
     SetupMidi();
 }
 
@@ -65,7 +66,7 @@ void ShaderChain::Update() {
         UpdateCamera();
     }
 
-    if (this->isRunning) {
+    if (this->isRunning && frame % pngRenderer->frameskip == 0) {
         RenderPasses();
     }
 
@@ -88,6 +89,7 @@ void ShaderChain::Update() {
     if (capturingThisFrame) {
         this->pngRenderer->WritePNG(&(this->passes[passes.size()-1]->buffer));
     }
+    frame++;
 }
 
 void ShaderChain::AddPass(ShaderPass *pass) {

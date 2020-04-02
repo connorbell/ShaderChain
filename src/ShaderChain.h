@@ -51,6 +51,7 @@ private:
     FFTManager fft;
 
     bool showGui;
+    int frame;
 
     void RenderPasses();
 
