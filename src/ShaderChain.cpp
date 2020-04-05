@@ -72,13 +72,15 @@ void ShaderChain::Update() {
 
     ofClear(25);
 
-    int idx = this->passes.size()-1;
-    float x = ofGetWidth()/2.-this->pngRenderer->resolutionX*0.5*this->pngRenderer->displayScaleParam;
-    float y = ofGetHeight()/2.-this->pngRenderer->resolutionY*0.5*this->pngRenderer->displayScaleParam;
-    float w = this->pngRenderer->resolutionX*this->pngRenderer->displayScaleParam;
-    float h = this->pngRenderer->resolutionY*this->pngRenderer->displayScaleParam;
+    if (this->passes.size() > 0) {
+        int idx = this->passes.size()-1;
+        float x = ofGetWidth()/2.-this->pngRenderer->resolutionX*0.5*this->pngRenderer->displayScaleParam;
+        float y = ofGetHeight()/2.-this->pngRenderer->resolutionY*0.5*this->pngRenderer->displayScaleParam;
+        float w = this->pngRenderer->resolutionX*this->pngRenderer->displayScaleParam;
+        float h = this->pngRenderer->resolutionY*this->pngRenderer->displayScaleParam;
 
-    this->passes[idx]->buffer.draw(x, y, w, h);
+        this->passes[idx]->buffer.draw(x, y, w, h);
+    }
 
     if (this->showGui) {
         this->gui.draw();
