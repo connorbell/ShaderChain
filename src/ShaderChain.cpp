@@ -121,6 +121,7 @@ void ShaderChain::dragEvent(ofDragInfo info) {
             pass->LoadJsonParametersFromLoadedShader();
             this->passes.push_back(pass);
             SetupGui();
+            this->passesGui.Setup(this->passes);
         }
     }
 }
