@@ -1,3 +1,22 @@
+/*
+{
+    "wantsLastBuffer" : true,
+    
+   "parameters" : [
+      {
+         "name" : "shift",
+         "range" : {
+            "x" : 0,
+            "y" : 6.28318
+         },
+         "show" : true,
+         "type" : 0,
+         "value" : 1.0
+      }
+   ]
+}
+*/
+
 #version 150
 #pragma include "includes/hue.glsl"
 

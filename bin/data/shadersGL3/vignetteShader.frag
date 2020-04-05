@@ -1,3 +1,29 @@
+/*
+{
+"parameters" : [
+   {
+      "name" : "strength",
+      "range" : {
+         "x" : 0,
+         "y" : 1
+      },
+      "show" : true,
+      "type" : 0,
+      "value" : 0.6326530575752258
+   },
+   {
+      "name" : "power",
+      "range" : {
+         "x" : 0,
+         "y" : 1
+      },
+      "show" : true,
+      "type" : 0,
+      "value" : 0.5
+   }
+]
+}
+*/
 #version 150
 
 uniform sampler2DRect _MainTexture;

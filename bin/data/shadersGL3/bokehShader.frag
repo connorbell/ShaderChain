@@ -1,3 +1,30 @@
+/*
+{
+	"parameters" : [
+	   {
+		  "name" : "startFocusDist",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 10
+		  },
+		  "show" : true,
+		  "type" : 0,
+		  "value" : 0.3571428656578064
+	   },
+	   {
+		  "name" : "endFocusDist",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 10
+		  },
+		  "show" : true,
+		  "type" : 0,
+		  "value" : 1.275510191917419
+	   }
+	]
+}
+*/
+
 #version 150
 
 uniform sampler2DRect _MainTexture;

@@ -1,3 +1,21 @@
+/*
+{
+    "wantsLastBuffer" : true,
+    "parameters" : [
+       {
+          "name" : "scale",
+          "range" : {
+             "x" : 0,
+             "y" : 1
+          },
+          "show" : true,
+          "type" : 0,
+          "value" : 0.75
+       }
+    ]
+}
+*/
+
 #version 150
 
 uniform sampler2DRect _MainTexture;
