@@ -32,7 +32,6 @@ class ShaderPass {
 
     void Load(std::string shaderPath, glm::vec2 res);
     void LoadFromJson(Json::Value &json, float width, float height);
-    void ParseUniforms(string path);
 
     void AddFloatParameter(std::string s, float startValue, glm::vec2 range, bool show, int midi);
     void AddVector3Parameter(std::string s, glm::vec3 val, bool show, glm::vec2 range, int midi[]);
@@ -40,7 +39,10 @@ class ShaderPass {
     void SetInputTexture(ofFbo buffer);
     void UpdateTime(float time);
     void UpdateResolution(int x, int y);
+    void LoadJsonParametersFromLoadedShader();
 
   private:
     glm::vec2 targetResolution;
+    ofxJSON json;
+    void LoadParametersFromJson(Json::Value &json);
 };

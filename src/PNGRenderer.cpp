@@ -42,7 +42,9 @@ void PNGRenderer::AddToGui(ofxPanel *panel) {
     panel->add(saveButton.setup("Save Frames"));
 
     panel->add(frameskip.set("Frameskip", frameskip, 1, 10));
+    this->durationParam.addListener(this, &PNGRenderer::durationUpdated);
     this->saveButton.addListener(this, &PNGRenderer::Start);
+    this->fpsParam.addListener(this, &PNGRenderer::fpsUpdated);
 }
 
 float PNGRenderer::Tick() {
@@ -93,4 +95,14 @@ void PNGRenderer::UpdateResolution(int w, int h) {
 
     resolutionXParam = xString.str();
     resolutionYParam = yString.str();
+}
+
+void PNGRenderer::durationUpdated(string &val) {
+    float v = stof(val);
+    this->duration = v;
+}
+
+void PNGRenderer::fpsUpdated(string &val) {
+    int v = stoi(val);
+    this->duration = v;
 }

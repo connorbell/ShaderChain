@@ -15,5 +15,5 @@ void main()
     vec4 c = texture(_MainTexture, (gl_FragCoord.xy));
     vec4 col = vec4(pow(c.rgb, vec3(power)), 1.0);
 
-    outputColor = mix(vec4(.0), col, 1. - smoothstep(0.,1., length(uv_c) * strength));
+    outputColor = mix(vec4(.0,0.,0.,1.0), col, clamp(1. - smoothstep(0.,1., length(uv_c) * strength),0., 1.));
 }

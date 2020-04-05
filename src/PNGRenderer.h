@@ -38,4 +38,7 @@ private:
     ofxButton saveButton;
     ofParameter<string> durationParam;
     ofParameter<string> fpsParam;
+
+    void durationUpdated(string &val);
+    void fpsUpdated(string &val); 
 };

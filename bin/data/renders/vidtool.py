@@ -61,7 +61,7 @@ def copyGifMaxSize(inputFilename, maxSize, prefix):
 def main(inputFilename, outputFilename):
 
     os.system("mkdir " + outputFilename)
-    os.system("move " + inputFilename + "*.png " + outputFilename)
+    os.system("mv " + inputFilename + "*.png " + outputFilename)
     os.chdir(outputFilename)
 
     print ("Creating mp4")

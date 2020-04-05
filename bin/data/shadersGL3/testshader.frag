@@ -1,3 +1,75 @@
+/*
+{
+"parameters" : [
+	   {
+		  "midi" : 1,
+		  "name" : "focalLength",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 10
+		  },
+		  "show" : true,
+		  "type" : 0,
+		  "value" : 2.5
+	   },
+	   {
+		  "name" : "minDist",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 0.1000000014901161
+		  },
+		  "show" : false,
+		  "type" : 0,
+		  "value" : 0.001000000047497451
+	   },
+	   {
+		  "name" : "maxDist",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 5
+		  },
+		  "show" : false,
+		  "type" : 0,
+		  "value" : 2.5
+	   },
+	   {
+		  "name" : "bgColor",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 1
+		  },
+		  "show" : true,
+		  "type" : 1,
+		  "value" : {
+			 "x" : 0,
+			 "y" : 0,
+			 "z" : 0
+		  }
+	   },
+	   {
+		  "name" : "noiseX",
+		  "range" : {
+			 "x" : -10,
+			 "y" : 10
+		  },
+		  "show" : true,
+		  "type" : 0,
+		  "value" : 0
+	   },
+	   {
+		  "name" : "noiseY",
+		  "range" : {
+			 "x" : -10,
+			 "y" : 10
+		  },
+		  "show" : true,
+		  "type" : 0,
+		  "value" : 0
+	   }
+	]
+}
+*/
+
 #version 150
 #pragma include "includes/noise.glsl"
 #pragma include "includes/hg_sdfs.glsl"
@@ -14,6 +86,8 @@ uniform float focalLength;
 
 uniform float minDist;
 uniform float maxDist;
+uniform float noiseX;
+uniform float noiseY;
 
 uniform vec3 bgColor;
 
@@ -29,22 +103,24 @@ float smin( float d1, float d2, float k ) {
 }
 
 float map(in vec3 pos) {
-    float dist = fPlane(pos, vec3(0., 1., 0.), .25-0.25*pow(fbm(vec3(pos.xz, sin(length(pos.xz*16.66)+_Time*2.)*0.01)), 2.));
-    vec2 idx = floor(abs(pos.xz)*16.);
+	float n = 0.225*pow(fbm(vec3(pos.xz+vec2(noiseX, noiseY), sin(length(pos.xz*6.66)+_Time)*0.1)), 2.);
+    float dist = fPlane(pos, vec3(0., 1., 0.), .25-n);
+    vec2 idx = (abs(pos.xz));
 
     pos += vec3(0.,0.15,-.75);
+	pR(pos.xz,0.25);
 
-    pos.y += sin((length(idx)) + _Time*2.)*0.015;
-    dist = smin(dist, fOctahedron(pos, 0.15), 0.15);
+    pos.y += cos((length(idx)*5.5) + _Time)*0.01;
 
-    return dist;
+	dist = smin(dist, fIcosahedron(pos, 0.225), 0.1);
+	return dist;
 }
 
 float march(in vec3 camPos, in vec3 rayDir) {
 
     float dist = minDist;
 
-    for (int i = 0; i < 45; i++) {
+    for (int i = 0; i < 85; i++) {
         vec3 p = camPos + rayDir * dist;
         float res = map(p);
         if (res <= minDist) break;

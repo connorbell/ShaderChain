@@ -116,7 +116,7 @@ void ShaderChain::dragEvent(ofDragInfo info) {
             auto relativeFileNameWithoutExtension = relativeFileName.substr(0,relativeFileName.find("frag")-1);
 
             ShaderPass *pass = new ShaderPass(relativeFileNameWithoutExtension, glm::vec2(this->pngRenderer->resolutionX,this->pngRenderer->resolutionY) );
-            pass->ParseUniforms(relativeFileName);
+            pass->LoadJsonParametersFromLoadedShader();
             this->passes.push_back(pass);
             SetupGui();
         }
