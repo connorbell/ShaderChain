@@ -15,8 +15,8 @@ void ofApp::setup(){
     ofSetWindowShape(1920, 1080);
     ofSetWindowTitle("ofxShaderChain");
     this->shaderChain.Setup(res);
-    this->shaderChain.ReadFromJson("comps/terrain.json");
-    this->shaderChain.SetupGui();
+    //this->shaderChain.ReadFromJson("comps/terrain.json");
+    //this->shaderChain.SetupGui();
 }
 
 //--------------------------------------------------------------
