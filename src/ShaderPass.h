@@ -25,6 +25,7 @@ class ShaderPass {
     ofFbo lastBuffer;
     ofPlanePrimitive plane;
     bool wantsLastBuffer;
+    bool wantsCamera;
 
     ShaderPass();
     ~ShaderPass();

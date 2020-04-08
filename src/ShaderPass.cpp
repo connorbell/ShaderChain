@@ -51,10 +51,12 @@ void ShaderPass::Render(float time, ofNode *cam, FFTManager *fft) {
 
     UpdateTime(time);
     this->shader.setUniform2f("_Resolution", this->targetResolution.x, this->targetResolution.y);
-    this->shader.setUniform3f("_CamPos", cam->getPosition());
-    this->shader.setUniform3f("_CamForward", cam->getZAxis());
-    this->shader.setUniform3f("_CamUp", cam->getYAxis());
-    this->shader.setUniform3f("_CamRight", cam->getXAxis());
+    if (wantsCamera) {
+        this->shader.setUniform3f("_CamPos", cam->getPosition());
+        this->shader.setUniform3f("_CamForward", cam->getZAxis());
+        this->shader.setUniform3f("_CamUp", cam->getYAxis());
+        this->shader.setUniform3f("_CamRight", cam->getXAxis());
+    }
 
     if (this->wantsLastBuffer) {
         this->shader.setUniformTexture("_LastTexture", this->lastBuffer.getTexture(), 1);
@@ -101,6 +103,9 @@ void ShaderPass::LoadJsonParametersFromLoadedShader() {
 }
 
 void ShaderPass::LoadParametersFromJson(Json::Value &json) {
+    this->wantsLastBuffer = json["wantsLastBuffer"].asBool();
+    this->wantsCamera = json["wantsCamera"].asBool();
+
     for (int j = 0; j < json["parameters"].size(); j++)
     {
         int type = json["parameters"][j]["type"].asInt();
@@ -143,9 +148,7 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
 }
 
 void ShaderPass::LoadFromJson(Json::Value &json, float width, float height) {
-
     std::string shaderName = json["shaderName"].asString();
     Load(shaderName, glm::vec2(width, height));
-    this->wantsLastBuffer = json["wantsLastBuffer"].asBool();
     LoadParametersFromJson(json);
 }

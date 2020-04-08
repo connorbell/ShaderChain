@@ -3,7 +3,7 @@
     "wantsLastBuffer" : true,
     "parameters" : [
        {
-          "name" : "scale",
+          "name" : "intensity",
           "range" : {
              "x" : 0,
              "y" : 1
@@ -11,6 +11,16 @@
           "show" : true,
           "type" : 0,
           "value" : 0.75
+       },
+       {
+          "name" : "scale",
+          "range" : {
+             "x" : 0,
+             "y" : 2
+          },
+          "show" : true,
+          "type" : 0,
+          "value" : 1.0
        }
     ]
 }
@@ -21,6 +31,7 @@
 uniform sampler2DRect _MainTexture;
 uniform sampler2DRect _LastTexture;
 //uniform sampler2DRect _AudioTexture;
+uniform float intensity;
 uniform float scale;
 uniform float _Time;
 uniform vec2 _Resolution;
@@ -38,9 +49,11 @@ void main()
     //float audio = texture(_AudioTexture, vec2(sin(a)*4.+4., 0.)).r;
     //float l = length(uv_c)*0.5*(1.-audio*0.015);
     //vec2 uv = vec2(cos(a), sin(a)) * l + 0.5;
-    vec2 uv = gl_FragCoord.xy;
 
-    vec4 lastColor = texture(_LastTexture, uv);
-    color.rgb += lastColor.rgb * scale; // * (1. + audio*.4);
+    vec2 uv = (gl_FragCoord.xy/_Resolution);
+    uv = (uv - 0.5) * scale + 0.5;
+
+    vec4 lastColor = texture(_LastTexture, uv*_Resolution);
+    color.rgb += lastColor.rgb * intensity; // * (1. + audio*.4);
     outputColor = vec4(color);
 }

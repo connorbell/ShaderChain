@@ -1,5 +1,6 @@
 /*
 {
+"wantsCamera" : true,
 "parameters" : [
 	   {
 		  "midi" : 1,

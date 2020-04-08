@@ -218,6 +218,7 @@ void ShaderChain::WriteToJson() {
     for (uint i = 0; i < this->passes.size(); i++) {
         this->result["data"][i]["shaderName"] = this->passes[i]->filePath;
         this->result["data"][i]["wantsLastBuffer"] = this->passes[i]->wantsLastBuffer;
+        this->result["data"][i]["wantsCamera"] = this->passes[i]->wantsCamera;
         this->result["res"]["x"] = this->pngRenderer->resolutionX;
         this->result["res"]["y"] = this->pngRenderer->resolutionY;
 
