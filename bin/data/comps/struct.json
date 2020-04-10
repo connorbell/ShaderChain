@@ -136,7 +136,8 @@
             }
          ],
          "shaderName" : "shadersGL3/structshader",
-         "wantsLastBuffer" : false
+         "wantsLastBuffer" : false,
+         "wantsCamera" : true
       },
       {
          "parameters" : [

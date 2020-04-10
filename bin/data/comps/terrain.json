@@ -79,7 +79,8 @@
             }
          ],
          "shaderName" : "shadersGL3/testshader",
-         "wantsLastBuffer" : false
+         "wantsLastBuffer" : false,
+         "wantsCamera" : true
       },
       {
          "parameters" : [
