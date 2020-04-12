@@ -46,6 +46,104 @@
 			 "y" : 0,
 			 "z" : 0
 		  }
+	   },
+   	   {
+   		  "name" : "startScale",
+   		  "range" : {
+   			 "x" : 0,
+   			 "y" : 2
+   		  },
+   		  "show" : true,
+   		  "type" : 0,
+   		  "value" : 0.75
+   	   },
+	   {
+		  "name" : "scaleFactor",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 1
+		  },
+		  "show" : true,
+		  "type" : 0,
+		  "value" : 0.575
+	   },
+	   {
+		  "name" : "offset",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 4
+		  },
+		  "show" : true,
+		  "type" : 1,
+		  "value" : {
+			 "x" : 0.75,
+			 "y" : 1,
+			 "z" : 2
+		  }
+	   },
+	   {
+		  "name" : "spaceSize",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 5
+		  },
+		  "show" : true,
+		  "type" : 1,
+		  "value" : {
+			 "x" : 3,
+			 "y" : 3,
+			 "z" : 3
+		  }
+	   },
+	   {
+		  "name" : "distScalar",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 2
+		  },
+		  "show" : true,
+		  "type" : 0,
+		  "value" : 0.5
+	   },
+	   {
+		  "name" : "rotationPhaseX",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 7
+		  },
+		  "show" : true,
+		  "type" : 0,
+		  "value" : 2.5
+	   },
+	   {
+		  "name" : "rotationPhaseY",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 7
+		  },
+		  "show" : true,
+		  "type" : 0,
+		  "value" : 2.5
+	   },
+	   {
+		  "name" : "animationAmpX",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 0.5
+		  },
+		  "show" : true,
+		  "type" : 0,
+		  "value" : 0.05
+	   },
+	   {
+		  "name" : "animationAmpY",
+		  "range" : {
+			 "x" : 0,
+			 "y" : 0.5
+		  },
+		  "show" : true,
+		  "type" : 0,
+		  "value" : 0.015
 	   }
 	]
 }
@@ -66,6 +164,18 @@ uniform float focalLength;
 uniform float minDist;
 uniform float maxDist;
 
+uniform float startScale;
+uniform float scaleFactor;
+uniform float distScalar;
+uniform float rotationPhaseX;
+uniform float rotationPhaseY;
+uniform float animationAmpX;
+uniform float animationAmpY;
+
+uniform vec3 offset;
+uniform vec3 spaceSize;
+
+
 uniform vec3 bgColor;
 
 in vec2 texCoordVarying;
@@ -82,9 +192,9 @@ float smin( float d1, float d2, float k ) {
 float map(in vec3 pos) {
 	vec3 originalPos = pos + _CamPos - _CamForward*1.5;
 
-	float scale = .55;
-    vec3 spacesize = vec3(3.,4.,2.2);
-    float distFromCam = length(pos)*0.4;
+	float scale = startScale;
+    vec3 spacesize = spaceSize;
+    float distFromCam = length(pos)*distScalar;
 
     // Divide the space into cells
     pos.xyz = mod(pos.xyz, spacesize) - spacesize*0.5;
@@ -94,23 +204,20 @@ float map(in vec3 pos) {
 
     float cube = 1e20;
     float res = cube;
-    vec3 displacement = vec3(-1., -.5, -2.)*0.75;
 
     for (int i = 0; i < 8; i++) {
         p.xyz = abs(p.xyz);
 
         float phase = _Time+float(i)*0.25+distFromCam*2.;
-        vec2 dispAnim = vec2( sin(phase), cos(phase))*0.025;
+		vec2 anim = vec2(cos(phase), sin(phase));
+		vec3 offs = offset + vec3(0., anim*0.025);
 
-        displacement.yz += dispAnim;
+        p -= offs * scale;
 
-        p += displacement * scale;
+        pR(p.xz,-distFromCam+rotationPhaseY+anim.x*animationAmpY);
+        pR(p.zy,distFromCam+rotationPhaseX+anim.y*animationAmpX);
 
-        phase = _Time+float(i)*0.5 + distFromCam;
-        pR(p.xz,-distFromCam+mouse.y+float(i)+sin(phase)*.05);
-        pR(p.zy,distFromCam+mouse.x+float(i)+cos(phase)*.075);
-
-		scale *= 0.6;
+		scale *= scaleFactor;
 
         float octa = fIcosahedron(p,scale);
 
@@ -123,7 +230,7 @@ float map(in vec3 pos) {
 
     // Smooth min blend the fractal terrain with itself with a param around zero to give it a scaling effect
     res = smin(res, res, -0.025+ sin(-0.5+_Time-length(vec3(pos.x*0.5,pos.y*0.9,pos.z))*12.)*0.05);
-    res = smin(res, fIcosahedron(originalPos,.2), 0.1);
+    res = smin(res, fIcosahedron(originalPos,.25), 0.2);
 
     return res;
 }
