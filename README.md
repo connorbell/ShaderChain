@@ -2,9 +2,9 @@
 
 This tool is a development interface for chaining glsl fragment shaders.
 
-✔️  Load a chain of shaders from json
+✔️  Load a chain of shaders from json and add passes at runtime.
 
-✔️  Define their uniforms and map them to midi keys
+✔️  Define their uniforms and map them to midi keys.
 
 ✔️  Render out to pngs with a duration and fps (good for making loops!)
 
@@ -14,11 +14,9 @@ This tool is a development interface for chaining glsl fragment shaders.
 
 ✔️  Fly around 3d wasd/mouse camera controls that map to uniforms (for exploring raymarched worlds).
 
+🔜 Texture input
+
 🔜 Audio input
-
-🔜 Load presets at runtime
-
-🔜 Add/remove passes at runtime
 
 🔜 Lotsss
 
@@ -27,18 +25,23 @@ Disclaimer: Very early stages. Great tools I've used like this in the past inclu
 ## Controls
 
 F - Fullscreen
+
 space - Pause / play
 
 ## Dependencies
 
-ofxFft
-ofxGui
-ofxJSON
-ofxMidi
-ofxAutoReloadedShader
+git clone https://github.com/kylemcdonald/ofxFft
+
+git clone https://github.com/jeffcrouse/ofxJSON
+
+git clone https://github.com/danomatika/ofxMidi
+
+git clone https://github.com/andreasmuller/ofxAutoReloadedShader
 
 ## Install
 
 Make sure you have all the addons.
+
 Checkout this repo into your OpenFrameworks "apps" folder.
+
 Run "make" then "make run"
