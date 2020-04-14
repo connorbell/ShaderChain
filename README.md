@@ -30,13 +30,12 @@ space - Pause / play
 
 ## Dependencies
 
+```
 git clone https://github.com/kylemcdonald/ofxFft
-
 git clone https://github.com/jeffcrouse/ofxJSON
-
 git clone https://github.com/danomatika/ofxMidi
-
 git clone https://github.com/andreasmuller/ofxAutoReloadedShader
+```
 
 ## Install
 
