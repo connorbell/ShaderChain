@@ -1,17 +1,22 @@
 #include "ShaderChain.h"
+#include "ofxSortableList.h"
+
 namespace fs = std::filesystem;
 
 void ShaderChain::Setup(glm::vec2 res) {
+    this->passesGui = new PassesGui();
+    ofAddListener(passesGui->passButtons->elementRemoved, this, &ShaderChain::removed);
+    ofAddListener(passesGui->passButtons->elementMoved, this, &ShaderChain::moved);
     this->pngRenderer = new PNGRenderer(3.14159, 30, res);
     this->isRunning = true;
-    this->gui.setup("Params");
-    this->guiGlobal.setup("Global", "GlobalSettings.xml", ofGetScreenWidth()-250, 0);
-    this->pngRenderer->AddToGui(&(this->guiGlobal));
-    this->pngRenderer->resolutionXParam.addListener(this, &ShaderChain::ResolutionDidChange);
-    this->pngRenderer->resolutionYParam.addListener(this, &ShaderChain::ResolutionDidChange);
+    //this->gui.setup("Params");
+    this->guiGlobal = gui.addPanel();
+    this->pngRenderer->AddToGui(this->guiGlobal);
     this->pngRenderer->savePresetButton.addListener(this, &ShaderChain::WriteToJson);
+    this->pngRenderer->openFileButton.addListener(this, &ShaderChain::OpenFilePressed);
     this->showGui = true;
     this->isMouseDown = false;
+    this->isShowingFileDialogue = false;
     this->fft.Start();
     this->frame = 0;
     SetupMidi();
@@ -22,6 +27,9 @@ ShaderChain::~ShaderChain() {
   for (uint i = 0; i < this->passes.size(); i++) {
       delete this->passes[i];
   }
+  ofRemoveListener(passesGui->passButtons->elementRemoved, this, &ShaderChain::removed);
+  ofRemoveListener(passesGui->passButtons->elementMoved, this, &ShaderChain::moved);
+  delete this->passesGui;
 }
 
 void ShaderChain::SetupMidi() {
@@ -37,11 +45,21 @@ void ShaderChain::SetupMidi() {
     midiIn.addListener(this);
 }
 
-void ShaderChain::ResolutionDidChange(string &val) {
-    this->pngRenderer->resolutionX = std::stof(this->pngRenderer->resolutionXParam);
-    this->pngRenderer->resolutionY = std::stof(this->pngRenderer->resolutionYParam);
-    for (uint i = 0; i < this->passes.size(); i++) {
-        this->passes[i]->UpdateResolution(this->pngRenderer->resolutionX, this->pngRenderer->resolutionY);
+void ShaderChain::UpdateResolutionIfChanged() {
+
+    bool needsUpdate = false;
+
+    if (this->passes.size() > 0) {
+        if (this->passes[0]->targetResolution.x != this->pngRenderer->resolutionX ||
+            this->passes[0]->targetResolution.y != this->pngRenderer->resolutionY) {
+            needsUpdate = true;
+        }
+    }
+
+    if (needsUpdate) {
+        for (uint i = 0; i < this->passes.size(); i++) {
+            this->passes[i]->UpdateResolution(this->pngRenderer->resolutionX, this->pngRenderer->resolutionY);
+        }
     }
 }
 
@@ -51,6 +69,8 @@ void ShaderChain::BeginSaveFrames() {
 
 void ShaderChain::Update() {
     fft.Update();
+    UpdateResolutionIfChanged();
+
     bool capturingThisFrame = pngRenderer->isCapturing;
 
     if (capturingThisFrame) {
@@ -83,9 +103,9 @@ void ShaderChain::Update() {
     }
 
     if (this->showGui) {
-        this->gui.draw();
-        this->guiGlobal.draw();
-        this->passesGui.Draw();
+    //    this->gui.draw();
+    //    this->guiGlobal.draw();
+        this->passesGui->Draw();
     }
 
     if (capturingThisFrame) {
@@ -114,14 +134,7 @@ void ShaderChain::dragEvent(ofDragInfo info) {
         if (extension == "json") {
             ReadFromJson(info.files[0]);
         } else if (extension == "frag") {
-            auto relativeFileName = info.files[0].substr(info.files[0].find("data") + 5);
-            auto relativeFileNameWithoutExtension = relativeFileName.substr(0,relativeFileName.find("frag")-1);
-
-            ShaderPass *pass = new ShaderPass(relativeFileNameWithoutExtension, glm::vec2(this->pngRenderer->resolutionX,this->pngRenderer->resolutionY) );
-            pass->LoadJsonParametersFromLoadedShader();
-            this->passes.push_back(pass);
-            SetupGui();
-            this->passesGui.Setup(this->passes);
+            LoadPassFromFile(info.files[0]);
         }
     }
 }
@@ -151,14 +164,21 @@ void ShaderChain::KeyPressed(int key) {
 }
 
 void ShaderChain::SetupGui() {
-    this->gui.clear();
-    this->parameterGroups.clear();
-    for (uint i = 0; i < this->passes.size(); i++) {
-        this->parameterGroups.add(passes[i]->parameterGroup);
+//    this->gui.clear();
+
+    if (this->parametersGuiGroup) {
+        this->parametersGuiGroup->clear();
+    } else {
+        this->parametersGuiGroup = gui.addPanel();
     }
-    this->gui.setup(parameterGroups);
-    this->gui.setPosition(10, 150);
-    this->gui.setName("Parameters");
+    this->parametersGuiGroup->setPosition(ofPoint(ofGetWidth()-220, 10));
+
+    for (uint i = 0; i < this->passes.size(); i++) {
+        ofxGuiGroup2 *group = this->parametersGuiGroup->addGroup(passes[i]->parameterGroup);
+
+    }
+
+//    this->gui.setName("Parameters");
 }
 
 void ShaderChain::newMidiMessage(ofxMidiMessage& msg) {
@@ -206,12 +226,22 @@ void ShaderChain::ReadFromJson(std::string path) {
             pass->LoadFromJson(result["data"][i], this->pngRenderer->resolutionX, this->pngRenderer->resolutionY);
             this->passes.push_back(pass);
         }
-        this->passesGui.Setup(this->passes);
+        this->passesGui->Setup(&this->passes);
         SetupGui();
     }
     else {
         ofLogError("ofApp::setup")  << "Failed to parse JSON" << endl;
     }
+}
+void ShaderChain::LoadPassFromFile(string path) {
+    auto relativeFileName = path.substr(path.find("data") + 5);
+    auto relativeFileNameWithoutExtension = relativeFileName.substr(0,relativeFileName.find("frag")-1);
+
+    ShaderPass *pass = new ShaderPass(relativeFileNameWithoutExtension, glm::vec2(this->pngRenderer->resolutionX,this->pngRenderer->resolutionY) );
+    pass->LoadJsonParametersFromLoadedShader();
+    this->passes.push_back(pass);
+    SetupGui();
+    this->passesGui->Setup(&this->passes);
 }
 
 void ShaderChain::WriteToJson() {
@@ -219,8 +249,8 @@ void ShaderChain::WriteToJson() {
         this->result["data"][i]["shaderName"] = this->passes[i]->filePath;
         this->result["data"][i]["wantsLastBuffer"] = this->passes[i]->wantsLastBuffer;
         this->result["data"][i]["wantsCamera"] = this->passes[i]->wantsCamera;
-        this->result["res"]["x"] = this->pngRenderer->resolutionX;
-        this->result["res"]["y"] = this->pngRenderer->resolutionY;
+        this->result["res"]["x"] = (float)this->pngRenderer->resolutionX;
+        this->result["res"]["y"] = (float)this->pngRenderer->resolutionY;
 
         this->result["campos"]["x"] = camera.getX();
         this->result["campos"]["y"] = camera.getY();
@@ -241,5 +271,35 @@ void ShaderChain::WriteToJson() {
         ofLogNotice("ShaderChain::WriteToJson") << this->pngRenderer->presetNameParam << " written unsuccessfully.";
     } else {
         ofLogNotice("ShaderChain::WriteToJson") << this->pngRenderer->presetNameParam << " written successfully.";
+    }
+}
+
+void ShaderChain::removed(RemovedElementData& data) {
+	cout << "removed " + ofToString(data.index) + "\n";
+    passes.erase(passes.begin() + data.index);
+    SetupGui();
+}
+
+void ShaderChain::moved(MovingElementData &data) {
+    iter_swap(passes.begin() + data.old_index, passes.begin() + data.new_index);
+	cout << "moved " + data.name + " from index " + ofToString(data.old_index) + " to index " + ofToString(data.new_index) + "\n";
+    SetupGui();
+}
+
+void ShaderChain::OpenFilePressed() {
+
+    if (!this->isShowingFileDialogue) {
+        this->isShowingFileDialogue = true;
+        ofFileDialogResult result = ofSystemLoadDialog("Load file",system("pwd"));
+
+        if (result.bSuccess) {
+            auto extension = result.filePath.substr(result.filePath.find_last_of(".") + 1);
+            if (extension == "frag") {
+                LoadPassFromFile(result.getPath());
+            } else if (extension == "json") {
+                ReadFromJson(result.getPath());
+            }
+        }
+        this->isShowingFileDialogue = false;
     }
 }

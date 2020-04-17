@@ -84,22 +84,26 @@
       },
       {
          "parameters" : [
-            {
-               "name" : "scale",
-               "range" : {
-                  "x" : 0,
-                  "y" : 1
-               },
-               "show" : true,
-               "type" : 0,
-               "value" : 0.75
-            }
-         ],
-         "params" : [
-            {
-               "name" : "scale",
-               "value" : 0.75
-            }
+             {
+                "name" : "intensity",
+                "range" : {
+                   "x" : 0,
+                   "y" : 1
+                },
+                "show" : true,
+                "type" : 0,
+                "value" : 0.75
+             },
+             {
+                "name" : "scale",
+                "range" : {
+                   "x" : 0,
+                   "y" : 2
+                },
+                "show" : true,
+                "type" : 0,
+                "value" : 1.0
+             }
          ],
          "shaderName" : "shadersGL3/feedbackShader",
          "wantsLastBuffer" : true

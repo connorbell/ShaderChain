@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#include "ofxGui.h"
+#include "ofxGuiExtended2.h"
 #include "ofxMidi.h"
 #include "ofxJSON.h"
 
@@ -35,24 +35,30 @@ public:
     void WriteToJson();
     void ReadFromJson(std::string path);
     void SetupMidi();
-    void ResolutionDidChange(string &val);
     void AudioTextureUpdate(ofTexture *audioTexture);
     void UpdateFft();
     void dragEvent(ofDragInfo info);
 
 private:
     PNGRenderer *pngRenderer;
-    ofxPanel gui;
-    ofxPanel guiGlobal;
-    PassesGui passesGui;
+    ofxGui gui;
+    ofxGuiPanel *parametersGuiGroup;
+    ofxGuiPanel *guiGlobal;
+    PassesGui *passesGui;
     ofParameterGroup parameterGroups;
 
     float mouseMoveSpeed = 10.0;
     FFTManager fft;
 
     bool showGui;
+    bool isShowingFileDialogue;
+
     int frame;
 
     void RenderPasses();
-
+    void removed(RemovedElementData& data);
+    void moved(MovingElementData& data);
+    void UpdateResolutionIfChanged();
+    void OpenFilePressed();
+    void LoadPassFromFile(string path);
 };

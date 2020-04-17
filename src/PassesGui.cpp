@@ -1,28 +1,26 @@
 #include "PassesGui.h"
 
 PassesGui::PassesGui() {
-    this->gui.setup("Passes");
+    this->panel = gui.addPanel();
+    passButtons = panel->add<ofxSortableList>("Passes");
+    this->panel->setPosition(ofPoint(10, 440));
 }
 
-void PassesGui::Setup(std::vector<ShaderPass*> passes) {
-    gui.clear();
+PassesGui::~PassesGui() {
 
-    for (uint i = 0; i < passButtons.size(); i++) {
-        delete passButtons[i];
-    }
-    if (passButtons.size() > 0) {
-        passButtons.clear();
-    }
+}
 
-    for (uint i = 0; i < passes.size(); i++) {
-        ofxButton *button = new ofxButton();
-        button->setup(passes[i]->filePath);
-        passButtons.push_back(button);
+void PassesGui::Setup(std::vector<ShaderPass*> *passes) {
+    passButtons->clear();
+    this->passes = passes;
 
-        gui.add(button);
+    for (uint i = 0; i < passes->size(); i++) {
+        ofParameter<string> text;
+        text.set(passes->at(i)->filePath, "");
+        passButtons->add(text);
     }
 }
 
 void PassesGui::Draw() {
-    this->gui.draw();
+
 }

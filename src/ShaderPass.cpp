@@ -1,4 +1,5 @@
 #include "ShaderPass.h"
+#include "ShaderChain.h"
 
 #include <regex>
 

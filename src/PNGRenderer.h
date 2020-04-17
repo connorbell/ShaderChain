@@ -2,32 +2,32 @@
 
 #include <string>
 #include "ofMain.h"
-#include "ofxGui.h"
+#include "ofxGuiExtended2.h"
 
 class PNGRenderer {
 
 public:
-    int resolutionX;
-    int resolutionY;
-    ofParameter<string> resolutionXParam;
-    ofParameter<string> resolutionYParam;
-    ofxButton savePresetButton;
+    ofParameter<float> resolutionX;
+    ofParameter<float> resolutionY;
+
+    ofParameter<void> savePresetButton;
+    ofParameter<void> openFileButton;
+
     ofParameter<string> presetNameParam;
     ofParameter<float> displayScaleParam;
     ofParameter<int> frameskip;
+    ofParameter<float> duration;
+    ofParameter<int> FPS;
 
     PNGRenderer(float duration, int fps, glm::vec2 resolution);
     std::string filePath;
     bool isCapturing = false;
-    float duration;
-    int FPS;
 
     float Tick();
     void Start();
     void WritePNG(ofFbo *buffer);
-    void AddToGui(ofxPanel *panel);
+    void AddToGui(ofxGuiPanel *panel);
     void UpdateResolution(int w, int h);
-
     ofParameter<bool> preview;
 
 private:
@@ -35,10 +35,5 @@ private:
     int totalFrames;
     int renderedFrames;
 
-    ofxButton saveButton;
-    ofParameter<string> durationParam;
-    ofParameter<string> fpsParam;
-
-    void durationUpdated(string &val);
-    void fpsUpdated(string &val); 
+    ofParameter<void> saveButton;
 };

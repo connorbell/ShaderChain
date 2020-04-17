@@ -1,20 +1,24 @@
 #pragma once
 
 #include <vector>
-#include "ofxGui.h"
 #include "ShaderPass.h"
+#include "ofxGuiExtended2.h"
+#include "ofxSortableList.h"
 
 class PassesGui {
 public:
 
     PassesGui();
-    std::vector<ofxButton*> passButtons;
+    ~PassesGui();
+
+    ofxSortableList *passButtons;
     ofxButton addPassButton;
 
-    void Setup(std::vector<ShaderPass*> passes);
+    void Setup(std::vector<ShaderPass*> *passes);
     void Draw();
 
 private:
-    ofxPanel gui;
-
+    ofxGui gui;
+    ofxGuiPanel *panel;
+    std::vector<ShaderPass*> *passes;
 };

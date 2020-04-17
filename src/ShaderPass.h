@@ -18,6 +18,7 @@ class ShaderPass {
   public:
     std::string filePath;
     std::vector<std::unique_ptr<Parameter>> params;
+    glm::vec2 targetResolution;
     float scale;
     ofxAutoReloadedShader shader;
     ofParameterGroup parameterGroup;
@@ -43,7 +44,6 @@ class ShaderPass {
     void LoadJsonParametersFromLoadedShader();
 
   private:
-    glm::vec2 targetResolution;
     ofxJSON json;
     void LoadParametersFromJson(Json::Value &json);
 };

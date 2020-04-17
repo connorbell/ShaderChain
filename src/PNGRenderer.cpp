@@ -14,37 +14,30 @@ PNGRenderer::PNGRenderer(float duration, int fps, glm::vec2 resolution) {
     this->displayScaleParam = 1.0;
     this->renderedFrames = 1;
     this->frameskip = 1;
+    this->duration = 3.14159;
+    this->FPS = 30;
+    this->preview = false;
 }
 
-void PNGRenderer::AddToGui(ofxPanel *panel) {
-    std::ostringstream xString;
-    xString << resolutionX;
+void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
 
-    std::ostringstream yString;
-    yString << resolutionY;
+    panel->addFpsPlotter();
+    panel->add(openFileButton.set("Open File"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
 
-    panel->add(resolutionXParam.set("res x",xString.str()));
-    panel->add(resolutionYParam.set("res y",yString.str()));
+    panel->add<ofxGuiFloatInputField>(resolutionX.set("Res x", resolutionX, 0, 4096));
+    panel->add<ofxGuiFloatInputField>(resolutionY.set("Res y", resolutionY, 0, 4096));
 
-    std::ostringstream durationString;
-    durationString << duration;
+    panel->add(savePresetButton.set("Save Preset"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+    panel->add<ofxGuiTextField>(presetNameParam.set("Preset name", presetNameParam));
+    panel->add(displayScaleParam.set("Display scale", displayScaleParam, 0.1, 5.0));
 
-    std::ostringstream fpsString;
-    fpsString << FPS;
-
-    panel->add(savePresetButton.setup("Save Preset"));
-    panel->add(presetNameParam.set("preset name", presetNameParam));
-    panel->add(displayScaleParam.set("Display resolution", displayScaleParam, 1.0, 5.0));
-
-    panel->add(preview.set("Preview", preview));
-    panel->add(durationParam.set("duration", durationString.str()));
-    panel->add(fpsParam.set("fps", fpsString.str()));
-    panel->add(saveButton.setup("Save Frames"));
-
+    panel->add<ofxGuiFloatInputField>(duration.set("Duration", duration, 0, 10000000));
+    panel->add<ofxGuiIntInputField>(FPS.set("fps", FPS, 0, 1000));
     panel->add(frameskip.set("Frameskip", frameskip, 1, 10));
-    this->durationParam.addListener(this, &PNGRenderer::durationUpdated);
+    panel->add(preview.set("Preview", preview));
+    panel->add(saveButton.set("Save Frames"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+
     this->saveButton.addListener(this, &PNGRenderer::Start);
-    this->fpsParam.addListener(this, &PNGRenderer::fpsUpdated);
 }
 
 float PNGRenderer::Tick() {
@@ -76,9 +69,6 @@ void PNGRenderer::WritePNG(ofFbo *buffer) {
 }
 
 void PNGRenderer::Start() {
-    this->duration = std::stof(durationParam);
-    this->FPS = std::stof(fpsParam);
-    cout << this->FPS << " " << this->duration << endl;
     this->renderedFrames = 0;
     this->totalFrames = duration * FPS;
     this->isCapturing = true;
@@ -87,22 +77,4 @@ void PNGRenderer::Start() {
 void PNGRenderer::UpdateResolution(int w, int h) {
     this->resolutionX = w;
     this->resolutionY = h;
-    std::ostringstream xString;
-    xString << resolutionX;
-
-    std::ostringstream yString;
-    yString << resolutionY;
-
-    resolutionXParam = xString.str();
-    resolutionYParam = yString.str();
-}
-
-void PNGRenderer::durationUpdated(string &val) {
-    float v = stof(val);
-    this->duration = v;
-}
-
-void PNGRenderer::fpsUpdated(string &val) {
-    int v = stoi(val);
-    this->duration = v;
 }
