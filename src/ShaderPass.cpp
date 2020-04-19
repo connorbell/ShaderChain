@@ -16,9 +16,9 @@ void ShaderPass::Load(std::string shaderPath, glm::vec2 res) {
     this->filePath = shaderPath;
     this->scale = 1.0;
     this->targetResolution = glm::vec2(res.x * scale, res.y * scale);
+    this->parameterGroup = nullptr;
     cout << filePath << " Target Resolution: " << std::to_string(this->targetResolution.x) << " " << std::to_string(this->targetResolution.y) << endl;
     UpdateResolution(this->targetResolution.x, this->targetResolution.y);
-    parameterGroup.setName(shaderPath);
 }
 
 ShaderPass::~ShaderPass(){
@@ -37,13 +37,16 @@ void ShaderPass::UpdateResolution(int x, int y) {
 void ShaderPass::AddFloatParameter(std::string s, float startValue, glm::vec2 range, bool show, int midi) {
     auto ptr = std::make_unique<FloatParameter>(s, startValue, range, show, midi);
     this->params.push_back(std::move(ptr));
-    this->params[params.size()-1]->AddToGui(&parameterGroup);
 }
 
 void ShaderPass::AddVector3Parameter(std::string s, glm::vec3 val, bool show, glm::vec2 range, int midi[]) {
     auto ptr = std::make_unique<Vector3Parameter>(s, val, show, range, midi);
     this->params.push_back(std::move(ptr));
-    this->params[params.size()-1]->AddToGui(&parameterGroup);
+}
+
+void ShaderPass::AddTextureParameter(string s, string filePath, int textureIndex, bool show) {
+    auto ptr = std::make_unique<TextureParameter>(s, filePath, textureIndex, show);
+    this->params.push_back(std::move(ptr));
 }
 
 void ShaderPass::Render(float time, ofNode *cam, FFTManager *fft) {
@@ -145,6 +148,15 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
             }
             AddVector3Parameter(name, glm::vec3(valx, valy, valz), show, glm::vec2(x, y), midi);
         }
+        // textures
+        else if (type == 2) {
+            string name = json["parameters"][j]["name"].asString();
+            string path = json["parameters"][j]["filePath"].asString();
+            bool show = json["parameters"][j]["show"].asBool();
+            int index = json["parameters"][j]["textureIndex"].asInt();
+
+            AddTextureParameter(name, path, index, show);
+        }
     }
 }
 
@@ -152,4 +164,14 @@ void ShaderPass::LoadFromJson(Json::Value &json, float width, float height) {
     std::string shaderName = json["shaderName"].asString();
     Load(shaderName, glm::vec2(width, height));
     LoadParametersFromJson(json);
+}
+
+void ShaderPass::AddToGui(ofxGuiPanel *gui) {
+
+    parameterGroup = gui->addGroup();
+    parameterGroup->setName(filePath);
+
+    for (int i = 0; i < this->params.size(); i++) {
+        params[i]->AddToGui(parameterGroup);
+    }
 }

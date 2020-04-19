@@ -11,7 +11,7 @@ public:
 
   FloatParameter(std::string uniform, float currentValue, glm::vec2 range, bool show, int midi);
   virtual void UpdateShader(ofxAutoReloadedShader *shader) override;
-  virtual void AddToGui(ofParameterGroup *gui) override;
+  virtual void AddToGui(ofxGuiGroup2 *gui) override;
   virtual void UpdateJson(Json::Value &val) override;
   virtual void UpdateMidi(int index, float value) override;
   virtual void BindMidi(int midiIndices[]) override;

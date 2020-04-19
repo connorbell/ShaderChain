@@ -42,10 +42,10 @@ public:
 private:
     PNGRenderer *pngRenderer;
     ofxGui gui;
-    ofxGuiPanel *parametersGuiGroup;
+    ofxGuiGroup2 *parametersGuiGroup;
     ofxGuiPanel *guiGlobal;
     PassesGui *passesGui;
-    ofParameterGroup parameterGroups;
+    ofxGuiPanel *parameterPanel;
 
     float mouseMoveSpeed = 10.0;
     FFTManager fft;

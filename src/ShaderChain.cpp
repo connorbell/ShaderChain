@@ -9,7 +9,6 @@ void ShaderChain::Setup(glm::vec2 res) {
     ofAddListener(passesGui->passButtons->elementMoved, this, &ShaderChain::moved);
     this->pngRenderer = new PNGRenderer(3.14159, 30, res);
     this->isRunning = true;
-    //this->gui.setup("Params");
     this->guiGlobal = gui.addPanel();
     this->pngRenderer->AddToGui(this->guiGlobal);
     this->pngRenderer->savePresetButton.addListener(this, &ShaderChain::WriteToJson);
@@ -19,6 +18,8 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->isShowingFileDialogue = false;
     this->fft.Start();
     this->frame = 0;
+    this->parameterPanel = gui.addPanel();
+    this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
     SetupMidi();
 }
 
@@ -164,21 +165,11 @@ void ShaderChain::KeyPressed(int key) {
 }
 
 void ShaderChain::SetupGui() {
-//    this->gui.clear();
-
-    if (this->parametersGuiGroup) {
-        this->parametersGuiGroup->clear();
-    } else {
-        this->parametersGuiGroup = gui.addPanel();
-    }
-    this->parametersGuiGroup->setPosition(ofPoint(ofGetWidth()-220, 10));
-
+    parameterPanel->clear();
+    this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
     for (uint i = 0; i < this->passes.size(); i++) {
-        ofxGuiGroup2 *group = this->parametersGuiGroup->addGroup(passes[i]->parameterGroup);
-
+        this->passes[i]->AddToGui(parameterPanel);
     }
-
-//    this->gui.setName("Parameters");
 }
 
 void ShaderChain::newMidiMessage(ofxMidiMessage& msg) {
