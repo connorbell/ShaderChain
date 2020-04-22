@@ -66,6 +66,13 @@
 		  "show" : true,
 		  "type" : 0,
 		  "value" : 0
+	   },
+	   {
+		  "name" : "noiseTex",
+		  "show" : true,
+		  "type" : 2,
+		  "filePath" : "textures/noise_loop.png",
+		  "textureIndex" : 1
 	   }
 	]
 }
@@ -90,6 +97,9 @@ uniform float maxDist;
 uniform float noiseX;
 uniform float noiseY;
 
+uniform sampler2DRect noiseTex;
+uniform vec2 noiseTex_res;
+
 uniform vec3 bgColor;
 
 in vec2 texCoordVarying;
@@ -104,16 +114,18 @@ float smin( float d1, float d2, float k ) {
 }
 
 float map(in vec3 pos) {
-	float n = 0.225*pow(fbm(vec3(pos.xz+vec2(noiseX, noiseY), sin(length(pos.xz*6.66)+_Time)*0.1)), 2.);
+	vec2 noiseUv = mod(abs(pos.xz*0.5+vec2(noiseX, noiseY)+_Time/(3.14159*4.)) * noiseTex_res, noiseTex_res);
+	float n = texture(noiseTex, noiseUv).r*4.;
+	n = pow(noise(vec2(n + cos(_Time + pos.z*3.14), sin(_Time*0.25 + pos.z*3.14 + n))),2.)*0.15;
     float dist = fPlane(pos, vec3(0., 1., 0.), .25-n);
     vec2 idx = (abs(pos.xz));
 
-    pos += vec3(0.,0.15,-.75);
+    pos += vec3(-0.5,-0.,-.6);
 	pR(pos.xz,0.25);
 
     pos.y += cos((length(idx)*5.5) + _Time)*0.01;
 
-	dist = smin(dist, fIcosahedron(pos, 0.225), 0.1);
+	dist = smin(dist, fBox(pos, vec3(0.14 )), 0.1);
 	return dist;
 }
 
@@ -144,10 +156,10 @@ vec4 render(in vec3 camPos, in vec3 rayDir) {
     float dist = march(camPos, rayDir);
     vec3 fPos = camPos + rayDir * dist;
     vec3 nor = calcNormal(fPos);
-    vec3 col = 1. - nor * 0.5 - 0.5;
-    float fres = (.666+dot(rayDir, nor));
+    vec3 col = nor.grb * 0.5 + 0.5;
+    float fres = (1.+dot(rayDir, nor));
     col *= fres;
-    //col = pow(col, vec3(0.666));
+    col = pow(col, vec3(0.666));
     col = mix(col, bgColor, clamp(dist/maxDist, 0.0, 1.0));
     return vec4(col, dist);
 }
