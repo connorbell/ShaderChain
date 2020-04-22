@@ -12,7 +12,7 @@ void FloatParameter::UpdateShader(ofxAutoReloadedShader *shader) {
   shader->setUniform1f(this->uniform, this->value);
 }
 
-void FloatParameter::AddToGui(ofParameterGroup *gui) {
+void FloatParameter::AddToGui(ofxGuiGroup2 *gui) {
     if (this->show) {
         gui->add(value.set(this->uniform,this->value,this->range.x,this->range.y));
     }

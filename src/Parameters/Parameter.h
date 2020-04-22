@@ -2,7 +2,7 @@
 #include <string>
 
 #include "ofMain.h"
-#include "ofxGui.h"
+#include "ofxGuiExtended2.h"
 #include "ofxAutoReloadedShader.h"
 #include "ofxJSON.h"
 
@@ -14,7 +14,7 @@ public:
   bool show;
 
   virtual void UpdateShader(ofxAutoReloadedShader *shader) {}
-  virtual void AddToGui(ofParameterGroup *gui) {}
+  virtual void AddToGui(ofxGuiGroup2 *gui) {}
   virtual void UpdateJson(Json::Value &val) {}
   virtual void UpdateMidi(int midiIndex, float value) {}
   virtual void BindMidi(int midiIndices[]) {}

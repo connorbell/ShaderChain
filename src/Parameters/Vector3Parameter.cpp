@@ -1,6 +1,6 @@
 #include "Vector3Parameter.h"
 
-Vector3Parameter::Vector3Parameter(std::string uniform, glm::vec3 defaultVal, bool show, glm::vec2 range, int *midi) {
+Vector3Parameter::Vector3Parameter(std::string uniform, ofVec3f defaultVal, bool show, glm::vec2 range, int *midi) {
   this->uniform = uniform;
   this->value = defaultVal;
   this->show = show;
@@ -15,9 +15,10 @@ void Vector3Parameter::UpdateShader(ofxAutoReloadedShader *shader) {
   shader->setUniform3f(this->uniform, this->value->x, this->value->y, this->value->z);
 }
 
-void Vector3Parameter::AddToGui(ofParameterGroup *gui) {
+void Vector3Parameter::AddToGui(ofxGuiGroup2 *gui) {
     if (this->show) {
-        gui->add(value.set(this->uniform,glm::vec3(this->value->x, this->value->y, this->value->z),glm::vec3(range.x,range.x,range.x),glm::vec3(range.y,range.y,range.y)));
+        value.set(this->uniform,this->value, ofVec3f(range.x,range.x,range.x),ofVec3f(range.y,range.y,range.y));
+        gui->add(value);
     }
 }
 

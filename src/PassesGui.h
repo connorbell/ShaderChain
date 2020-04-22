@@ -12,7 +12,7 @@ public:
     ~PassesGui();
 
     ofxSortableList *passButtons;
-    ofxButton addPassButton;
+    ofxGuiButton addPassButton;
 
     void Setup(std::vector<ShaderPass*> *passes);
     void Draw();
