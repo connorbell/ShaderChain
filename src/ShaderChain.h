@@ -14,7 +14,7 @@ class ShaderChain: public ofxMidiListener {
 public:
     std::vector<ShaderPass*> passes;
     float time;
-    bool isRunning;
+    ofParameter<bool> isRunning;
     ofxMidiIn midiIn;
     ofxJSONElement result;
     ofNode camera;
@@ -42,10 +42,10 @@ public:
 private:
     PNGRenderer *pngRenderer;
     ofxGui gui;
-    ofxGuiPanel *parametersGuiGroup;
+    ofxGuiGroup2 *parametersGuiGroup;
     ofxGuiPanel *guiGlobal;
     PassesGui *passesGui;
-    ofParameterGroup parameterGroups;
+    ofxGuiPanel *parameterPanel;
 
     float mouseMoveSpeed = 10.0;
     FFTManager fft;
@@ -61,4 +61,6 @@ private:
     void UpdateResolutionIfChanged();
     void OpenFilePressed();
     void LoadPassFromFile(string path);
+    void playingChanged(bool &val);
+    void updateStatusText(string s);
 };

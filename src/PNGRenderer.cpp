@@ -21,6 +21,8 @@ PNGRenderer::PNGRenderer(float duration, int fps, glm::vec2 resolution) {
 
 void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
 
+    panel->add(statusLabel.set("Playing",""));
+
     panel->addFpsPlotter();
     panel->add(openFileButton.set("Open File"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
 
@@ -31,6 +33,7 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
     panel->add<ofxGuiTextField>(presetNameParam.set("Preset name", presetNameParam));
     panel->add(displayScaleParam.set("Display scale", displayScaleParam, 0.1, 5.0));
 
+    panel->add(renderCategoryLabel.set("Rendering",""));
     panel->add<ofxGuiFloatInputField>(duration.set("Duration", duration, 0, 10000000));
     panel->add<ofxGuiIntInputField>(FPS.set("fps", FPS, 0, 1000));
     panel->add(frameskip.set("Frameskip", frameskip, 1, 10));
@@ -41,16 +44,19 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
 }
 
 float PNGRenderer::Tick() {
-  float progress = (float)this->currentFrame / this->totalFrames;
+    float progress = (float)this->currentFrame / this->totalFrames;
 
-  this->currentFrame = (this->currentFrame+1) % this->totalFrames;
-  this->renderedFrames++;
-  cout << this->renderedFrames << endl;
-  if (this->renderedFrames == this->totalFrames) {
-    this->isCapturing = false;
-  }
+    this->currentFrame = (this->currentFrame+1) % this->totalFrames;
+    this->renderedFrames++;
+    this->statusLabel = ("Rendered " + to_string(renderedFrames) + " frames");
 
-  return progress * this->duration;
+    cout << this->renderedFrames << endl;
+
+    if (this->renderedFrames == this->totalFrames) {
+        this->isCapturing = false;
+    }
+
+    return progress * this->duration;
 }
 
 void PNGRenderer::WritePNG(ofFbo *buffer) {

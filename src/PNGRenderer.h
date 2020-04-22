@@ -7,6 +7,8 @@
 class PNGRenderer {
 
 public:
+    ofParameter<string> statusLabel;
+
     ofParameter<float> resolutionX;
     ofParameter<float> resolutionY;
 
@@ -15,6 +17,7 @@ public:
 
     ofParameter<string> presetNameParam;
     ofParameter<float> displayScaleParam;
+    ofParameter<string> renderCategoryLabel;
     ofParameter<int> frameskip;
     ofParameter<float> duration;
     ofParameter<int> FPS;
