@@ -17,12 +17,26 @@ void ShaderPass::Load(std::string shaderPath, glm::vec2 res) {
     this->scale = 1.0;
     this->targetResolution = glm::vec2(res.x * scale, res.y * scale);
     this->parameterGroup = nullptr;
+    this->LoadDisplayNameFromFileName();
     cout << filePath << " Target Resolution: " << std::to_string(this->targetResolution.x) << " " << std::to_string(this->targetResolution.y) << endl;
     UpdateResolution(this->targetResolution.x, this->targetResolution.y);
 }
 
 ShaderPass::~ShaderPass(){
     params.clear();
+}
+
+void ShaderPass::LoadDisplayNameFromFileName() {
+    int indexOfLastForwardSlash = this->filePath.find_last_of("/");
+    int indexOfLastBackSlash = this->filePath.find_last_of("\\");
+
+    if (indexOfLastForwardSlash != std::string::npos) {
+        this->displayName = this->filePath.substr(indexOfLastForwardSlash + 1);
+    } else if (indexOfLastBackSlash != std::string::npos) {
+        this->displayName = this->filePath.substr(indexOfLastBackSlash + 1);
+    } else {
+        this->displayName = this->filePath;
+    }
 }
 
 void ShaderPass::UpdateResolution(int x, int y) {
@@ -169,7 +183,7 @@ void ShaderPass::LoadFromJson(Json::Value &json, float width, float height) {
 void ShaderPass::AddToGui(ofxGuiPanel *gui) {
 
     parameterGroup = gui->addGroup();
-    parameterGroup->setName(filePath);
+    parameterGroup->setName(displayName);
 
     for (int i = 0; i < this->params.size(); i++) {
         params[i]->AddToGui(parameterGroup);

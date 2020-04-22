@@ -33,7 +33,6 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
     panel->add<ofxGuiTextField>(presetNameParam.set("Preset name", presetNameParam));
     panel->add(displayScaleParam.set("Display scale", displayScaleParam, 0.1, 5.0));
 
-    panel->add(renderCategoryLabel.set("Rendering",""));
     panel->add<ofxGuiFloatInputField>(duration.set("Duration", duration, 0, 10000000));
     panel->add<ofxGuiIntInputField>(FPS.set("fps", FPS, 0, 1000));
     panel->add(frameskip.set("Frameskip", frameskip, 1, 10));

@@ -17,7 +17,6 @@ public:
 
     ofParameter<string> presetNameParam;
     ofParameter<float> displayScaleParam;
-    ofParameter<string> renderCategoryLabel;
     ofParameter<int> frameskip;
     ofParameter<float> duration;
     ofParameter<int> FPS;

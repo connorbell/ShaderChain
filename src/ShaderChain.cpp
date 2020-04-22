@@ -9,6 +9,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     ofAddListener(passesGui->passButtons->elementMoved, this, &ShaderChain::moved);
     this->pngRenderer = new PNGRenderer(3.14159, 30, res);
     this->isRunning.set("isRunning", true);
+    this->isRunning.addListener(this, &ShaderChain::playingChanged);
     this->guiGlobal = gui.addPanel();
     this->pngRenderer->AddToGui(this->guiGlobal);
     this->pngRenderer->savePresetButton.addListener(this, &ShaderChain::WriteToJson);

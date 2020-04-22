@@ -19,6 +19,7 @@
 class ShaderPass {
   public:
     std::string filePath;
+    std::string displayName;
     std::vector<std::unique_ptr<Parameter>> params;
     glm::vec2 targetResolution;
     float scale;
@@ -46,6 +47,7 @@ class ShaderPass {
     void UpdateResolution(int x, int y);
     void LoadJsonParametersFromLoadedShader();
     void AddToGui(ofxGuiPanel *gui);
+    void LoadDisplayNameFromFileName();
 
   private:
     ofxJSON json;

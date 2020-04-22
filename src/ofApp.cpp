@@ -11,12 +11,12 @@ ofApp::~ofApp() {
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    glm::vec2 res = glm::vec2(150, 150);
+    glm::vec2 res = glm::vec2(480, 270);
     ofSetWindowShape(1920, 1080);
     ofSetWindowTitle("ofxShaderChain");
     this->shaderChain.Setup(res);
     //this->shaderChain.ReadFromJson("comps/terrain.json");
-    //this->shaderChain.SetupGui();
+    this->shaderChain.SetupGui();
 }
 
 //--------------------------------------------------------------
