@@ -42,8 +42,11 @@ void ShaderPass::LoadDisplayNameFromFileName() {
 void ShaderPass::UpdateResolution(int x, int y) {
     cout << "update resolution" << endl;
     this->targetResolution = glm::vec2(x * scale, y * scale);
-    this->buffer.allocate(targetResolution.x, targetResolution.y);
-    this->lastBuffer.allocate(targetResolution.x, targetResolution.y);
+    this->buffer.allocate(targetResolution.x, targetResolution.y, GL_RGBA32F);
+
+    if (wantsLastBuffer) {
+        this->lastBuffer.allocate(targetResolution.x, targetResolution.y, GL_RGBA32F);
+    }
     this->plane.set(this->targetResolution.x, this->targetResolution.y, 2, 2);
 	this->plane.setPosition({this->targetResolution.x/2, this->targetResolution.y/2, 0.0f});
 }
@@ -63,10 +66,14 @@ void ShaderPass::AddTextureParameter(string s, string filePath, int textureIndex
     this->params.push_back(std::move(ptr));
 }
 
+void ShaderPass::AddColorParameter(string s, float r, float g, float b, float a, bool show, int midi[]) {
+    auto ptr = std::make_unique<ColorParameter>(s, r, g, b, a, show, midi);
+    this->params.push_back(std::move(ptr));
+}
+
 void ShaderPass::Render(float time, ofNode *cam, FFTManager *fft) {
     this->buffer.begin();
     this->shader.begin();
-
     UpdateTime(time);
     this->shader.setUniform2f("_Resolution", this->targetResolution.x, this->targetResolution.y);
     if (wantsCamera) {
@@ -170,6 +177,19 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
             int index = json["parameters"][j]["textureIndex"].asInt();
 
             AddTextureParameter(name, path, index, show);
+        }
+        // colors
+        else if (type == 3) {
+            float r = json["parameters"][j]["value"]["r"].asFloat();
+            float g = json["parameters"][j]["value"]["g"].asFloat();
+            float b = json["parameters"][j]["value"]["b"].asFloat();
+            float a = json["parameters"][j]["value"]["a"].asFloat();
+            std::string name = json["parameters"][j]["name"].asString();
+            bool show = json["parameters"][j]["show"].asBool();
+
+            int midi[] = {-1, -1, -1, -1};
+
+            AddColorParameter(name, r, g, b, a, show, midi);
         }
     }
 }

@@ -239,7 +239,7 @@ float march(in vec3 camPos, in vec3 rayDir) {
 
     float dist = minDist;
 
-    for (int i = 0; i < 35; i++) {
+    for (int i = 0; i < 65; i++) {
         vec3 p = camPos + rayDir * dist;
         float res = map(p);
         if (res <= minDist) break;
@@ -265,7 +265,7 @@ vec4 render(in vec3 camPos, in vec3 rayDir) {
     vec3 col = nor * 0.5 + 0.5;
     float fres = (1.+dot(rayDir, nor));
     col *= fres;
-    //col = pow(col, vec3(0.666));
+    col = pow(col, vec3(0.666));
     col = mix(col, bgColor, clamp(dist/maxDist, 0.0, 1.0));
     return vec4(col, dist);
 }

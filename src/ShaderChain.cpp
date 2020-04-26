@@ -21,6 +21,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->frame = 0;
     this->parameterPanel = gui.addPanel();
     this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
+    ofDisableAlphaBlending();
     SetupMidi();
 }
 

@@ -5,9 +5,6 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
     this->filePath = filePath;
     this->uniform = uniform;
     this->show = show;
-    ofFile file(filePath);
-
-    cout << "loading " << filePath << (file.exists() ? "exists" : "nopey") << endl;
     this->value.load(filePath);
 }
 
