@@ -18,3 +18,11 @@ void TextureParameter::AddToGui(ofxGuiGroup2 *gui) {
         gui->add<ofxGuiGraphics>(this->uniform, &value.getTexture(), ofJson({{"height", 200}}));
     }
 }
+
+void TextureParameter::UpdateJson(Json::Value &val) {
+    val["name"] = this->uniform;
+    val["filePath"] = this->filePath;
+    val["textureIndex"] = this->textureIndex;
+    val["show"] = this->show;
+    val["type"] = 2;
+}

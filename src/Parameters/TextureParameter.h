@@ -12,4 +12,5 @@ public:
     int textureIndex;
     virtual void UpdateShader(ofxAutoReloadedShader *shader) override;
     virtual void AddToGui(ofxGuiGroup2 *gui) override;
+    virtual void UpdateJson(Json::Value &val) override;
 };
