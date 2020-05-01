@@ -12,7 +12,7 @@ ColorParameter::ColorParameter(std::string uniform, float r, float g, float b, f
 }
 
 void ColorParameter::UpdateShader(ofxAutoReloadedShader *shader) {
-  shader->setUniform4f(this->uniform, this->value->r, this->value->g, this->value->b, this->value->a);
+  shader->setUniform4f(this->uniform, (float)this->value->r/255.0, (float)this->value->g/255.0, (float)this->value->b/255.0, (float)this->value->a/255.0);
 }
 
 void ColorParameter::AddToGui(ofxGuiGroup2 *gui) {
