@@ -214,6 +214,9 @@ void ShaderChain::ReadFromJson(std::string path) {
         float camZ = result["campos"]["z"].asFloat();
         this->camera.setPosition(camX, camY, camZ);
 
+        this->pngRenderer->resolutionX = result["res"]["x"].asFloat();
+        this->pngRenderer->resolutionY = result["res"]["y"].asFloat();
+
         for (int i = 0; i < result["data"].size(); i++) {
             ShaderPass *pass = new ShaderPass();
             pass->LoadFromJson(result["data"][i], this->pngRenderer->resolutionX, this->pngRenderer->resolutionY);
@@ -238,21 +241,23 @@ void ShaderChain::LoadPassFromFile(string path) {
 }
 
 void ShaderChain::WriteToJson() {
+    this->result.clear();
+    this->result["res"]["x"] = (float)this->pngRenderer->resolutionX;
+    this->result["res"]["y"] = (float)this->pngRenderer->resolutionY;
+
+    this->result["campos"]["x"] = camera.getX();
+    this->result["campos"]["y"] = camera.getY();
+    this->result["campos"]["z"] = camera.getZ();
+
+    glm::vec3 rot = camera.getOrientationEulerDeg();
+    this->result["camrot"]["x"] = rot.x;
+    this->result["camrot"]["y"] = rot.y;
+    this->result["camrot"]["z"] = rot.z;
+
     for (uint i = 0; i < this->passes.size(); i++) {
         this->result["data"][i]["shaderName"] = this->passes[i]->filePath;
         this->result["data"][i]["wantsLastBuffer"] = this->passes[i]->wantsLastBuffer;
         this->result["data"][i]["wantsCamera"] = this->passes[i]->wantsCamera;
-        this->result["res"]["x"] = (float)this->pngRenderer->resolutionX;
-        this->result["res"]["y"] = (float)this->pngRenderer->resolutionY;
-
-        this->result["campos"]["x"] = camera.getX();
-        this->result["campos"]["y"] = camera.getY();
-        this->result["campos"]["z"] = camera.getZ();
-
-        glm::vec3 rot = camera.getOrientationEulerDeg();
-        this->result["camrot"]["x"] = rot.x;
-        this->result["camrot"]["y"] = rot.y;
-        this->result["camrot"]["z"] = rot.z;
 
         for (uint j = 0; j < this->passes[i]->params.size(); j++) {
             this->result["data"][i]["parameters"][j]["name"] = this->passes[i]->params[j]->uniform;
