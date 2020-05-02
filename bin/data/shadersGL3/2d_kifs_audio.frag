@@ -1,3 +1,110 @@
+/*
+{
+    "lastBufferTextureIndex": 1,
+    "lastaudioTextureIndex": 2,
+    "parameters" : [
+      {
+         "name" : "edges",
+         "range" : {
+            "x" : 0,
+            "y" : 50
+         },
+         "show" : true,
+         "type" : 0,
+         "value" : 5.0
+      },
+      {
+         "name" : "midi1",
+         "range" : {
+            "x" : 0,
+            "y" : 10
+         },
+         "show" : true,
+         "type" : 0,
+         "midi" : 1,
+         "value" : 5.0
+      },
+      {
+         "name" : "midi2",
+         "range" : {
+            "x" : 0,
+            "y" : 1
+         },
+         "show" : true,
+         "type" : 0,
+         "midi" : 2,
+         "value" : 0.1
+      },
+      {
+         "name" : "midi3",
+         "range" : {
+            "x" : 0,
+            "y" : 10
+         },
+         "show" : true,
+         "type" : 0,
+         "midi" : 3,
+         "value" : 1.0
+      },
+      {
+         "name" : "midi4",
+         "range" : {
+            "x" : 0,
+            "y" : 1
+         },
+         "show" : true,
+         "type" : 0,
+         "midi" : 4,
+         "value" : 1.0
+      },
+      {
+         "name" : "midi5",
+         "range" : {
+            "x" : 0,
+            "y" : 1
+         },
+         "show" : true,
+         "type" : 0,
+         "midi" : 5,
+         "value" : 0.5
+      },
+      {
+         "name" : "midi6",
+         "range" : {
+            "x" : 0,
+            "y" : 1
+         },
+         "show" : true,
+         "type" : 0,
+         "midi" : 6,
+         "value" : 0.5
+      },
+      {
+         "name" : "midi7",
+         "range" : {
+            "x" : 0,
+            "y" : 1
+         },
+         "show" : true,
+         "type" : 0,
+         "midi" : 7,
+         "value" : 0.5
+      },
+      {
+         "name" : "midi8",
+         "range" : {
+            "x" : 0,
+            "y" : 1
+         },
+         "show" : true,
+         "type" : 0,
+         "midi" : 8,
+         "value" : 0.5
+      },
+   ]
+}
+*/
+
 #version 150
 
 in vec2 texCoordVarying;
@@ -6,7 +113,6 @@ out vec4 outputColor;
 uniform float _Time;
 uniform sampler2DRect _MainTexture;
 uniform sampler2DRect _LastTexture;
-
 uniform sampler2DRect _AudioTexture;
 uniform vec2 _Resolution;
 
@@ -155,7 +261,7 @@ void main() {
     vec2 uv_c = texCoordVarying * 2.0 - 1.0;
 
     float a = atan(uv_c.y, uv_c.x);
-    float samp = texture(_AudioTexture, vec2((sin(a)*.5+.5) * 250, 0.)).r*0.045;
+    float samp = texture(_AudioTexture, vec2(texCoordVarying.x*256., 0.)).r;
     float l = length(uv_c)*(0.5-samp*0.5);
     uv_c = vec2(cos(a), sin(a)) * l + 0.5;
     uv_c += vec2(fbm(uv*15.+ vec2(l,sin(_Time+a+l))), fbm(-uv*15.+ vec2(l,-cos(t+a+l))) )*midi1;
@@ -193,7 +299,7 @@ void main() {
     }
 
     col.rgb = vec3(dist.x);
-    col = vec4(col.rgb + last.rgb*midi7*(1.+samp*4.), 1.0);
+    col = vec4(vec3(samp), 1.0);
 
     outputColor = col;
 }

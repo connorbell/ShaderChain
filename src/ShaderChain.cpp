@@ -14,10 +14,10 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->pngRenderer->AddToGui(this->guiGlobal);
     this->pngRenderer->savePresetButton.addListener(this, &ShaderChain::WriteToJson);
     this->pngRenderer->openFileButton.addListener(this, &ShaderChain::OpenFilePressed);
+    this->pngRenderer->saveButton.addListener(this, &ShaderChain::BeginSaveFrames);
     this->showGui = true;
     this->isMouseDown = false;
     this->isShowingFileDialogue = false;
-    //this->fft.Start();
     this->frame = 0;
     this->parameterPanel = gui.addPanel();
     this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
@@ -67,11 +67,15 @@ void ShaderChain::UpdateResolutionIfChanged() {
 }
 
 void ShaderChain::BeginSaveFrames() {
+
+    if (fft.currentState == InputStateSoundFile) {
+        this->time = 0.0;        
+    }
+
     pngRenderer->Start();
 }
 
 void ShaderChain::Update() {
-    //fft.Update();
     UpdateResolutionIfChanged();
 
     bool capturingThisFrame = pngRenderer->isCapturing;
@@ -80,6 +84,7 @@ void ShaderChain::Update() {
         float deltaTime = 1./pngRenderer->FPS;
         pngRenderer->Tick();
         this->time = this->time + deltaTime;
+        fft.setTime(this->time);
     }
     else {
         if (this->isRunning) {
@@ -88,6 +93,8 @@ void ShaderChain::Update() {
         }
         UpdateCamera();
     }
+
+    fft.Update();
 
     ofClear(25);
 
@@ -125,10 +132,10 @@ void ShaderChain::AddPass(ShaderPass *pass) {
 void ShaderChain::RenderPasses() {
     for (uint i = 0; i < this->passes.size(); i++) {
         if (i > 0) {
-            this->passes[i]->Render(&(passes[i-1]->buffer), this->time, &camera);
+            this->passes[i]->Render(&(passes[i-1]->buffer), this->time, &camera, &fft);
         }
         else {
-            this->passes[i]->Render(nullptr, this->time, &camera);
+            this->passes[i]->Render(nullptr, this->time, &camera, &fft);
         }
     }
 }
@@ -141,6 +148,7 @@ void ShaderChain::dragEvent(ofDragInfo info) {
 void ShaderChain::KeyPressed(int key) {
     if (key == ' ') {
         this->isRunning = !this->isRunning;
+        fft.setPaused(!this->isRunning);
     }
     if (key == 'g') {
         this->showGui = !this->showGui;
@@ -243,7 +251,7 @@ void ShaderChain::processFileInput(string filePath) {
     } else if (extension == "json") {
         ReadFromJson(filePath);
     } else if (extension == "mp3") {
-        loadMp3(filePath);
+        fft.loadSoundFile(filePath);
     }
 }
 
@@ -263,7 +271,12 @@ void ShaderChain::WriteToJson() {
 
     for (uint i = 0; i < this->passes.size(); i++) {
         this->result["data"][i]["shaderName"] = this->passes[i]->filePath;
-        this->result["data"][i]["wantsLastBuffer"] = this->passes[i]->wantsLastBuffer;
+        if (this->passes[i]->lastBufferTextureIndex != -1) {
+            this->result["data"][i]["lastBufferTextureIndex"] = this->passes[i]->lastBufferTextureIndex;
+        }
+        if (this->passes[i]->audioTextureIndex != -1) {
+            this->result["data"][i]["audioTextureIndex"] = this->passes[i]->audioTextureIndex;
+        }
         this->result["data"][i]["wantsCamera"] = this->passes[i]->wantsCamera;
 
         for (uint j = 0; j < this->passes[i]->params.size(); j++) {
@@ -302,12 +315,6 @@ void ShaderChain::OpenFilePressed() {
         }
         this->isShowingFileDialogue = false;
     }
-}
-
-void ShaderChain::loadMp3(string filePath) {
-    soundPlayer.load(filePath);
-    cout << "Loading mp3 " << filePath << endl;
-    soundPlayer.play();
 }
 
 void ShaderChain::updateStatusText(string s) {

@@ -38,8 +38,6 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
     panel->add(frameskip.set("Frameskip", frameskip, 1, 10));
     panel->add(preview.set("Preview", preview));
     panel->add(saveButton.set("Save Frames"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
-
-    this->saveButton.addListener(this, &PNGRenderer::Start);
 }
 
 float PNGRenderer::Tick() {

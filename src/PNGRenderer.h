@@ -31,11 +31,11 @@ public:
     void AddToGui(ofxGuiPanel *panel);
     void UpdateResolution(int w, int h);
     ofParameter<bool> preview;
+    ofParameter<void> saveButton;
 
 private:
     int currentFrame;
     int totalFrames;
     int renderedFrames;
 
-    ofParameter<void> saveButton;
 };

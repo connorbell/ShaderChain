@@ -46,7 +46,7 @@ private:
     ofxGuiPanel *guiGlobal;
     PassesGui *passesGui;
     ofxGuiPanel *parameterPanel;
-    ofSoundPlayer soundPlayer;
+    FFTManager fft;
 
     float mouseMoveSpeed = 10.0;
 

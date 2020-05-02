@@ -44,7 +44,7 @@ void ShaderPass::UpdateResolution(int x, int y) {
     this->targetResolution = glm::vec2(x * scale, y * scale);
     this->buffer.allocate(targetResolution.x, targetResolution.y, GL_RGBA32F);
 
-    if (wantsLastBuffer) {
+    if (lastBufferTextureIndex != -1) {
         this->lastBuffer.allocate(targetResolution.x, targetResolution.y, GL_RGBA32F);
     }
     this->plane.set(this->targetResolution.x, this->targetResolution.y, 2, 2);
@@ -71,7 +71,7 @@ void ShaderPass::AddColorParameter(string s, float r, float g, float b, float a,
     this->params.push_back(std::move(ptr));
 }
 
-void ShaderPass::Render(ofFbo *previousBuffer, float time, ofNode *cam) {
+void ShaderPass::Render(ofFbo *previousBuffer, float time, ofNode *cam, FFTManager *fft) {
     this->buffer.begin();
     this->shader.begin();
 
@@ -88,9 +88,11 @@ void ShaderPass::Render(ofFbo *previousBuffer, float time, ofNode *cam) {
         this->shader.setUniform3f("_CamRight", cam->getXAxis());
     }
 
-    if (this->wantsLastBuffer && this->lastBuffer.isAllocated()) {
-        this->shader.setUniformTexture("_LastTexture", this->lastBuffer.getTextureReference(0), 1);
-        //this->shader.setUniformTexture("_AudioTexture", fft->audioTexture, 2);
+    if (this->lastBufferTextureIndex != -1 && this->lastBuffer.isAllocated()) {
+        this->shader.setUniformTexture("_LastTexture", this->lastBuffer.getTextureReference(0), this->lastBufferTextureIndex);
+    }
+    if (this->audioTextureIndex != -1) {
+        this->shader.setUniformTexture("_AudioTexture", fft->audioTexture, this->audioTextureIndex);
     }
 
     for (uint i = 0; i < params.size(); i++) {
@@ -101,7 +103,7 @@ void ShaderPass::Render(ofFbo *previousBuffer, float time, ofNode *cam) {
     this->shader.end();
     this->buffer.end();
 
-    if (this->wantsLastBuffer) {
+    if (this->lastBufferTextureIndex != -1) {
         this->lastBuffer.begin();
         this->buffer.draw(0,0);
         this->lastBuffer.end();
@@ -133,7 +135,8 @@ void ShaderPass::LoadJsonParametersFromLoadedShader() {
 }
 
 void ShaderPass::LoadParametersFromJson(Json::Value &json) {
-    this->wantsLastBuffer = json["wantsLastBuffer"].asBool();
+    this->lastBufferTextureIndex = json["lastBufferTextureIndex"].asInt();
+    this->audioTextureIndex = json["audioTextureIndex"].asInt();
     this->wantsCamera = json["wantsCamera"].asBool();
 
     for (int j = 0; j < json["parameters"].size(); j++)
