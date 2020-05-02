@@ -46,9 +46,9 @@ private:
     ofxGuiPanel *guiGlobal;
     PassesGui *passesGui;
     ofxGuiPanel *parameterPanel;
+    ofSoundPlayer soundPlayer;
 
     float mouseMoveSpeed = 10.0;
-    FFTManager fft;
 
     bool showGui;
     bool isShowingFileDialogue;
@@ -63,4 +63,6 @@ private:
     void LoadPassFromFile(string path);
     void playingChanged(bool &val);
     void updateStatusText(string s);
+    void loadMp3(string filePath);
+    void processFileInput(string filePath);
 };

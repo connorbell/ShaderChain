@@ -17,7 +17,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->showGui = true;
     this->isMouseDown = false;
     this->isShowingFileDialogue = false;
-    this->fft.Start();
+    //this->fft.Start();
     this->frame = 0;
     this->parameterPanel = gui.addPanel();
     this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
@@ -71,7 +71,7 @@ void ShaderChain::BeginSaveFrames() {
 }
 
 void ShaderChain::Update() {
-    fft.Update();
+    //fft.Update();
     UpdateResolutionIfChanged();
 
     bool capturingThisFrame = pngRenderer->isCapturing;
@@ -89,10 +89,11 @@ void ShaderChain::Update() {
         UpdateCamera();
     }
 
+    ofClear(25);
+
     if (this->isRunning && frame % pngRenderer->frameskip == 0) {
         RenderPasses();
     }
-
     ofClear(25);
 
     if (this->passes.size() > 0) {
@@ -124,21 +125,16 @@ void ShaderChain::AddPass(ShaderPass *pass) {
 void ShaderChain::RenderPasses() {
     for (uint i = 0; i < this->passes.size(); i++) {
         if (i > 0) {
-          this->passes[i]->SetInputTexture(passes[i-1]->buffer);
+            this->passes[i]->Render(&(passes[i-1]->buffer), this->time, &camera);
         }
-
-        this->passes[i]->Render(this->time, &camera, &fft);
+        else {
+            this->passes[i]->Render(nullptr, this->time, &camera);
+        }
     }
 }
 void ShaderChain::dragEvent(ofDragInfo info) {
     if (info.files.size() > 0) {
-        auto extension = info.files[0].substr(info.files[0].find_last_of(".") + 1);
-
-        if (extension == "json") {
-            ReadFromJson(info.files[0]);
-        } else if (extension == "frag") {
-            LoadPassFromFile(info.files[0]);
-        }
+        processFileInput(info.files[0]);
     }
 }
 
@@ -240,6 +236,17 @@ void ShaderChain::LoadPassFromFile(string path) {
     this->passesGui->Setup(&this->passes);
 }
 
+void ShaderChain::processFileInput(string filePath) {
+    auto extension = filePath.substr(filePath.find_last_of(".") + 1);
+    if (extension == "frag") {
+        LoadPassFromFile(filePath);
+    } else if (extension == "json") {
+        ReadFromJson(filePath);
+    } else if (extension == "mp3") {
+        loadMp3(filePath);
+    }
+}
+
 void ShaderChain::WriteToJson() {
     this->result.clear();
     this->result["res"]["x"] = (float)this->pngRenderer->resolutionX;
@@ -291,15 +298,16 @@ void ShaderChain::OpenFilePressed() {
         ofFileDialogResult result = ofSystemLoadDialog("Load file",system("pwd"));
 
         if (result.bSuccess) {
-            auto extension = result.filePath.substr(result.filePath.find_last_of(".") + 1);
-            if (extension == "frag") {
-                LoadPassFromFile(result.getPath());
-            } else if (extension == "json") {
-                ReadFromJson(result.getPath());
-            }
+            processFileInput(result.filePath);
         }
         this->isShowingFileDialogue = false;
     }
+}
+
+void ShaderChain::loadMp3(string filePath) {
+    soundPlayer.load(filePath);
+    cout << "Loading mp3 " << filePath << endl;
+    soundPlayer.play();
 }
 
 void ShaderChain::updateStatusText(string s) {

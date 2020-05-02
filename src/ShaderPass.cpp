@@ -71,9 +71,14 @@ void ShaderPass::AddColorParameter(string s, float r, float g, float b, float a,
     this->params.push_back(std::move(ptr));
 }
 
-void ShaderPass::Render(float time, ofNode *cam, FFTManager *fft) {
+void ShaderPass::Render(ofFbo *previousBuffer, float time, ofNode *cam) {
     this->buffer.begin();
     this->shader.begin();
+
+    if (previousBuffer != nullptr) {
+        SetInputTexture(*previousBuffer);
+    }
+
     UpdateTime(time);
     this->shader.setUniform2f("_Resolution", this->targetResolution.x, this->targetResolution.y);
     if (wantsCamera) {
@@ -83,9 +88,9 @@ void ShaderPass::Render(float time, ofNode *cam, FFTManager *fft) {
         this->shader.setUniform3f("_CamRight", cam->getXAxis());
     }
 
-    if (this->wantsLastBuffer) {
-        this->shader.setUniformTexture("_LastTexture", this->lastBuffer.getTexture(), 1);
-        this->shader.setUniformTexture("_AudioTexture", fft->audioTexture, 2);
+    if (this->wantsLastBuffer && this->lastBuffer.isAllocated()) {
+        this->shader.setUniformTexture("_LastTexture", this->lastBuffer.getTextureReference(0), 1);
+        //this->shader.setUniformTexture("_AudioTexture", fft->audioTexture, 2);
     }
 
     for (uint i = 0; i < params.size(); i++) {
