@@ -5,7 +5,9 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
     this->filePath = filePath;
     this->uniform = uniform;
     this->show = show;
-    this->value.load(filePath);
+    if (filePath.length() > 0) {
+        this->value.load(filePath);
+    }
 }
 
 void TextureParameter::UpdateShader(ofxAutoReloadedShader *shader) {

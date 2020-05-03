@@ -135,8 +135,8 @@ void ShaderPass::LoadJsonParametersFromLoadedShader() {
 }
 
 void ShaderPass::LoadParametersFromJson(Json::Value &json) {
-    this->lastBufferTextureIndex = json["lastBufferTextureIndex"].asInt();
-    this->audioTextureIndex = json["audioTextureIndex"].asInt();
+    if (json.isMember("lastBufferTextureIndex")) this->lastBufferTextureIndex = json["lastBufferTextureIndex"].asInt();
+    if (json.isMember("audioTextureIndex")) this->audioTextureIndex = json["audioTextureIndex"].asInt();
     this->wantsCamera = json["wantsCamera"].asBool();
 
     for (int j = 0; j < json["parameters"].size(); j++)

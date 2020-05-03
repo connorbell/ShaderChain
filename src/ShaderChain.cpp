@@ -170,9 +170,6 @@ void ShaderChain::KeyPressed(int key) {
     if (key == 'a') {
         camera.move(-camera.getXAxis() * ofGetLastFrameTime());
     }
-    if (key == '8') {
-
-    }
 }
 
 void ShaderChain::SetupGui() {

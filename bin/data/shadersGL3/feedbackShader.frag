@@ -1,6 +1,6 @@
 /*
 {
-    "wantsLastBuffer" : true,
+    "lastBufferTextureIndex": 2,
     "parameters" : [
        {
           "name" : "intensity",
@@ -55,5 +55,5 @@ void main()
 
     vec4 lastColor = texture(_LastTexture, uv*_Resolution);
     color.rgb += lastColor.rgb * intensity; // * (1. + audio*.4);
-    outputColor = vec4(color);
+    outputColor = clamp(vec4(color), vec4(0.0), vec4(1.0));
 }
