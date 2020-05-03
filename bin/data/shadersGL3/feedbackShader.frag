@@ -1,6 +1,6 @@
 /*
 {
-    "lastBufferTextureIndex": 2,
+    "lastBufferTextureIndex": 1,
     "parameters" : [
        {
           "name" : "intensity",

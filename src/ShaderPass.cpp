@@ -89,7 +89,7 @@ void ShaderPass::Render(ofFbo *previousBuffer, float time, ofNode *cam, FFTManag
     }
 
     if (this->lastBufferTextureIndex != -1 && this->lastBuffer.isAllocated()) {
-        this->shader.setUniformTexture("_LastTexture", this->lastBuffer.getTextureReference(0), this->lastBufferTextureIndex);
+        this->shader.setUniformTexture("_LastTexture", this->lastBuffer.getTexture(), this->lastBufferTextureIndex);
     }
     if (this->audioTextureIndex != -1) {
         this->shader.setUniformTexture("_AudioTexture", fft->audioTexture, this->audioTextureIndex);
@@ -138,6 +138,10 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
     if (json.isMember("lastBufferTextureIndex")) this->lastBufferTextureIndex = json["lastBufferTextureIndex"].asInt();
     if (json.isMember("audioTextureIndex")) this->audioTextureIndex = json["audioTextureIndex"].asInt();
     this->wantsCamera = json["wantsCamera"].asBool();
+    cout << "last texture index: " << this->lastBufferTextureIndex << endl;
+    if (lastBufferTextureIndex != -1) {
+        this->lastBuffer.allocate(targetResolution.x, targetResolution.y, GL_RGBA32F);
+    }
 
     for (int j = 0; j < json["parameters"].size(); j++)
     {
