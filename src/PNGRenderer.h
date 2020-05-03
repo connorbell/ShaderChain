@@ -20,6 +20,9 @@ public:
     ofParameter<int> frameskip;
     ofParameter<float> duration;
     ofParameter<int> FPS;
+    ofParameter<void> encodeMp4Button;
+    ofParameter<void> encodeGifButton;
+    ofParameterGroup renderParameterGroup;
 
     PNGRenderer(float duration, int fps, glm::vec2 resolution);
     std::string filePath;
@@ -32,10 +35,12 @@ public:
     void UpdateResolution(int w, int h);
     ofParameter<bool> preview;
     ofParameter<void> saveButton;
+    void saveGif();
+    void saveVideo();
+    int totalFrames;
 
 private:
     int currentFrame;
-    int totalFrames;
     int renderedFrames;
 
 };

@@ -15,6 +15,8 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->pngRenderer->savePresetButton.addListener(this, &ShaderChain::WriteToJson);
     this->pngRenderer->openFileButton.addListener(this, &ShaderChain::OpenFilePressed);
     this->pngRenderer->saveButton.addListener(this, &ShaderChain::BeginSaveFrames);
+    this->pngRenderer->encodeMp4Button.addListener(this, &ShaderChain::encodeMp4Pressed);
+    this->pngRenderer->encodeGifButton.addListener(this, &ShaderChain::encodeGifPressed);
     this->showGui = true;
     this->isMouseDown = false;
     this->isShowingFileDialogue = false;
@@ -69,7 +71,7 @@ void ShaderChain::UpdateResolutionIfChanged() {
 void ShaderChain::BeginSaveFrames() {
 
     if (fft.currentState == InputStateSoundFile) {
-        this->time = 0.0;        
+        this->time = 0.0;
     }
 
     pngRenderer->Start();
@@ -167,6 +169,9 @@ void ShaderChain::KeyPressed(int key) {
     }
     if (key == 'a') {
         camera.move(-camera.getXAxis() * ofGetLastFrameTime());
+    }
+    if (key == '8') {
+
     }
 }
 
@@ -285,7 +290,7 @@ void ShaderChain::WriteToJson() {
         }
     }
 
-    if (!this->result.save(this->pngRenderer->presetNameParam, true)) {
+    if (!this->result.save((this->pngRenderer->presetNameParam.get() + ".json"), true)) {
         ofLogNotice("ShaderChain::WriteToJson") << this->pngRenderer->presetNameParam << " written unsuccessfully.";
     } else {
         ofLogNotice("ShaderChain::WriteToJson") << this->pngRenderer->presetNameParam << " written successfully.";
@@ -317,6 +322,37 @@ void ShaderChain::OpenFilePressed() {
     }
 }
 
+void ShaderChain::saveVideo(string outputFilename) {
+    string f = outputFilename;
+
+    int totalFrames = pngRenderer->FPS * pngRenderer->duration;
+    outputFilename = "data/renders/" + outputFilename;
+
+    string mkdirCommand = "mkdir " + outputFilename;
+    system(mkdirCommand.c_str());
+    string moveFilesCommand = "mv " + outputFilename + "_*.png " + outputFilename;
+    system(moveFilesCommand.c_str());
+    outputFilename = outputFilename + "/" + f;
+
+    cout << "Creating mp4 " << outputFilename << endl;
+    string outputMp4Filename = outputFilename + ".mp4";
+    string fpsString = to_string(pngRenderer->FPS);
+    string totalZerosString = to_string((int)floor(log10 (((float)totalFrames)))+1);
+
+    string ffmpegCommand = "ffmpeg -r " + fpsString + " -f image2 -s 1080x1920 -i \"" + outputFilename + "_%0" + totalZerosString + "d.png\" -vcodec libx264 -crf 25 -pix_fmt yuv420p " + outputMp4Filename;
+    system(ffmpegCommand.c_str());
+
+    cout << ffmpegCommand << endl;
+
+    if (fft.currentState == InputStateSoundFile) {
+        string outputMp4AudioFilename = outputFilename + "_audio.mp4";
+        string addSoundCommand = "ffmpeg -i " + outputMp4Filename + " -i \"" + fft.soundFilePath + "\" -codec copy -shortest " + outputMp4AudioFilename;
+        system(addSoundCommand.c_str());
+    }
+
+    updateStatusText("Video saved to " + outputMp4Filename);
+}
+
 void ShaderChain::updateStatusText(string s) {
     this->pngRenderer->statusLabel.set(s, "");
 }
@@ -327,4 +363,12 @@ void ShaderChain::playingChanged(bool &val) {
     } else {
         updateStatusText("Paused");
     }
+}
+
+void ShaderChain::encodeMp4Pressed() {
+    saveVideo(pngRenderer->presetNameParam.get());
+}
+
+void ShaderChain::encodeGifPressed() {
+
 }

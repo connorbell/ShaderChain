@@ -15,6 +15,7 @@ public:
     unsigned char lastBuffer[3072];
     ofSoundPlayer soundPlayer;
     InputState currentState = InputStateNone;
+    string soundFilePath;
     FFTManager();
     ~FFTManager();
 

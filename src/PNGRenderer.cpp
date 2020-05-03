@@ -30,14 +30,20 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
     panel->add<ofxGuiFloatInputField>(resolutionY.set("Res y", resolutionY, 0, 4096));
 
     panel->add(savePresetButton.set("Save Preset"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
-    panel->add<ofxGuiTextField>(presetNameParam.set("Preset name", presetNameParam));
+    panel->add<ofxGuiTextField>(presetNameParam.set("Preset name", "name"));
     panel->add(displayScaleParam.set("Display scale", displayScaleParam, 0.1, 5.0));
 
     panel->add<ofxGuiFloatInputField>(duration.set("Duration", duration, 0, 10000000));
     panel->add<ofxGuiIntInputField>(FPS.set("fps", FPS, 0, 1000));
     panel->add(frameskip.set("Frameskip", frameskip, 1, 10));
     panel->add(preview.set("Preview", preview));
-    panel->add(saveButton.set("Save Frames"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+
+    renderParameterGroup.setName("Rendering");
+    renderParameterGroup.add(saveButton.set("Save Frames"));
+    renderParameterGroup.add(encodeMp4Button.set("Encode mp4"));
+    renderParameterGroup.add(encodeGifButton.set("Encode gif"));
+
+    ofxGuiContainer* menu = panel->addMenu(renderParameterGroup);
 }
 
 float PNGRenderer::Tick() {
@@ -72,6 +78,7 @@ void PNGRenderer::WritePNG(ofFbo *buffer) {
 }
 
 void PNGRenderer::Start() {
+    this->filePath = "renders/" + presetNameParam.get();
     this->renderedFrames = 0;
     this->totalFrames = duration * FPS;
     this->isCapturing = true;
@@ -80,4 +87,12 @@ void PNGRenderer::Start() {
 void PNGRenderer::UpdateResolution(int w, int h) {
     this->resolutionX = w;
     this->resolutionY = h;
+}
+
+void saveGif() {
+    system(" ");
+}
+
+void saveVideo(string outputFilename) {
+
 }

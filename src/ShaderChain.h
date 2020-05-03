@@ -65,4 +65,7 @@ private:
     void updateStatusText(string s);
     void loadMp3(string filePath);
     void processFileInput(string filePath);
+    void saveVideo(string outputFilename);
+    void encodeMp4Pressed();
+    void encodeGifPressed();
 };

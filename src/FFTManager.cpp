@@ -76,6 +76,7 @@ void FFTManager::UpdateShader(ofShader *shader, int textureIndex) {
 }
 
 void FFTManager::loadSoundFile(string filePath) {
+    soundFilePath = filePath;
     audioTexture.allocate(1024,1,GL_RGB);
     soundPlayer.load(filePath);
     soundPlayer.play();
