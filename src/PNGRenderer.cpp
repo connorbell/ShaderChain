@@ -74,11 +74,16 @@ void PNGRenderer::WritePNG(ofFbo *buffer) {
 
   s += std::to_string(this->currentFrame);
   buffer->readToPixels(outputPixels);
-  ofSaveImage(outputPixels, this->filePath + "_" + s + ".png", OF_IMAGE_QUALITY_BEST);
+  string destFilePath = this->filePath + "_" + s + ".png";
+  ofSaveImage(outputPixels, destFilePath, OF_IMAGE_QUALITY_BEST);
+  cout << destFilePath << endl;
 }
 
 void PNGRenderer::Start() {
-    this->filePath = "renders/" + presetNameParam.get();
+    string s = presetNameParam.get();
+    string file = s.substr(s.find_last_of("/") + 1);
+    string fileWithoutExtension = file.substr(0, file.find_last_of("."));
+    this->filePath = "renders/" + fileWithoutExtension;
     this->renderedFrames = 0;
     this->totalFrames = duration * FPS;
     this->isCapturing = true;

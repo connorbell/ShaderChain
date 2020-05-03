@@ -1,0 +1,218 @@
+{
+   "campos" : {
+      "x" : -0.1579750180244446,
+      "y" : 0.1817663460969925,
+      "z" : -0.6343722939491272
+   },
+   "camrot" : {
+      "x" : 21.56731033325195,
+      "y" : 1.14590322971344,
+      "z" : 1.015793681144714
+   },
+   "data" : [
+      {
+         "parameters" : [
+            {
+               "name" : "focalLength",
+               "range" : {
+                  "x" : 0,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 2.33695650100708
+            },
+            {
+               "name" : "minDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 0.1000000014901161
+               },
+               "show" : false,
+               "type" : 0,
+               "value" : 0.001000000047497451
+            },
+            {
+               "name" : "maxDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 40
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 1.30434775352478
+            },
+            {
+               "name" : "bgColor",
+               "show" : true,
+               "type" : 3,
+               "value" : {
+                  "a" : 0,
+                  "b" : 0,
+                  "g" : 0,
+                  "r" : 0
+               }
+            },
+            {
+               "name" : "noiseX",
+               "range" : {
+                  "x" : -10,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0
+            },
+            {
+               "name" : "noiseY",
+               "range" : {
+                  "x" : -10,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0
+            },
+            {
+               "filePath" : "textures/noise_loop.png",
+               "name" : "noiseTex",
+               "show" : true,
+               "textureIndex" : 1,
+               "type" : 2
+            }
+         ],
+         "shaderName" : "shadersGL3/terrainshader",
+         "wantsCamera" : true
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "startFocusDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0.3723404109477997
+            },
+            {
+               "name" : "endFocusDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 1.063829779624939
+            },
+            {
+               "name" : "ramp",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0.1117021292448044
+            },
+            {
+               "name" : "blurSize",
+               "range" : {
+                  "x" : 0,
+                  "y" : 16
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 7.914893627166748
+            }
+         ],
+         "shaderName" : "shadersGL3/bokehShader",
+         "wantsCamera" : false
+      },
+      {
+         "audioTextureIndex" : 2,
+         "lastBufferTextureIndex" : 1,
+         "parameters" : [
+            {
+               "name" : "intensity",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0.4945652186870575
+            },
+            {
+               "name" : "scale",
+               "range" : {
+                  "x" : 0,
+                  "y" : 2
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 1
+            },
+            {
+               "name" : "hue",
+               "range" : {
+                  "x" : 0,
+                  "y" : 5
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 2.52717399597168
+            }
+         ],
+         "shaderName" : "shadersGL3/feedbackAudioShader",
+         "wantsCamera" : false
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "strength",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0.320652186870575
+            },
+            {
+               "name" : "power",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0.3804347813129425
+            }
+         ],
+         "shaderName" : "shadersGL3/vignetteShader",
+         "wantsCamera" : false
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "shift",
+               "range" : {
+                  "x" : 0,
+                  "y" : 6.283180236816406
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 4.507498741149902
+            }
+         ],
+         "shaderName" : "shadersGL3/hueShader",
+         "wantsCamera" : false
+      }
+   ],
+   "res" : {
+      "x" : 1280,
+      "y" : 720
+   }
+}

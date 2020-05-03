@@ -287,7 +287,7 @@ void ShaderChain::WriteToJson() {
         }
     }
 
-    if (!this->result.save((this->pngRenderer->presetNameParam.get() + ".json"), true)) {
+    if (!this->result.save((this->pngRenderer->presetNameParam.get()), true)) {
         ofLogNotice("ShaderChain::WriteToJson") << this->pngRenderer->presetNameParam << " written unsuccessfully.";
     } else {
         ofLogNotice("ShaderChain::WriteToJson") << this->pngRenderer->presetNameParam << " written successfully.";
@@ -336,14 +336,14 @@ void ShaderChain::saveVideo(string outputFilename) {
     string fpsString = to_string(pngRenderer->FPS);
     string totalZerosString = to_string((int)floor(log10 (((float)totalFrames)))+1);
 
-    string ffmpegCommand = "ffmpeg -r " + fpsString + " -f image2 -s 1080x1920 -i \"" + outputFilename + "_%0" + totalZerosString + "d.png\" -vcodec libx264 -crf 25 -pix_fmt yuv420p " + outputMp4Filename;
+    string ffmpegCommand = "ffmpeg -r " + fpsString + " -f image2 -s 1080x1920 -i \"" + outputFilename + "_%0" + totalZerosString + "d.png\" -vcodec libx264 -crf 18 -pix_fmt yuv420p " + outputMp4Filename;
     system(ffmpegCommand.c_str());
 
     cout << ffmpegCommand << endl;
 
     if (fft.currentState == InputStateSoundFile) {
         string outputMp4AudioFilename = outputFilename + "_audio.mp4";
-        string addSoundCommand = "ffmpeg -i " + outputMp4Filename + " -i \"" + fft.soundFilePath + "\" -codec copy -shortest " + outputMp4AudioFilename;
+        string addSoundCommand = "ffmpeg -i " + outputMp4Filename + " -i \"" + fft.soundFilePath + "\" -vcodec copy -acodec aac -shortest " + outputMp4AudioFilename;
         system(addSoundCommand.c_str());
     }
 
@@ -363,7 +363,10 @@ void ShaderChain::playingChanged(bool &val) {
 }
 
 void ShaderChain::encodeMp4Pressed() {
-    saveVideo(pngRenderer->presetNameParam.get());
+    string s = pngRenderer->presetNameParam.get();
+    string file = s.substr(s.find_last_of("/") + 1);
+    string fileWithoutExtension = file.substr(0, file.find_last_of("."));
+    saveVideo(fileWithoutExtension);
 }
 
 void ShaderChain::encodeGifPressed() {
