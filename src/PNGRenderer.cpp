@@ -2,19 +2,18 @@
 #include <math.h>
 #include "ShaderChain.h"
 
-PNGRenderer::PNGRenderer(float duration, int fps, glm::vec2 resolution) {
-    this->duration = duration;
+PNGRenderer::PNGRenderer(float animduration, int fps, glm::vec2 resolution) {
+    this->animduration = animduration;
     this->FPS = fps;
 
     this->currentFrame = 0;
-    this->totalFrames = duration * fps;
+    this->totalFrames = animduration * fps;
     this->resolutionX = resolution.x;
     this->resolutionY = resolution.y;
     this->filePath = "renders/cool";
     this->displayScaleParam = 1.0;
     this->renderedFrames = 1;
     this->frameskip = 1;
-    this->duration = 3.14159;
     this->FPS = 30;
     this->preview = false;
 }
@@ -33,7 +32,7 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
     panel->add<ofxGuiTextField>(presetNameParam.set("Preset name", "name"));
     panel->add(displayScaleParam.set("Display scale", displayScaleParam, 0.1, 5.0));
 
-    panel->add<ofxGuiFloatInputField>(duration.set("Duration", duration, 0, 10000000));
+    panel->add<ofxGuiFloatInputField>(animduration.set("Duration", animduration, 0, 10000000));
     panel->add<ofxGuiIntInputField>(FPS.set("fps", FPS, 0, 1000));
     panel->add(frameskip.set("Frameskip", frameskip, 1, 10));
     panel->add(preview.set("Preview", preview));
@@ -59,7 +58,7 @@ float PNGRenderer::Tick() {
         this->isCapturing = false;
     }
 
-    return progress * this->duration;
+    return progress * this->animduration;
 }
 
 void PNGRenderer::WritePNG(ofFbo *buffer) {
@@ -85,7 +84,7 @@ void PNGRenderer::Start() {
     string fileWithoutExtension = file.substr(0, file.find_last_of("."));
     this->filePath = "renders/" + fileWithoutExtension;
     this->renderedFrames = 0;
-    this->totalFrames = duration * FPS;
+    this->totalFrames = animduration * FPS;
     this->isCapturing = true;
 }
 

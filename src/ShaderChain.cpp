@@ -1,8 +1,6 @@
 #include "ShaderChain.h"
 #include "ofxSortableList.h"
 
-namespace fs = std::filesystem;
-
 void ShaderChain::Setup(glm::vec2 res) {
     this->passesGui = new PassesGui();
     ofAddListener(passesGui->passButtons->elementRemoved, this, &ShaderChain::removed);
@@ -29,7 +27,7 @@ void ShaderChain::Setup(glm::vec2 res) {
 
 ShaderChain::~ShaderChain() {
   delete this->pngRenderer;
-  for (uint i = 0; i < this->passes.size(); i++) {
+  for (unsigned int i = 0; i < this->passes.size(); i++) {
       delete this->passes[i];
   }
   ofRemoveListener(passesGui->passButtons->elementRemoved, this, &ShaderChain::removed);
@@ -62,7 +60,7 @@ void ShaderChain::UpdateResolutionIfChanged() {
     }
 
     if (needsUpdate) {
-        for (uint i = 0; i < this->passes.size(); i++) {
+        for (unsigned int i = 0; i < this->passes.size(); i++) {
             this->passes[i]->UpdateResolution(this->pngRenderer->resolutionX, this->pngRenderer->resolutionY);
         }
     }
@@ -91,7 +89,7 @@ void ShaderChain::Update() {
     else {
         if (this->isRunning) {
             float deltaTime = 1./pngRenderer->FPS;
-            this->time = pngRenderer->preview ? fmod(this->time + deltaTime, pngRenderer->duration) : this->time + deltaTime;
+            this->time = pngRenderer->preview ? fmod(this->time + deltaTime, pngRenderer->animduration) : this->time + deltaTime;
         }
         UpdateCamera();
     }
@@ -132,7 +130,7 @@ void ShaderChain::AddPass(ShaderPass *pass) {
 }
 
 void ShaderChain::RenderPasses() {
-    for (uint i = 0; i < this->passes.size(); i++) {
+    for (int i = 0; i < this->passes.size(); i++) {
         if (i > 0) {
             this->passes[i]->Render(&(passes[i-1]->buffer), this->time, &camera, &fft);
         }
@@ -175,7 +173,7 @@ void ShaderChain::KeyPressed(int key) {
 void ShaderChain::SetupGui() {
     parameterPanel->clear();
     this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
-    for (uint i = 0; i < this->passes.size(); i++) {
+    for (int i = 0; i < this->passes.size(); i++) {
         this->passes[i]->AddToGui(parameterPanel);
     }
 }
@@ -183,7 +181,7 @@ void ShaderChain::SetupGui() {
 void ShaderChain::newMidiMessage(ofxMidiMessage& msg) {
     if(msg.status < MIDI_SYSEX) {
         if(msg.status == MIDI_CONTROL_CHANGE) {
-            for (uint j = 0; j < this->passes[0]->params.size(); j++) {
+            for (int j = 0; j < this->passes[0]->params.size(); j++) {
                 this->passes[0]->params[j]->UpdateMidi(msg.control, msg.value);
             }
         }
@@ -200,11 +198,11 @@ void ShaderChain::UpdateCamera() {
     }
 }
 
-void ShaderChain::ReadFromJson(std::string path) {
-    bool parsingSuccessful = result.open(path);
-    this->pngRenderer->presetNameParam = path;
+void ShaderChain::ReadFromJson(std::string filepath) {
+    bool parsingSuccessful = result.open(filepath);
+    this->pngRenderer->presetNameParam = filepath;
 
-    for (uint i = 0; i < this->passes.size(); i++) {
+    for (int i = 0; i < this->passes.size(); i++) {
         delete this->passes[i];
     }
     this->passes.clear();
@@ -235,8 +233,8 @@ void ShaderChain::ReadFromJson(std::string path) {
         ofLogError("ofApp::setup")  << "Failed to parse JSON" << endl;
     }
 }
-void ShaderChain::LoadPassFromFile(string path) {
-    auto relativeFileName = path.substr(path.find("data") + 5);
+void ShaderChain::LoadPassFromFile(string filepath) {
+    auto relativeFileName = filepath.substr(filepath.find("data") + 5);
     auto relativeFileNameWithoutExtension = relativeFileName.substr(0,relativeFileName.find("frag")-1);
 
     ShaderPass *pass = new ShaderPass(relativeFileNameWithoutExtension, glm::vec2(this->pngRenderer->resolutionX,this->pngRenderer->resolutionY) );
@@ -271,7 +269,7 @@ void ShaderChain::WriteToJson() {
     this->result["camrot"]["y"] = rot.y;
     this->result["camrot"]["z"] = rot.z;
 
-    for (uint i = 0; i < this->passes.size(); i++) {
+    for (int i = 0; i < this->passes.size(); i++) {
         this->result["data"][i]["shaderName"] = this->passes[i]->filePath;
         if (this->passes[i]->lastBufferTextureIndex != -1) {
             this->result["data"][i]["lastBufferTextureIndex"] = this->passes[i]->lastBufferTextureIndex;
@@ -281,7 +279,7 @@ void ShaderChain::WriteToJson() {
         }
         this->result["data"][i]["wantsCamera"] = this->passes[i]->wantsCamera;
 
-        for (uint j = 0; j < this->passes[i]->params.size(); j++) {
+        for (int j = 0; j < this->passes[i]->params.size(); j++) {
             this->result["data"][i]["parameters"][j]["name"] = this->passes[i]->params[j]->uniform;
             this->passes[i]->params[j]->UpdateJson((this->result["data"][i]["parameters"][j]));
         }
@@ -322,7 +320,7 @@ void ShaderChain::OpenFilePressed() {
 void ShaderChain::saveVideo(string outputFilename) {
     string f = outputFilename;
 
-    int totalFrames = pngRenderer->FPS * pngRenderer->duration;
+    int totalFrames = pngRenderer->FPS * pngRenderer->animduration;
     outputFilename = "data/renders/" + outputFilename;
 
     string mkdirCommand = "mkdir " + outputFilename;

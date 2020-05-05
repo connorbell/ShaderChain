@@ -95,7 +95,7 @@ void ShaderPass::Render(ofFbo *previousBuffer, float time, ofNode *cam, FFTManag
         this->shader.setUniformTexture("_AudioTexture", fft->audioTexture, this->audioTextureIndex);
     }
 
-    for (uint i = 0; i < params.size(); i++) {
+    for (unsigned int i = 0; i < params.size(); i++) {
         this->params[i]->UpdateShader(&(this->shader));
     }
 
@@ -143,7 +143,7 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
         this->lastBuffer.allocate(targetResolution.x, targetResolution.y, GL_RGBA32F);
     }
 
-    for (int j = 0; j < json["parameters"].size(); j++)
+    for (unsigned int j = 0; j < json["parameters"].size(); j++)
     {
         int type = json["parameters"][j]["type"].asInt();
 
@@ -217,7 +217,7 @@ void ShaderPass::AddToGui(ofxGuiPanel *gui) {
     parameterGroup = gui->addGroup();
     parameterGroup->setName(displayName);
 
-    for (int i = 0; i < this->params.size(); i++) {
+    for (unsigned int i = 0; i < this->params.size(); i++) {
         params[i]->AddToGui(parameterGroup);
     }
 }
