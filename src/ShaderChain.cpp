@@ -72,6 +72,14 @@ void ShaderChain::BeginSaveFrames() {
 
     if (fft.currentState == InputStateSoundFile) {
         this->time = 0.0;
+        ofFloatColor *black = new ofFloatColor(0.0, 0.0, 0.0, 0.0);
+        for (uint i = 0; i < this->passes.size(); i++) {
+            if (passes[i]->lastBuffer.isAllocated()) {
+
+                passes[i]->lastBuffer.clearColorBuffer(*black);
+            }
+        }
+        delete black;
     }
 
     pngRenderer->Start();
@@ -370,5 +378,25 @@ void ShaderChain::encodeMp4Pressed() {
 }
 
 void ShaderChain::encodeGifPressed() {
+    int totalFrames = pngRenderer->FPS * pngRenderer->duration;
+    string totalZerosString = to_string((int)floor(log10 (((float)totalFrames)))+1);
+
+    string s = pngRenderer->presetNameParam.get();
+    string file = s.substr(s.find_last_of("/") + 1);
+    string fileWithoutExtension = file.substr(0, file.find_last_of("."));
+    string rendersDirectory = "data/renders/";
+    string targetDirectory = rendersDirectory + fileWithoutExtension + "_gif/";
+    system(("mkdir " + targetDirectory).c_str());
+    string moveFilesCommand = "mv " + rendersDirectory + fileWithoutExtension + "_*.png " + targetDirectory;
+    system(moveFilesCommand.c_str());
+
+    string ffmpegCommand = "ffmpeg -v warning -start_number 0 -i " + targetDirectory + fileWithoutExtension + "_%0"+totalZerosString+"d.png -vf scale=500:-1:flags=lanczos,palettegen=stats_mode=diff:reserve_transparent=off -y " + targetDirectory + "palette.png";
+    system(ffmpegCommand.c_str());
+
+    string targetFilename = targetDirectory + fileWithoutExtension +".gif";
+    ffmpegCommand = "ffmpeg -v warning -thread_queue_size 512 -start_number 0 -i " + targetDirectory + fileWithoutExtension + "_%0" + totalZerosString+"d.png -i "+ targetDirectory + "palette.png -r 30 -lavfi scale=500:-1:flags=\"lanczos [x]; [x][1:v] paletteuse\" -y " + targetFilename;
+    system(ffmpegCommand.c_str());
+
+    updateStatusText("Gif saved to " + targetFilename);
 
 }
