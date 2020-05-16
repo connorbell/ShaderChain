@@ -5,9 +5,9 @@
       "z" : -0.6343722939491272
    },
    "camrot" : {
-      "x" : 21.56731033325195,
-      "y" : 1.14590322971344,
-      "z" : 1.015793681144714
+      "x" : 22.7319450378418,
+      "y" : -0.2263630330562592,
+      "z" : 0.9780140519142151
    },
    "data" : [
       {
@@ -20,7 +20,7 @@
                },
                "show" : true,
                "type" : 0,
-               "value" : 2.33695650100708
+               "value" : 3.09782600402832
             },
             {
                "name" : "minDist",
@@ -163,6 +163,13 @@
                "show" : true,
                "type" : 0,
                "value" : 2.52717399597168
+            },
+            {
+               "filePath" : "textures/noise_loop.png",
+               "name" : "_NoiseTexture",
+               "show" : true,
+               "textureIndex" : 3,
+               "type" : 2
             }
          ],
          "shaderName" : "shadersGL3/feedbackAudioShader",
@@ -212,7 +219,8 @@
       }
    ],
    "res" : {
-      "x" : 1280,
-      "y" : 720
+      "x" : 1080,
+      "y" : 1350
    }
 }
+

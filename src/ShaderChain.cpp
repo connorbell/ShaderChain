@@ -390,7 +390,7 @@ void ShaderChain::encodeGifPressed() {
     string moveFilesCommand = "mv " + rendersDirectory + fileWithoutExtension + "_*.png " + targetDirectory;
     system(moveFilesCommand.c_str());
 
-    string ffmpegCommand = "ffmpeg -v warning -start_number 0 -i " + targetDirectory + fileWithoutExtension + "_%0"+totalZerosString+"d.png -vf scale=500:-1:flags=lanczos,palettegen=stats_mode=diff:reserve_transparent=off -y " + targetDirectory + "palette.png";
+    string ffmpegCommand = "ffmpeg -v warning -start_number 0 -i " + targetDirectory + fileWithoutExtension + "_%0"+totalZerosString+"d.png -vf scale=500:-1:flags=lanczos,palettegen=stats_mode=diff:reserve_transparent=off:max_colors="+to_string(pngRenderer->gifNumColors)+ " -y " + targetDirectory + "palette.png";
     system(ffmpegCommand.c_str());
 
     string targetFilename = targetDirectory + fileWithoutExtension +".gif";

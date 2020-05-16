@@ -87,6 +87,7 @@ void FFTManager::loadSoundFile(string filePath) {
     soundPlayer.setPosition(0.0);
 
     soundPlayer.play();
+    soundPlayer.setLoop(true);
     currentState = InputStateSoundFile;
     isPaused = false;
 }

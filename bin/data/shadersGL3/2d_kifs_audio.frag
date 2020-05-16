@@ -1,7 +1,7 @@
 /*
 {
     "lastBufferTextureIndex": 1,
-    "lastaudioTextureIndex": 2,
+    "audioTextureIndex": 2,
     "parameters" : [
       {
          "name" : "edges",

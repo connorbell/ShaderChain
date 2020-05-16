@@ -41,7 +41,13 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
     renderParameterGroup.setName("Rendering");
     renderParameterGroup.add(saveButton.set("Save Frames"));
     renderParameterGroup.add(encodeMp4Button.set("Encode mp4"));
-    renderParameterGroup.add(encodeGifButton.set("Encode gif"));
+
+    gifNumColors = 256;
+    gifMenuGroup.setName("Gif");
+    gifMenuGroup.add(gifNumColors.set("Colors", gifNumColors, 1, 255));
+    gifMenuGroup.add(encodeGifButton.set("Encode gif"));
+
+    renderParameterGroup.add(gifMenuGroup);
 
     ofxGuiContainer* menu = panel->addMenu(renderParameterGroup);
 }

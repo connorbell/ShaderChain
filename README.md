@@ -2,6 +2,8 @@
 
 This tool is a development interface for chaining glsl fragment shaders.
 
+[Trello board](https://trello.com/b/EPuGtf6P/ofxshaderchain)
+
 ✔️  Load a chain of shaders from json and add passes at runtime.
 
 ✔️  Define their uniforms and map them to midi keys.
@@ -14,7 +16,7 @@ This tool is a development interface for chaining glsl fragment shaders.
 
 ✔️  Fly around 3d wasd/mouse camera controls that map to uniforms (for exploring raymarched worlds).
 
-🔜 Texture input
+✔️  Texture input
 
 🔜 Audio input
 

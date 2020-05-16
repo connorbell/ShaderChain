@@ -11,7 +11,7 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
 }
 
 void TextureParameter::UpdateShader(ofxAutoReloadedShader *shader) {
-    shader->setUniformTexture(this->uniform, this->value, 0);
+    shader->setUniformTexture(this->uniform, this->value, this->textureIndex);
     shader->setUniform2f(this->uniform+"_res", this->value.getWidth(), this->value.getHeight());
 }
 

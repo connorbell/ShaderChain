@@ -23,6 +23,9 @@ public:
     ofParameter<void> encodeMp4Button;
     ofParameter<void> encodeGifButton;
     ofParameterGroup renderParameterGroup;
+    ofParameterGroup pngSavingGroup;
+    ofParameterGroup gifMenuGroup;
+    ofParameter<int> gifNumColors;
 
     PNGRenderer(float duration, int fps, glm::vec2 resolution);
     std::string filePath;
