@@ -18,7 +18,8 @@ public:
     ofParameter<string> presetNameParam;
     ofParameter<float> displayScaleParam;
     ofParameter<int> frameskip;
-    ofParameter<float> duration;
+    ofParameter<int> numBlendFrames;
+    ofParameter<float> animduration;
     ofParameter<int> FPS;
     ofParameter<void> encodeMp4Button;
     ofParameter<void> encodeGifButton;
@@ -27,7 +28,7 @@ public:
     ofParameterGroup gifMenuGroup;
     ofParameter<int> gifNumColors;
 
-    PNGRenderer(float duration, int fps, glm::vec2 resolution);
+    PNGRenderer(float animduration, int fps, glm::vec2 resolution);
     std::string filePath;
     bool isCapturing = false;
 

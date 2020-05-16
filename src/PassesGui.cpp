@@ -14,7 +14,7 @@ void PassesGui::Setup(std::vector<ShaderPass*> *passes) {
     passButtons->clear();
     this->passes = passes;
 
-    for (uint i = 0; i < passes->size(); i++) {
+    for (int i = 0; i < passes->size(); i++) {
         ofParameter<string> text;
         text.set(passes->at(i)->displayName, "");
         passButtons->add(text);
