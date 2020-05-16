@@ -165,18 +165,7 @@ void ShaderChain::Update() {
             auto swap = this->cumulativeBuffer;
             this->cumulativeBuffer = this->cumulativeBufferSwap;
             this->cumulativeBufferSwap = swap;
-
-            if (renderTest) {
-                ofPixels outputPixels;
-                outputPixels.allocate(pngRenderer->resolutionX, pngRenderer->resolutionY, OF_IMAGE_COLOR);
-                this->cumulativeBuffer.readToPixels(outputPixels);
-                string destFilePath = "wadi_" + to_string(i) + ".png";
-                ofSaveImage(outputPixels, destFilePath, OF_IMAGE_QUALITY_BEST);
-            }
         }
-    }
-    if (renderTest) {
-        renderTest = false;
     }
 
     if (this->passes.size() > 0) {
@@ -447,7 +436,7 @@ void ShaderChain::encodeMp4Pressed() {
 }
 
 void ShaderChain::encodeGifPressed() {
-    int totalFrames = pngRenderer->FPS * pngRenderer->duration;
+    int totalFrames = pngRenderer->FPS * pngRenderer->animduration;
     string totalZerosString = to_string((int)floor(log10 (((float)totalFrames)))+1);
 
     string s = pngRenderer->presetNameParam.get();
