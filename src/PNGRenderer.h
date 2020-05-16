@@ -18,6 +18,7 @@ public:
     ofParameter<string> presetNameParam;
     ofParameter<float> displayScaleParam;
     ofParameter<int> frameskip;
+    ofParameter<int> numBlendFrames;
     ofParameter<float> animduration;
     ofParameter<int> FPS;
     ofParameter<void> encodeMp4Button;

@@ -19,6 +19,9 @@ public:
     ofxJSONElement result;
     ofNode camera;
     bool isMouseDown;
+    ofFbo cumulativeBuffer;
+    ofFbo cumulativeBufferSwap;
+    ofShader cumulativeShader;
 
     ShaderChain(glm::vec2 res);
     ShaderChain() {}
@@ -68,4 +71,7 @@ private:
     void saveVideo(string outputFilename);
     void encodeMp4Pressed();
     void encodeGifPressed();
+    bool renderTest = false;
+    ofPlanePrimitive cumulativeRenderPlane;
+
 };

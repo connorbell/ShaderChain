@@ -15,6 +15,7 @@ PNGRenderer::PNGRenderer(float animduration, int fps, glm::vec2 resolution) {
     this->renderedFrames = 1;
     this->frameskip = 1;
     this->FPS = 30;
+    this->numBlendFrames = 1;
     this->preview = false;
 }
 
@@ -38,6 +39,7 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
     panel->add(preview.set("Preview", preview));
 
     renderParameterGroup.setName("Rendering");
+    renderParameterGroup.add(numBlendFrames.set("Num Blend Frames", numBlendFrames, 1, 128));
     renderParameterGroup.add(saveButton.set("Save Frames"));
     renderParameterGroup.add(encodeMp4Button.set("Encode mp4"));
     renderParameterGroup.add(encodeGifButton.set("Encode gif"));
