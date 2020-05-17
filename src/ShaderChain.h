@@ -61,7 +61,7 @@ private:
     void RenderPasses();
     void removed(RemovedElementData& data);
     void moved(MovingElementData& data);
-    void UpdateResolutionIfChanged();
+    void UpdateResolutionIfChanged(bool force);
     void OpenFilePressed();
     void LoadPassFromFile(string path);
     void playingChanged(bool &val);
@@ -71,7 +71,6 @@ private:
     void saveVideo(string outputFilename);
     void encodeMp4Pressed();
     void encodeGifPressed();
-    bool renderTest = false;
     ofPlanePrimitive cumulativeRenderPlane;
 
 };

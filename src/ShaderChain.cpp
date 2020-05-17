@@ -56,9 +56,9 @@ void ShaderChain::SetupMidi() {
     midiIn.addListener(this);
 }
 
-void ShaderChain::UpdateResolutionIfChanged() {
+void ShaderChain::UpdateResolutionIfChanged(bool force) {
 
-    bool needsUpdate = false;
+    bool needsUpdate = force;
 
     if (this->passes.size() > 0) {
         if (this->passes[0]->targetResolution.x != this->pngRenderer->resolutionX ||
@@ -68,6 +68,7 @@ void ShaderChain::UpdateResolutionIfChanged() {
     }
 
     if (needsUpdate) {
+        ofSetFrameRate(pngRenderer->FPS);
         ofFloatColor black;
 
         cumulativeBuffer.allocate(this->pngRenderer->resolutionX, this->pngRenderer->resolutionY, GL_RGBA32F);
@@ -103,71 +104,65 @@ void ShaderChain::BeginSaveFrames() {
 
 void ShaderChain::Update() {
 
-    if (this->passes.size() == 0) {
-        ofClear(25);
-        return;
-    }
-
-    UpdateResolutionIfChanged();
-    UpdateCamera();
-    fft.Update();
-
-    ofFloatColor black;
-    black.r = 0;
-    black.g = 0;
-    black.b = 0;
-    black.a = 1;
-
-    this->cumulativeBuffer.begin();
-    ofClear(0,0,0,255);
-    this->cumulativeBuffer.end();
-
-    this->cumulativeBufferSwap.begin();
-    ofClear(0,0,0,255);
-    this->cumulativeBufferSwap.end();
-
-
     bool capturingThisFrame = pngRenderer->isCapturing;
 
-    if (capturingThisFrame) {
-        pngRenderer->Tick();
-    }
-    float deltaTime = 1. / (pngRenderer->FPS * pngRenderer->numBlendFrames);
     ofClear(25);
 
-    if (this->isRunning) {
+    if (this->passes.size() > 0) {
 
-        for (uint i = 0; i < pngRenderer->numBlendFrames; i++) {
+        UpdateResolutionIfChanged(false);
+        UpdateCamera();
+        fft.Update();
 
-            if (capturingThisFrame) {
-                this->time = this->time + deltaTime;
-                fft.setTime(this->time);
-            }
-            else {
-                this->time = pngRenderer->preview ? fmod(this->time + deltaTime, pngRenderer->animduration) : this->time + deltaTime;
-            }
+        ofFloatColor black;
+        black.a = 1;
 
-            if (frame % pngRenderer->frameskip == 0) {
-                RenderPasses();
-            }
+        if (capturingThisFrame) {
+            pngRenderer->Tick();
+        }
+        float deltaTime = 1. / (pngRenderer->FPS * pngRenderer->numBlendFrames);
+
+        if (this->isRunning) {
 
             this->cumulativeBuffer.begin();
-            this->cumulativeShader.begin();
-            ofClear(0, 0, 0, 255);
-            int idx = this->passes.size()-1;
-            this->cumulativeShader.setUniform1f("factor", (1./pngRenderer->numBlendFrames));
-            this->cumulativeShader.setUniformTexture("_CumulativeTexture", this->cumulativeBufferSwap.getTexture(), 0);
-            this->cumulativeShader.setUniformTexture("_IncomingTexture", this->passes[idx]->buffer.getTexture(), 1);
-            this->cumulativeRenderPlane.draw();
-            this->cumulativeShader.end();
+            ofClear(0,0,0,255);
             this->cumulativeBuffer.end();
 
-            auto swap = this->cumulativeBuffer;
-            this->cumulativeBuffer = this->cumulativeBufferSwap;
-            this->cumulativeBufferSwap = swap;
+            this->cumulativeBufferSwap.begin();
+            ofClear(0,0,0,255);
+            this->cumulativeBufferSwap.end();
+
+            for (uint i = 0; i < pngRenderer->numBlendFrames; i++) {
+
+                if (capturingThisFrame) {
+                    this->time = this->time + deltaTime;
+                    fft.setTime(this->time);
+                }
+                else {
+                    this->time = pngRenderer->preview ? fmod(this->time + deltaTime, pngRenderer->animduration) : this->time + deltaTime;
+                }
+
+                if (frame % pngRenderer->frameskip == 0) {
+                    RenderPasses();
+                }
+
+                this->cumulativeBuffer.begin();
+                this->cumulativeShader.begin();
+                ofClear(0, 0, 0, 255);
+                int idx = this->passes.size()-1;
+                this->cumulativeShader.setUniform1f("factor", (1./pngRenderer->numBlendFrames));
+                this->cumulativeShader.setUniformTexture("_CumulativeTexture", this->cumulativeBufferSwap.getTexture(), 0);
+                this->cumulativeShader.setUniformTexture("_IncomingTexture", this->passes[idx]->buffer.getTexture(), 1);
+                this->cumulativeRenderPlane.draw();
+                this->cumulativeShader.end();
+                this->cumulativeBuffer.end();
+
+                auto swap = this->cumulativeBuffer;
+                this->cumulativeBuffer = this->cumulativeBufferSwap;
+                this->cumulativeBufferSwap = swap;
+            }
         }
     }
-
     if (this->passes.size() > 0) {
         int idx = this->passes.size()-1;
         float x = ofGetWidth()/2.-this->pngRenderer->resolutionX*0.5*this->pngRenderer->displayScaleParam;
@@ -185,7 +180,7 @@ void ShaderChain::Update() {
     }
 
     if (capturingThisFrame) {
-        this->pngRenderer->WritePNG(&(this->passes[passes.size()-1]->buffer));
+        this->pngRenderer->WritePNG(&(this->cumulativeBufferSwap));
     }
     frame++;
 }
@@ -232,9 +227,6 @@ void ShaderChain::KeyPressed(int key) {
     }
     if (key == 'a') {
         camera.move(-camera.getXAxis() * ofGetLastFrameTime());
-    }
-    if (key == 'r') {
-        renderTest = true;
     }
 }
 
@@ -310,6 +302,7 @@ void ShaderChain::LoadPassFromFile(string filepath) {
     this->passes.push_back(pass);
     SetupGui();
     this->passesGui->Setup(&this->passes);
+    UpdateResolutionIfChanged(true);
 }
 
 void ShaderChain::processFileInput(string filePath) {
