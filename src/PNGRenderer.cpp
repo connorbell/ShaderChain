@@ -38,10 +38,16 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
     panel->add(frameskip.set("Frameskip", frameskip, 1, 10));
     panel->add(preview.set("Preview", preview));
 
+    vidMenuGroup.setName("Mp4");
+    vidMenuGroup.add(numLoops.set("Num loops", numLoops, 1, 32));
+    vidMenuGroup.add(encodeMp4Button.set("Encode mp4"));
+
     renderParameterGroup.setName("Rendering");
+
     renderParameterGroup.add(numBlendFrames.set("Num Blend Frames", numBlendFrames, 1, 128));
     renderParameterGroup.add(saveButton.set("Save Frames"));
-    renderParameterGroup.add(encodeMp4Button.set("Encode mp4"));
+
+    renderParameterGroup.add(vidMenuGroup);
 
     gifNumColors = 256;
     gifMenuGroup.setName("Gif");

@@ -404,6 +404,27 @@ void ShaderChain::saveVideo(string outputFilename) {
         string outputMp4AudioFilename = outputFilename + "_audio.mp4";
         string addSoundCommand = "ffmpeg -i " + outputMp4Filename + " -i \"" + fft.soundFilePath + "\" -vcodec copy -acodec aac -shortest " + outputMp4AudioFilename;
         system(addSoundCommand.c_str());
+        outputMp4Filename = outputMp4AudioFilename;
+    }
+
+    if (pngRenderer->numLoops > 1) {
+        string inputFileText = "";
+        for (uint i = 0; i < pngRenderer->numLoops; i++) {
+            inputFileText += "file '" + outputMp4Filename + "''\n";
+        }
+
+        ofstream file;
+        file.open("list.txt");
+        file << inputFileText;
+        file.close();
+
+        string outputLoopedFilename = outputFilename + "_looped.mp4";
+
+        ffmpegCommand = "ffmpeg -f concat -i list.txt -c copy " + outputLoopedFilename;
+        system(ffmpegCommand.c_str());
+
+        remove("list.txt");
+        outputMp4Filename = outputLoopedFilename;
     }
 
     updateStatusText("Video saved to " + outputMp4Filename);

@@ -18,6 +18,7 @@ public:
     ofParameter<string> presetNameParam;
     ofParameter<float> displayScaleParam;
     ofParameter<int> frameskip;
+    ofParameter<int> numLoops;
     ofParameter<int> numBlendFrames;
     ofParameter<float> animduration;
     ofParameter<int> FPS;
@@ -26,6 +27,7 @@ public:
     ofParameterGroup renderParameterGroup;
     ofParameterGroup pngSavingGroup;
     ofParameterGroup gifMenuGroup;
+    ofParameterGroup vidMenuGroup;
     ofParameter<int> gifNumColors;
 
     PNGRenderer(float animduration, int fps, glm::vec2 resolution);
