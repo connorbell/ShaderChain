@@ -170,12 +170,6 @@ void ShaderChain::Update() {
         this->cumulativeBufferSwap.draw(x, y, w, h);
     }
 
-    if (this->showGui) {
-    //    this->gui.draw();
-    //    this->guiGlobal.draw();
-        this->passesGui->Draw();
-    }
-
     if (capturingThisFrame) {
         this->pngRenderer->WritePNG(&(this->cumulativeBufferSwap));
     }

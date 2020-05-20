@@ -12,6 +12,7 @@ public:
     ofParameter<float> resolutionX;
     ofParameter<float> resolutionY;
 
+    ofParameterGroup fileGroup;
     ofParameter<void> savePresetButton;
     ofParameter<void> openFileButton;
 
@@ -24,6 +25,7 @@ public:
     ofParameter<int> FPS;
     ofParameter<void> encodeMp4Button;
     ofParameter<void> encodeGifButton;
+
     ofParameterGroup renderParameterGroup;
     ofParameterGroup pngSavingGroup;
     ofParameterGroup gifMenuGroup;

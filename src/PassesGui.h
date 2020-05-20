@@ -15,7 +15,6 @@ public:
     ofxGuiButton addPassButton;
 
     void Setup(std::vector<ShaderPass*> *passes);
-    void Draw();
     ofxGuiPanel *panel;
 
 private:

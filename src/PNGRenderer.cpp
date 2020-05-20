@@ -15,6 +15,7 @@ PNGRenderer::PNGRenderer(float animduration, int fps, glm::vec2 resolution) {
     this->renderedFrames = 1;
     this->frameskip = 1;
     this->FPS = 30;
+    this->numLoops = 1;
     this->numBlendFrames = 1;
     this->preview = false;
 }
@@ -26,37 +27,33 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
     panel->addFpsPlotter();
     panel->add(openFileButton.set("Open File"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
 
-    panel->add<ofxGuiFloatInputField>(resolutionX.set("Res x", resolutionX, 0, 4096));
-    panel->add<ofxGuiFloatInputField>(resolutionY.set("Res y", resolutionY, 0, 4096));
-
     panel->add(savePresetButton.set("Save Preset"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
     panel->add<ofxGuiTextField>(presetNameParam.set("Preset name", "name"));
     panel->add(displayScaleParam.set("Display scale", displayScaleParam, 0.1, 5.0));
 
-    panel->add<ofxGuiFloatInputField>(animduration.set("Duration", animduration, 0, 10000000));
-    panel->add<ofxGuiIntInputField>(FPS.set("fps", FPS, 0, 1000));
-    panel->add(frameskip.set("Frameskip", frameskip, 1, 10));
-    panel->add(preview.set("Preview", preview));
-
     vidMenuGroup.setName("Mp4");
     vidMenuGroup.add(numLoops.set("Num loops", numLoops, 1, 32));
-    vidMenuGroup.add(encodeMp4Button.set("Encode mp4"));
 
     renderParameterGroup.setName("Rendering");
-
-    renderParameterGroup.add(numBlendFrames.set("Num Blend Frames", numBlendFrames, 1, 128));
-    renderParameterGroup.add(saveButton.set("Save Frames"));
-
-    renderParameterGroup.add(vidMenuGroup);
 
     gifNumColors = 256;
     gifMenuGroup.setName("Gif");
     gifMenuGroup.add(gifNumColors.set("Colors", gifNumColors, 1, 255));
-    gifMenuGroup.add(encodeGifButton.set("Encode gif"));
 
-    renderParameterGroup.add(gifMenuGroup);
+    ofxGuiMenu* renderingMenu = panel->addMenu(renderParameterGroup);
+    renderingMenu->add<ofxGuiFloatInputField>(resolutionX.set("Res x", resolutionX, 0, 4096));
+    renderingMenu->add<ofxGuiFloatInputField>(resolutionY.set("Res y", resolutionY, 0, 4096));
+    renderingMenu->add<ofxGuiFloatInputField>(animduration.set("Duration          ", animduration, 0, 10000000));
+    renderingMenu->add<ofxGuiIntInputField>(FPS.set("FPS", FPS, 0, 1000));
+    renderingMenu->add(numBlendFrames.set("Blend Frames", numBlendFrames, 1, 128));
+    renderingMenu->add(frameskip.set("Frameskip", frameskip, 1, 10));
+    renderingMenu->add(preview.set("Preview", preview));
+    renderingMenu->add(saveButton.set("Save Frames"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
 
-    ofxGuiContainer* menu = panel->addMenu(renderParameterGroup);
+    ofxGuiMenu* gifGroup = renderingMenu->addMenu(gifMenuGroup);
+    ofxGuiMenu* vidGroup = renderingMenu->addMenu(vidMenuGroup);
+    gifGroup->add(encodeGifButton.set("Encode gif"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+    vidGroup->add(encodeMp4Button.set("Encode mp4"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
 }
 
 float PNGRenderer::Tick() {

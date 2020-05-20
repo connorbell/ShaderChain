@@ -20,7 +20,3 @@ void PassesGui::Setup(std::vector<ShaderPass*> *passes) {
         passButtons->add(text);
     }
 }
-
-void PassesGui::Draw() {
-
-}
