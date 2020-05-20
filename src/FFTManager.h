@@ -27,7 +27,8 @@ public:
     void UpdateShader(ofShader *shader, int textureIndex);
     void setPaused(bool val);
     void setTime(float time);
-
+    void resetSongIfPlaying();
+    
 private:
     bool isPaused = true;
     float soundFileDuration = 0.0;

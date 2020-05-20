@@ -106,3 +106,7 @@ void FFTManager::setTime(float time) {
         soundPlayer.setPositionMS(t);
     }
 }
+
+void FFTManager::resetSongIfPlaying() {
+    setTime(0.0);
+}
