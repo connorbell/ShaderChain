@@ -74,12 +74,12 @@ void ShaderPass::AddColorParameter(string s, float r, float g, float b, float a,
 void ShaderPass::Render(ofFbo *previousBuffer, float time, ofNode *cam, FFTManager *fft) {
     this->buffer.begin();
     this->shader.begin();
+	
+	UpdateTime(time);
 
-    if (previousBuffer != nullptr) {
+	if (previousBuffer != nullptr) {
         SetInputTexture(*previousBuffer);
     }
-
-    UpdateTime(time);
     this->shader.setUniform2f("_Resolution", this->targetResolution.x, this->targetResolution.y);
     if (wantsCamera) {
         this->shader.setUniform3f("_CamPos", cam->getPosition());
