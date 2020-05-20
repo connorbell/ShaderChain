@@ -9,7 +9,7 @@ FFTManager::FFTManager() {
 }
 
 FFTManager::~FFTManager() {
-    if (fft) {
+    if (fft != nullptr) {
         delete fft;
     }
 }

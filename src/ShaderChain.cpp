@@ -19,6 +19,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->isMouseDown = false;
     this->isShowingFileDialogue = false;
     this->frame = 0;
+	this->time = 0.0;
     this->parameterPanel = gui.addPanel();
     this->cumulativeShader.load("shadersGL3/internal/cumulativeAdd");
     this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
@@ -90,7 +91,7 @@ void ShaderChain::BeginSaveFrames() {
     if (fft.currentState == InputStateSoundFile) {
         this->time = 0.0;
         ofFloatColor *black = new ofFloatColor(0.0, 0.0, 0.0, 0.0);
-        for (uint i = 0; i < this->passes.size(); i++) {
+        for (unsigned int i = 0; i < this->passes.size(); i++) {
             if (passes[i]->lastBuffer.isAllocated()) {
 
                 passes[i]->lastBuffer.clearColorBuffer(*black);
@@ -107,9 +108,7 @@ void ShaderChain::Update() {
     bool capturingThisFrame = pngRenderer->isCapturing;
 
     ofClear(25);
-
     if (this->passes.size() > 0) {
-
         UpdateResolutionIfChanged(false);
         UpdateCamera();
         fft.Update();
@@ -123,7 +122,6 @@ void ShaderChain::Update() {
         float deltaTime = 1. / (pngRenderer->FPS * pngRenderer->numBlendFrames);
 
         if (this->isRunning) {
-
             this->cumulativeBuffer.begin();
             ofClear(0,0,0,255);
             this->cumulativeBuffer.end();
@@ -132,7 +130,7 @@ void ShaderChain::Update() {
             ofClear(0,0,0,255);
             this->cumulativeBufferSwap.end();
 
-            for (uint i = 0; i < pngRenderer->numBlendFrames; i++) {
+            for (unsigned int i = 0; i < pngRenderer->numBlendFrames; i++) {
 
                 if (capturingThisFrame) {
                     this->time = this->time + deltaTime;
@@ -140,7 +138,7 @@ void ShaderChain::Update() {
                 }
                 else {
                     this->time = pngRenderer->preview ? fmod(this->time + deltaTime, pngRenderer->animduration) : this->time + deltaTime;
-                }
+				}
 
                 if (frame % pngRenderer->frameskip == 0) {
                     RenderPasses();
@@ -288,6 +286,7 @@ void ShaderChain::ReadFromJson(std::string filepath) {
         }
         this->passesGui->Setup(&this->passes);
         SetupGui();
+		UpdateResolutionIfChanged(true);
     }
     else {
         ofLogError("ofApp::setup")  << "Failed to parse JSON" << endl;
@@ -409,7 +408,7 @@ void ShaderChain::saveVideo(string outputFilename) {
 
     if (pngRenderer->numLoops > 1) {
         string inputFileText = "";
-        for (uint i = 0; i < pngRenderer->numLoops; i++) {
+        for (unsigned int i = 0; i < pngRenderer->numLoops; i++) {
             inputFileText += "file '" + outputMp4Filename + "''\n";
         }
 
