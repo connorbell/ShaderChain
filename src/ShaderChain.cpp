@@ -92,7 +92,6 @@ void ShaderChain::BeginSaveFrames() {
         ofFloatColor *black = new ofFloatColor(0.0, 0.0, 0.0, 0.0);
         for (uint i = 0; i < this->passes.size(); i++) {
             if (passes[i]->lastBuffer.isAllocated()) {
-
                 passes[i]->lastBuffer.clearColorBuffer(*black);
             }
         }
@@ -212,6 +211,9 @@ void ShaderChain::KeyPressed(int key) {
     }
     if (key == 'g') {
         this->showGui = !this->showGui;
+        guiGlobal->setEnabled(this->showGui);
+        parameterPanel->setEnabled(this->showGui);
+        passesGui->panel->setEnabled(this->showGui);
     }
     if (key == 'f') {
         ofToggleFullscreen();
@@ -227,6 +229,10 @@ void ShaderChain::KeyPressed(int key) {
     }
     if (key == 'a') {
         camera.move(-camera.getXAxis() * ofGetLastFrameTime());
+    }
+    if (key == 'r') {
+        this->time = 0.0;
+        fft.resetSongIfPlaying();
     }
 }
 

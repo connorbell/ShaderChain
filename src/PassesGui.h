@@ -16,9 +16,9 @@ public:
 
     void Setup(std::vector<ShaderPass*> *passes);
     void Draw();
+    ofxGuiPanel *panel;
 
 private:
     ofxGui gui;
-    ofxGuiPanel *panel;
     std::vector<ShaderPass*> *passes;
 };
