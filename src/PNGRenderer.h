@@ -43,12 +43,10 @@ public:
     void UpdateResolution(int w, int h);
     ofParameter<bool> preview;
     ofParameter<void> saveButton;
-    void saveGif();
-    void saveVideo();
     int totalFrames;
-
+    
 private:
     int currentFrame;
     int renderedFrames;
-
+    ofxGuiButton *saveFramesButton;
 };

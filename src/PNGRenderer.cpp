@@ -48,7 +48,7 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
     renderingMenu->add(numBlendFrames.set("Blend Frames", numBlendFrames, 1, 128));
     renderingMenu->add(frameskip.set("Frameskip", frameskip, 1, 10));
     renderingMenu->add(preview.set("Preview", preview));
-    renderingMenu->add(saveButton.set("Save Frames"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+    saveFramesButton = renderingMenu->add(saveButton.set("Save Frames"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
 
     ofxGuiMenu* gifGroup = renderingMenu->addMenu(gifMenuGroup);
     ofxGuiMenu* vidGroup = renderingMenu->addMenu(vidMenuGroup);
@@ -67,6 +67,8 @@ float PNGRenderer::Tick() {
 
     if (this->renderedFrames == this->totalFrames) {
         this->isCapturing = false;
+        saveFramesButton->setName("Save Frames");
+        saveFramesButton->updateLayout();
     }
 
     return progress * this->animduration;
@@ -90,6 +92,11 @@ void PNGRenderer::WritePNG(ofFbo *buffer) {
 }
 
 void PNGRenderer::Start() {
+    if (this->isCapturing) {
+        saveFramesButton->setName("Save Frames");
+        this->isCapturing = false;
+        return;
+    }
     string s = presetNameParam.get();
     string file = s.substr(s.find_last_of("/") + 1);
     string fileWithoutExtension = file.substr(0, file.find_last_of("."));
@@ -97,17 +104,11 @@ void PNGRenderer::Start() {
     this->renderedFrames = 0;
     this->totalFrames = animduration * FPS;
     this->isCapturing = true;
+
+    saveFramesButton->setName("Cancel");
 }
 
 void PNGRenderer::UpdateResolution(int w, int h) {
     this->resolutionX = w;
     this->resolutionY = h;
-}
-
-void saveGif() {
-    system(" ");
-}
-
-void saveVideo(string outputFilename) {
-
 }

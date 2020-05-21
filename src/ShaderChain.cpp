@@ -98,7 +98,7 @@ void ShaderChain::BeginSaveFrames() {
         }
         delete black;
     }
-
+    this->isRunning = true;
     pngRenderer->Start();
 }
 
