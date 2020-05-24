@@ -102,7 +102,6 @@ void FFTManager::setTime(float time) {
 
     if (currentState != InputStateNone) {
         float t = fmod(time,soundFileDuration)*1000.;
-        cout << t << endl;
         soundPlayer.setPositionMS(t);
     }
 }

@@ -44,9 +44,9 @@ public:
     ofParameter<bool> preview;
     ofParameter<void> saveButton;
     int totalFrames;
+    int currentFrame;
     
 private:
-    int currentFrame;
     int renderedFrames;
     ofxGuiButton *saveFramesButton;
 };

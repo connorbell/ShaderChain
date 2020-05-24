@@ -8,7 +8,7 @@ FloatParameter::FloatParameter(std::string uniform, float currentValue, glm::vec
   this->midiIndex = midi;
 }
 
-void FloatParameter::UpdateShader(ofxAutoReloadedShader *shader) {
+void FloatParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct *renderStruct) {
   shader->setUniform1f(this->uniform, this->value);
 }
 

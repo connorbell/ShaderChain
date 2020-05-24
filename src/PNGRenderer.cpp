@@ -63,8 +63,6 @@ float PNGRenderer::Tick() {
     this->renderedFrames++;
     this->statusLabel = ("Rendered " + to_string(renderedFrames) + " frames");
 
-    cout << this->renderedFrames << endl;
-
     if (this->renderedFrames == this->totalFrames) {
         this->isCapturing = false;
         saveFramesButton->setName("Save Frames");

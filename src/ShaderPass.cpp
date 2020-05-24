@@ -71,32 +71,32 @@ void ShaderPass::AddColorParameter(string s, float r, float g, float b, float a,
     this->params.push_back(std::move(ptr));
 }
 
-void ShaderPass::Render(ofFbo *previousBuffer, float time, ofNode *cam, FFTManager *fft) {
+void ShaderPass::Render(ofFbo *previousBuffer, RenderStruct *renderStruct) {
     this->buffer.begin();
     this->shader.begin();
-	
-	UpdateTime(time);
+
+	UpdateTime(renderStruct->time);
 
 	if (previousBuffer != nullptr) {
-        SetInputTexture(*previousBuffer);
+        SetInputTexture(previousBuffer);
     }
     this->shader.setUniform2f("_Resolution", this->targetResolution.x, this->targetResolution.y);
     if (wantsCamera) {
-        this->shader.setUniform3f("_CamPos", cam->getPosition());
-        this->shader.setUniform3f("_CamForward", cam->getZAxis());
-        this->shader.setUniform3f("_CamUp", cam->getYAxis());
-        this->shader.setUniform3f("_CamRight", cam->getXAxis());
+        this->shader.setUniform3f("_CamPos", renderStruct->cam->getPosition());
+        this->shader.setUniform3f("_CamForward", renderStruct->cam->getZAxis());
+        this->shader.setUniform3f("_CamUp", renderStruct->cam->getYAxis());
+        this->shader.setUniform3f("_CamRight", renderStruct->cam->getXAxis());
     }
 
     if (this->lastBufferTextureIndex != -1 && this->lastBuffer.isAllocated()) {
         this->shader.setUniformTexture("_LastTexture", this->lastBuffer.getTexture(), this->lastBufferTextureIndex);
     }
     if (this->audioTextureIndex != -1) {
-        this->shader.setUniformTexture("_AudioTexture", fft->audioTexture, this->audioTextureIndex);
+        this->shader.setUniformTexture("_AudioTexture", renderStruct->fft->audioTexture, this->audioTextureIndex);
     }
 
     for (unsigned int i = 0; i < params.size(); i++) {
-        this->params[i]->UpdateShader(&(this->shader));
+        this->params[i]->UpdateShader(&(this->shader), renderStruct);
     }
 
     this->plane.draw();
@@ -110,8 +110,8 @@ void ShaderPass::Render(ofFbo *previousBuffer, float time, ofNode *cam, FFTManag
     }
 }
 
-void ShaderPass::SetInputTexture(ofFbo buffer) {
-  this->shader.setUniformTexture("_MainTexture", buffer.getTexture(), 0);
+void ShaderPass::SetInputTexture(ofFbo *buffer) {
+  this->shader.setUniformTexture("_MainTexture", buffer->getTexture(), 0);
 }
 
 void ShaderPass::UpdateTime(float time) {
@@ -212,12 +212,13 @@ void ShaderPass::LoadFromJson(Json::Value &json, float width, float height) {
     LoadParametersFromJson(json);
 }
 
-void ShaderPass::AddToGui(ofxGuiPanel *gui) {
+void ShaderPass::AddToGui(ofxGuiPanel *gui, TextureInputSelectionView *selectionView) {
 
     parameterGroup = gui->addGroup();
     parameterGroup->setName(displayName);
 
     for (unsigned int i = 0; i < this->params.size(); i++) {
+        params[i]->selectionView = selectionView;
         params[i]->AddToGui(parameterGroup);
     }
 }

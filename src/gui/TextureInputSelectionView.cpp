@@ -44,6 +44,8 @@ void TextureInputSelectionView::hide() {
 }
 
 void TextureInputSelectionView::openFromFileButtonPressed() {
+    if (!this->panel->isEnabled()) return;
+
     cout << "Open from file" << endl;
 
     if (!isShowingFileDialogue) {
@@ -58,12 +60,16 @@ void TextureInputSelectionView::openFromFileButtonPressed() {
 }
 
 void TextureInputSelectionView::openFromWebcamButtonPressed() {
+    if (!this->panel->isEnabled()) return;
+    
     bool val = true;
     hide();
     ofNotifyEvent(wantsWebcamChanged, val);
 }
 
 void TextureInputSelectionView::bufferButtonPressed() {
+    if (!this->panel->isEnabled()) return;
+
     for (unsigned int i = 0; i < bufferButtons.size(); i++) {
         if (bufferButtons[i]->isMouseOver()) {
             string s = bufferButtons[i]->getName();

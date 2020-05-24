@@ -1,5 +1,6 @@
 #include "ShaderChain.h"
 #include "ofxSortableList.h"
+#include "RenderStruct.h"
 
 void ShaderChain::Setup(glm::vec2 res) {
     this->passesGui = new PassesGui();
@@ -15,6 +16,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->pngRenderer->saveButton.addListener(this, &ShaderChain::BeginSaveFrames);
     this->pngRenderer->encodeMp4Button.addListener(this, &ShaderChain::encodeMp4Pressed);
     this->pngRenderer->encodeGifButton.addListener(this, &ShaderChain::encodeGifPressed);
+    this->textureInputSelectionView.openFromWebcamButton.addListener(this, &ShaderChain::startWebcamPressed);
     this->showGui = true;
     this->isMouseDown = false;
     this->isShowingFileDialogue = false;
@@ -23,6 +25,12 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->parameterPanel = gui.addPanel();
     this->cumulativeShader.load("shadersGL3/internal/cumulativeAdd");
     this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
+    this->renderStruct.passes = &this->passes;
+    this->renderStruct.time = 0.0;
+    this->renderStruct.fft = &this->fft;
+    this->renderStruct.cam = &this->camera;
+    this->renderStruct.vidGrabber = &this->vidGrabber;
+
     ofFloatColor black;
 
     cumulativeBuffer.allocate(this->pngRenderer->resolutionX, this->pngRenderer->resolutionY, GL_RGBA32F);
@@ -105,7 +113,9 @@ void ShaderChain::BeginSaveFrames() {
 void ShaderChain::Update() {
 
     bool capturingThisFrame = pngRenderer->isCapturing;
-
+    renderStruct.isOfflineRendering = capturingThisFrame;
+    renderStruct.frame = pngRenderer->currentFrame;
+    
     ofClear(25);
     if (this->passes.size() > 0) {
         UpdateResolutionIfChanged(false);
@@ -138,6 +148,8 @@ void ShaderChain::Update() {
                 else {
                     this->time = pngRenderer->preview ? fmod(this->time + deltaTime, pngRenderer->animduration) : this->time + deltaTime;
 				}
+
+                this->renderStruct.time = this->time;
 
                 if (frame % pngRenderer->frameskip == 0) {
                     RenderPasses();
@@ -183,10 +195,10 @@ void ShaderChain::AddPass(ShaderPass *pass) {
 void ShaderChain::RenderPasses() {
     for (int i = 0; i < this->passes.size(); i++) {
         if (i > 0) {
-            this->passes[i]->Render(&(passes[i-1]->buffer), this->time, &camera, &fft);
+            this->passes[i]->Render(&(passes[i-1]->buffer), &renderStruct);
         }
         else {
-            this->passes[i]->Render(nullptr, this->time, &camera, &fft);
+            this->passes[i]->Render(nullptr, &renderStruct);
         }
     }
 }
@@ -230,9 +242,15 @@ void ShaderChain::KeyPressed(int key) {
 
 void ShaderChain::SetupGui() {
     parameterPanel->clear();
+
+    textureInputSelectionView.passNames.clear();
+    for (unsigned int i = 0; i < passes.size(); i++) {
+        textureInputSelectionView.passNames.push_back(passes[i]->displayName);
+    }
+
     this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
     for (int i = 0; i < this->passes.size(); i++) {
-        this->passes[i]->AddToGui(parameterPanel);
+        this->passes[i]->AddToGui(parameterPanel, &textureInputSelectionView);
     }
 }
 
@@ -469,5 +487,11 @@ void ShaderChain::encodeGifPressed() {
     system(ffmpegCommand.c_str());
 
     updateStatusText("Gif saved to " + targetFilename);
+}
 
+void ShaderChain::startWebcamPressed() {
+    vidGrabber.setDeviceID(0);
+    vidGrabber.setUseTexture(true);
+    vidGrabber.setDesiredFrameRate(30);
+    vidGrabber.initGrabber(pngRenderer->resolutionX, pngRenderer->resolutionY);
 }

@@ -16,6 +16,7 @@
 
 #include "ofxAutoReloadedShader.h"
 #include "FFTManager.h"
+#include "RenderStruct.h"
 
 class ShaderPass {
   public:
@@ -44,12 +45,12 @@ class ShaderPass {
     void AddVector3Parameter(std::string s, glm::vec3 val, bool show, glm::vec2 range, int midi[]);
     void AddTextureParameter(string s, string filePath, int textureIndex, bool show);
     void AddColorParameter(string s, float r, float g, float b, float a, bool show, int midi[]);
-    void Render(ofFbo *previousBuffer, float time, ofNode *cam, FFTManager *fft);
-    void SetInputTexture(ofFbo buffer);
+    void Render(ofFbo *previousBuffer, RenderStruct *renderStruct);
+    void SetInputTexture(ofFbo *buffer);
     void UpdateTime(float time);
     void UpdateResolution(int x, int y);
     void LoadJsonParametersFromLoadedShader();
-    void AddToGui(ofxGuiPanel *gui);
+    void AddToGui(ofxGuiPanel *gui, TextureInputSelectionView *selectionView);
     void LoadDisplayNameFromFileName();
 
   private:

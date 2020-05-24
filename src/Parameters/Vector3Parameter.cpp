@@ -11,7 +11,7 @@ Vector3Parameter::Vector3Parameter(std::string uniform, ofVec3f defaultVal, bool
   this->midi[2] = midi[2];
 }
 
-void Vector3Parameter::UpdateShader(ofxAutoReloadedShader *shader) {
+void Vector3Parameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct *renderStruct) {
   shader->setUniform3f(this->uniform, this->value->x, this->value->y, this->value->z);
 }
 

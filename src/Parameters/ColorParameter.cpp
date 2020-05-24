@@ -11,7 +11,7 @@ ColorParameter::ColorParameter(std::string uniform, float r, float g, float b, f
   this->midi[3] = midi[3];
 }
 
-void ColorParameter::UpdateShader(ofxAutoReloadedShader *shader) {
+void ColorParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct *renderStruct) {
   shader->setUniform4f(this->uniform, (float)this->value->r/255.0, (float)this->value->g/255.0, (float)this->value->b/255.0, (float)this->value->a/255.0);
 }
 

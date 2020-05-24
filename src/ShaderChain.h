@@ -9,6 +9,7 @@
 #include "PNGRenderer.h"
 #include "FFTManager.h"
 #include "PassesGui.h"
+#include "TextureInputSelectionView.h"
 
 class ShaderChain: public ofxMidiListener {
 public:
@@ -50,6 +51,8 @@ private:
     PassesGui *passesGui;
     ofxGuiPanel *parameterPanel;
     FFTManager fft;
+    TextureInputSelectionView textureInputSelectionView;
+    ofVideoGrabber vidGrabber;
 
     float mouseMoveSpeed = 10.0;
 
@@ -57,6 +60,7 @@ private:
     bool isShowingFileDialogue;
 
     int frame;
+    RenderStruct renderStruct;
 
     void RenderPasses();
     void removed(RemovedElementData& data);
@@ -72,5 +76,5 @@ private:
     void encodeMp4Pressed();
     void encodeGifPressed();
     ofPlanePrimitive cumulativeRenderPlane;
-
+    void startWebcamPressed();
 };
