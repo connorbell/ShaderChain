@@ -96,6 +96,10 @@ void ShaderChain::UpdateResolutionIfChanged(bool force) {
 
 void ShaderChain::BeginSaveFrames() {
 
+    for (int i = 0; i < this->passes.size(); i++) {
+        passes[i]->startOfflineRender();
+    }
+
     if (fft.currentState == InputStateSoundFile) {
         this->time = 0.0;
         ofFloatColor *black = new ofFloatColor(0.0, 0.0, 0.0, 0.0);
@@ -110,12 +114,18 @@ void ShaderChain::BeginSaveFrames() {
     pngRenderer->Start();
 }
 
-void ShaderChain::Update() {
+void ShaderChain::update() {
+    renderStruct.isOfflineRendering = pngRenderer->isCapturing;
+    for (int i = 0; i < this->passes.size(); i++) {
+        this->passes[i]->update(&renderStruct);
+    }
+}
+
+void ShaderChain::draw() {
 
     bool capturingThisFrame = pngRenderer->isCapturing;
-    renderStruct.isOfflineRendering = capturingThisFrame;
     renderStruct.frame = pngRenderer->currentFrame;
-    
+
     ofClear(25);
     if (this->passes.size() > 0) {
         UpdateResolutionIfChanged(false);
@@ -184,6 +194,13 @@ void ShaderChain::Update() {
 
     if (capturingThisFrame) {
         this->pngRenderer->WritePNG(&(this->cumulativeBufferSwap));
+
+        // On finished
+        if (!this->pngRenderer->isCapturing) {
+            for (int i = 0; i < this->passes.size(); i++) {
+                passes[i]->stopOfflineRender();
+            }
+        }
     }
     frame++;
 }

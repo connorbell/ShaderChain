@@ -52,6 +52,9 @@ class ShaderPass {
     void LoadJsonParametersFromLoadedShader();
     void AddToGui(ofxGuiPanel *gui, TextureInputSelectionView *selectionView);
     void LoadDisplayNameFromFileName();
+    void update(RenderStruct *renderStruct);
+    void startOfflineRender();
+    void stopOfflineRender();
 
   private:
     ofxJSON json;

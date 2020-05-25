@@ -64,8 +64,6 @@ void main()
     vec4 blendCol = texture(blendTex, blendUv);
     vec4 maskCol = texture(maskTex, maskUv);
 
-    float fade = dot(maskCol.rgb, targetMaskCol.rgb) * tolerance;
-    //outputColor = mix(mainCol, blendCol, clamp(fade, 0., 1.));
-    //outputColor.a = 1.0;
-    outputColor = mainCol;
+    vec3 fade = abs(maskCol.rgb - targetMaskCol.rgb) * tolerance;
+    outputColor = mix(mainCol, blendCol, clamp(length(fade), 0., 1.));
 }

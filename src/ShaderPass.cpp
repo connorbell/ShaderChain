@@ -71,6 +71,12 @@ void ShaderPass::AddColorParameter(string s, float r, float g, float b, float a,
     this->params.push_back(std::move(ptr));
 }
 
+void ShaderPass::update(RenderStruct *renderStruct) {
+    for (unsigned int i = 0; i < this->params.size(); i++) {
+        this->params[i]->update(renderStruct);
+    }
+}
+
 void ShaderPass::Render(ofFbo *previousBuffer, RenderStruct *renderStruct) {
     this->buffer.begin();
     this->shader.begin();
@@ -116,6 +122,18 @@ void ShaderPass::SetInputTexture(ofFbo *buffer) {
 
 void ShaderPass::UpdateTime(float time) {
     this->shader.setUniform1f("_Time", time);
+}
+
+void ShaderPass::startOfflineRender() {
+    for (unsigned int i = 0; i < this->params.size(); i++) {
+        this->params[i]->startOfflineRender();
+    }
+}
+
+void ShaderPass::stopOfflineRender() {
+    for (unsigned int i = 0; i < this->params.size(); i++) {
+        this->params[i]->stopOfflineRender();
+    }
 }
 
 void ShaderPass::LoadJsonParametersFromLoadedShader() {

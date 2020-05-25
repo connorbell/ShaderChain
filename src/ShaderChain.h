@@ -30,7 +30,8 @@ public:
     void Setup(glm::vec2 res);
     void SetupGui();
     void BeginSaveFrames();
-    void Update();
+    void update();
+    void draw();
     void AddPass(ShaderPass *pass);
 
     void UpdateCamera();

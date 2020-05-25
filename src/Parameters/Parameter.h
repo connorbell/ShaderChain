@@ -21,4 +21,7 @@ public:
   virtual void UpdateJson(Json::Value &val) {}
   virtual void UpdateMidi(int midiIndex, float value) {}
   virtual void BindMidi(int midiIndices[]) {}
+  virtual void update(RenderStruct *renderStruct) {}
+  virtual void startOfflineRender() {}
+  virtual void stopOfflineRender() {}
 };

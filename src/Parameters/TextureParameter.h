@@ -3,6 +3,7 @@
 #include "Parameter.h"
 #include "ofxGuiExtended2.h"
 #include "ofxGuiTextureInput.h"
+#include "ofGstVideoPlayer.h"
 
 typedef enum {
     ImageFile,
@@ -23,6 +24,7 @@ public:
     ofVideoPlayer videoFile;
     string bufferName;
     ofxGuiTextureInput *texInput;
+    ofGstVideoPlayer gstreamer;
     void updateTextureFromFile(string &s);
     void wantsWebcamChanged(bool &val);
     void wantsBufferChanged(string &val);
@@ -31,4 +33,7 @@ public:
     virtual void UpdateShader(ofxAutoReloadedShader *shader, RenderStruct *renderStruct) override;
     virtual void AddToGui(ofxGuiGroup2 *gui) override;
     virtual void UpdateJson(Json::Value &val) override;
+    virtual void update(RenderStruct *renderStruct) override;
+    virtual void startOfflineRender() override;
+    virtual void stopOfflineRender() override;
 };

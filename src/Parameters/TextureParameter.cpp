@@ -5,6 +5,9 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
     this->textureIndex = textureIndex;
     this->filePath = filePath;
     this->uniform = uniform;
+    gstreamer.setFrameByFrame(true);
+    auto player = ofPtr<ofBaseVideoPlayer>(&gstreamer);
+    this->videoFile.setPlayer(player);
     this->show = show;
     if (filePath.length() > 0) {
         this->value.load(filePath);
@@ -12,6 +15,22 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
     }
     else {
         this->type = None;
+    }
+}
+
+void TextureParameter::update(RenderStruct *renderStruct) {
+    if (this->type == VideoFile) {
+
+        if (renderStruct->isOfflineRendering) {
+            cout << "is frame new " << videoFile.isFrameNew() << endl;
+            cout << "current video frame " << this->videoFile.getCurrentFrame() << endl;
+            int targetFrame = renderStruct->frame % this->videoFile.getTotalNumFrames();
+            cout << targetFrame << endl;
+            this->videoFile.nextFrame();
+            this->videoFile.update();
+        } else {
+            this->videoFile.update();
+        }
     }
 }
 
@@ -25,17 +44,12 @@ void TextureParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct 
         }
     } else if (this->type == VideoFile) {
         if (this->videoFile.isLoaded() && this->videoFile.getWidth() > 0) {
-            this->videoFile.play();
-            if (renderStruct->isOfflineRendering) {
-                this->videoFile.setFrame(renderStruct->frame);
-            }
+            this->texInput->setGraphics(&this->videoFile.getTexture());
+            shader->setUniformTexture(this->uniform, this->videoFile.getTexture(), 1);
+            shader->setUniform2f(this->uniform+"_res", this->videoFile.getWidth(), this->videoFile.getHeight());
+        }
+        if (renderStruct->isOfflineRendering) {
 
-            this->videoFile.update();
-            this->videoFile.unbind();
-            //this->texInput->setGraphics(&this->videoFile.getTexture());
-            //shader->setUniformTexture(this->uniform, this->videoFile.getTexture(), this->textureIndex);
-            //shader->setUniform2f(this->uniform+"_res", this->videoFile.getWidth(), this->videoFile.getHeight());
-            this->videoFile.setPaused(true);
         }
     } else if (this->type == Webcam) {
         renderStruct->vidGrabber->update();
@@ -120,4 +134,26 @@ void TextureParameter::UpdateJson(Json::Value &val) {
     val["textureIndex"] = this->textureIndex;
     val["show"] = this->show;
     val["type"] = 2;
+}
+
+void TextureParameter::startOfflineRender() {
+    if (type == VideoFile) {
+        cout << "start offline render" << endl;
+        this->videoFile.setPaused(true);
+        this->videoFile.setFrame(0);
+        gstreamer.setFrameByFrame(true);
+        //gstreamer.setFrameByFrame(true);
+    }
+}
+
+void TextureParameter::stopOfflineRender() {
+    if (type == VideoFile) {
+        cout << "stop offline render" << endl;
+        this->videoFile.setPaused(false);
+        this->videoFile.play();
+
+        //gstreamer.setFrameByFrame(false);
+        //this->videoFile.setPaused(false);
+        //this->videoFile.play();
+    }
 }
