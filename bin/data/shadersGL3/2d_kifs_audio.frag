@@ -10,7 +10,7 @@
             "y" : 50
          },
          "show" : true,
-         "type" : 0,
+         "type" : "float",
          "value" : 5.0
       },
       {
@@ -20,7 +20,7 @@
             "y" : 10
          },
          "show" : true,
-         "type" : 0,
+         "type" : "float",
          "midi" : 1,
          "value" : 5.0
       },
@@ -31,7 +31,7 @@
             "y" : 1
          },
          "show" : true,
-         "type" : 0,
+         "type" : "float",
          "midi" : 2,
          "value" : 0.1
       },
@@ -42,7 +42,7 @@
             "y" : 10
          },
          "show" : true,
-         "type" : 0,
+         "type" : "float",
          "midi" : 3,
          "value" : 1.0
       },
@@ -53,7 +53,7 @@
             "y" : 1
          },
          "show" : true,
-         "type" : 0,
+         "type" : "float",
          "midi" : 4,
          "value" : 1.0
       },
@@ -64,7 +64,7 @@
             "y" : 1
          },
          "show" : true,
-         "type" : 0,
+         "type" : "float",
          "midi" : 5,
          "value" : 0.5
       },
@@ -75,7 +75,7 @@
             "y" : 1
          },
          "show" : true,
-         "type" : 0,
+         "type" : "float",
          "midi" : 6,
          "value" : 0.5
       },
@@ -86,7 +86,7 @@
             "y" : 1
          },
          "show" : true,
-         "type" : 0,
+         "type" : "float",
          "midi" : 7,
          "value" : 0.5
       },
@@ -97,7 +97,7 @@
             "y" : 1
          },
          "show" : true,
-         "type" : 0,
+         "type" : "float",
          "midi" : 8,
          "value" : 0.5
       },

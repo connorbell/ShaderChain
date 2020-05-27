@@ -10,9 +10,13 @@
 
 #include "Parameters/Parameter.h"
 #include "Parameters/FloatParameter.h"
+#include "Parameters/Vector2Parameter.h"
 #include "Parameters/Vector3Parameter.h"
+#include "Parameters/Vector4Parameter.h"
 #include "Parameters/TextureParameter.h"
 #include "Parameters/ColorParameter.h"
+#include "Parameters/BoolParameter.h"
+#include "Parameters/IntParameter.h"
 
 #include "ofxAutoReloadedShader.h"
 #include "FFTManager.h"
@@ -21,6 +25,7 @@
 class ShaderPass {
   public:
     std::string filePath;
+    std::string vertexShaderPath = "shadersGL3/internal/vertex.vert";
     std::string displayName;
     std::vector<std::unique_ptr<Parameter>> params;
     glm::vec2 targetResolution;
@@ -42,8 +47,12 @@ class ShaderPass {
     void LoadFromJson(Json::Value &json, float width, float height);
 
     void AddFloatParameter(std::string s, float startValue, glm::vec2 range, bool show, int midi);
+    void AddIntParameter(std::string s, int startValue, glm::vec2 range, bool show, int midi);
+    void AddBoolParameter(std::string s, bool startValue, bool show, int midi);
+    void AddVector2Parameter(std::string s, glm::vec2 val, bool show, glm::vec2 range, int midi[]);
     void AddVector3Parameter(std::string s, glm::vec3 val, bool show, glm::vec2 range, int midi[]);
-    void AddTextureParameter(string s, string filePath, int textureIndex, bool show);
+    void AddVector4Parameter(std::string s, glm::vec4 val, bool show, glm::vec2 range, int midi[]);
+    void AddTextureParameter(string s, string filePath, int textureIndex, bool show,string texType);
     void AddColorParameter(string s, float r, float g, float b, float a, bool show, int midi[]);
     void Render(ofFbo *previousBuffer, RenderStruct *renderStruct);
     void SetInputTexture(ofFbo *buffer);

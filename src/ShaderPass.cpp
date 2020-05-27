@@ -12,7 +12,7 @@ ShaderPass::ShaderPass(std::string shaderPath, glm::vec2 res) {
 }
 
 void ShaderPass::Load(std::string shaderPath, glm::vec2 res) {
-    this->shader.load(shaderPath);
+    this->shader.load(vertexShaderPath, shaderPath + ".frag", "");
     this->filePath = shaderPath;
     this->scale = 1.0;
     this->targetResolution = glm::vec2(res.x * scale, res.y * scale);
@@ -51,8 +51,23 @@ void ShaderPass::UpdateResolution(int x, int y) {
 	this->plane.setPosition({this->targetResolution.x/2, this->targetResolution.y/2, 0.0f});
 }
 
+void ShaderPass::AddBoolParameter(std::string s, bool startValue, bool show, int midi) {
+    auto ptr = std::make_unique<BoolParameter>(s, startValue, show, midi);
+    this->params.push_back(std::move(ptr));
+}
+
+void ShaderPass::AddIntParameter(std::string s, int startValue, glm::vec2 range, bool show, int midi) {
+    auto ptr = std::make_unique<IntParameter>(s, startValue, range, show, midi);
+    this->params.push_back(std::move(ptr));
+}
+
 void ShaderPass::AddFloatParameter(std::string s, float startValue, glm::vec2 range, bool show, int midi) {
     auto ptr = std::make_unique<FloatParameter>(s, startValue, range, show, midi);
+    this->params.push_back(std::move(ptr));
+}
+
+void ShaderPass::AddVector2Parameter(std::string s, glm::vec2 val, bool show, glm::vec2 range, int midi[]) {
+    auto ptr = std::make_unique<Vector2Parameter>(s, val, show, range, midi);
     this->params.push_back(std::move(ptr));
 }
 
@@ -61,8 +76,13 @@ void ShaderPass::AddVector3Parameter(std::string s, glm::vec3 val, bool show, gl
     this->params.push_back(std::move(ptr));
 }
 
-void ShaderPass::AddTextureParameter(string s, string filePath, int textureIndex, bool show) {
-    auto ptr = std::make_unique<TextureParameter>(s, filePath, textureIndex, show);
+void ShaderPass::AddVector4Parameter(std::string s, glm::vec4 val, bool show, glm::vec2 range, int midi[]) {
+    auto ptr = std::make_unique<Vector4Parameter>(s, val, show, range, midi);
+    this->params.push_back(std::move(ptr));
+}
+
+void ShaderPass::AddTextureParameter(string s, string filePath, int textureIndex, bool show, string texType) {
+    auto ptr = std::make_unique<TextureParameter>(s, filePath, textureIndex, show, texType);
     this->params.push_back(std::move(ptr));
 }
 
@@ -163,10 +183,10 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
 
     for (unsigned int j = 0; j < json["parameters"].size(); j++)
     {
-        int type = json["parameters"][j]["type"].asInt();
+        string type = json["parameters"][j]["type"].asString();
 
         // floats
-        if (type == 0) {
+        if (type == "float") {
             float val = json["parameters"][j]["value"].asFloat();
             std::string name = json["parameters"][j]["name"].asString();
             float x = json["parameters"][j]["range"]["x"].asFloat();
@@ -180,7 +200,7 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
             AddFloatParameter(name, val, glm::vec2(x, y), show, midi);
         }
         // vec3s
-        else if (type == 1) {
+        else if (type == "vec3") {
             float valx = json["parameters"][j]["value"]["x"].asFloat();
             float valy = json["parameters"][j]["value"]["y"].asFloat();
             float valz = json["parameters"][j]["value"]["z"].asFloat();
@@ -200,16 +220,17 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
             AddVector3Parameter(name, glm::vec3(valx, valy, valz), show, glm::vec2(x, y), midi);
         }
         // textures
-        else if (type == 2) {
+        else if (type == "texture") {
             string name = json["parameters"][j]["name"].asString();
             string path = json["parameters"][j]["filePath"].asString();
             bool show = json["parameters"][j]["show"].asBool();
             int index = json["parameters"][j]["textureIndex"].asInt();
+            string texType = json["parameters"][j]["textype"].asString();
 
-            AddTextureParameter(name, path, index, show);
+            AddTextureParameter(name, path, index, show, texType);
         }
         // colors
-        else if (type == 3) {
+        else if (type == "color") {
             float r = json["parameters"][j]["value"]["r"].asFloat();
             float g = json["parameters"][j]["value"]["g"].asFloat();
             float b = json["parameters"][j]["value"]["b"].asFloat();
@@ -220,6 +241,64 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
             int midi[] = {-1, -1, -1, -1};
 
             AddColorParameter(name, r, g, b, a, show, midi);
+        } // vec2s
+        else if (type == "vec2") {
+            float valx = json["parameters"][j]["value"]["x"].asFloat();
+            float valy = json["parameters"][j]["value"]["y"].asFloat();
+
+            std::string name = json["parameters"][j]["name"].asString();
+            float x = json["parameters"][j]["range"]["x"].asFloat();
+            float y = json["parameters"][j]["range"]["y"].asFloat();
+            bool show = json["parameters"][j]["show"].asBool();
+
+            int midi[] = {-1, -1};
+
+            if (json["parameters"][j].isMember("midi")) {
+                midi[0] = json["parameters"][j]["midi"]["x"].asInt();
+                midi[1] = json["parameters"][j]["midi"]["y"].asInt();
+            }
+            AddVector2Parameter(name, glm::vec2(valx, valy), show, glm::vec2(x, y), midi);
+        }
+        else if (type == "vec4") {
+            float valx = json["parameters"][j]["value"]["x"].asFloat();
+            float valy = json["parameters"][j]["value"]["y"].asFloat();
+            float valz = json["parameters"][j]["value"]["z"].asFloat();
+            float valw = json["parameters"][j]["value"]["w"].asFloat();
+
+            std::string name = json["parameters"][j]["name"].asString();
+            float x = json["parameters"][j]["range"]["x"].asFloat();
+            float y = json["parameters"][j]["range"]["y"].asFloat();
+            bool show = json["parameters"][j]["show"].asBool();
+
+            int midi[] = {-1, -1, -1, -1};
+
+            if (json["parameters"][j].isMember("midi")) {
+                midi[0] = json["parameters"][j]["midi"]["x"].asInt();
+                midi[1] = json["parameters"][j]["midi"]["y"].asInt();
+                midi[2] = json["parameters"][j]["midi"]["z"].asInt();
+                midi[2] = json["parameters"][j]["midi"]["w"].asInt();
+            }
+            AddVector4Parameter(name, glm::vec4(valx, valy, valz, valw), show, glm::vec2(x, y), midi);
+        }
+        else if (type == "int") {
+            int val = json["parameters"][j]["value"].asInt();
+
+            std::string name = json["parameters"][j]["name"].asString();
+            float x = json["parameters"][j]["range"]["x"].asFloat();
+            float y = json["parameters"][j]["range"]["y"].asFloat();
+            bool show = json["parameters"][j]["show"].asBool();
+
+            int midi = -1;
+
+            AddIntParameter(name, val, glm::vec2(x, y), show, midi);
+        } else if (type == "bool") {
+            bool val = json["parameters"][j]["value"].asBool();
+            std::string name = json["parameters"][j]["name"].asString();
+            bool show = json["parameters"][j]["show"].asBool();
+
+            int midi = -1;
+
+            AddBoolParameter(name, val, show, midi);
         }
     }
 }

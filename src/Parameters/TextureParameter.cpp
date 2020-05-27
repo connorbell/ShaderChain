@@ -1,7 +1,7 @@
 #include "TextureParameter.h"
 #include "ShaderPass.h"
 
-TextureParameter::TextureParameter(string uniform, string filePath, int textureIndex, bool show) {
+TextureParameter::TextureParameter(string uniform, string filePath, int textureIndex, bool show, string texType) {
     this->textureIndex = textureIndex;
     this->filePath = filePath;
     this->uniform = uniform;
@@ -9,29 +9,27 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
     auto player = ofPtr<ofBaseVideoPlayer>(&gstreamer);
     this->videoFile.setPlayer(player);
     this->show = show;
-    if (filePath.length() > 0) {
-        this->value.load(filePath);
-        this->type = ImageFile;
-    }
-    else {
-        this->type = None;
-    }
+    this->type = getTypeFromString(texType);
 }
 
 void TextureParameter::update(RenderStruct *renderStruct) {
     if (this->type == VideoFile) {
 
         if (renderStruct->isOfflineRendering) {
-            cout << "is frame new " << videoFile.isFrameNew() << endl;
-            cout << "current video frame " << this->videoFile.getCurrentFrame() << endl;
             int targetFrame = renderStruct->frame % this->videoFile.getTotalNumFrames();
-            cout << targetFrame << endl;
             this->videoFile.nextFrame();
             this->videoFile.update();
         } else {
             this->videoFile.update();
         }
     }
+}
+
+void TextureParameter::updateToNewType(TextureSourceType t) {
+    if (this->type == Webcam && t != Webcam) {
+        texInput->selectionView->updateWebcam(false);
+    }
+    this->type = t;
 }
 
 void TextureParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct *renderStruct) {
@@ -48,14 +46,13 @@ void TextureParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct 
             shader->setUniformTexture(this->uniform, this->videoFile.getTexture(), 1);
             shader->setUniform2f(this->uniform+"_res", this->videoFile.getWidth(), this->videoFile.getHeight());
         }
-        if (renderStruct->isOfflineRendering) {
-
-        }
     } else if (this->type == Webcam) {
         renderStruct->vidGrabber->update();
         this->texInput->setGraphics(&renderStruct->vidGrabber->getTexture());
         shader->setUniformTexture(this->uniform, renderStruct->vidGrabber->getTexture(), this->textureIndex);
         shader->setUniform2f(this->uniform+"_res", renderStruct->vidGrabber->getWidth(), renderStruct->vidGrabber->getHeight());
+
+
     } else if (this->type == Buffer) {
 
         int targetBufferIndex = -1;
@@ -81,20 +78,23 @@ void TextureParameter::AddToGui(ofxGuiGroup2 *gui) {
         texInput->selectionView = selectionView;
         ofAddListener(texInput->showEvent, this, &TextureParameter::onShowSelectionView);
     }
+    startDoingThingForType();
 }
 
 void TextureParameter::onShowSelectionView() {
-    cout << "On show selection view" <<endl;
     ofAddListener(selectionView->selectedFilePathChanged, this, &TextureParameter::updateTextureFromFile);
     ofAddListener(selectionView->wantsWebcamChanged, this, &TextureParameter::wantsWebcamChanged);
     ofAddListener(selectionView->selectedBufferChanged, this, &TextureParameter::wantsBufferChanged);
+    listenersAdded = true;
 }
 
 void TextureParameter::onHideSelectionView() {
-    cout << "On hide selection view" <<endl;
-    ofRemoveListener(selectionView->selectedFilePathChanged, this, &TextureParameter::updateTextureFromFile);
-    ofRemoveListener(selectionView->wantsWebcamChanged, this, &TextureParameter::wantsWebcamChanged);
-    ofRemoveListener(selectionView->selectedBufferChanged, this, &TextureParameter::wantsBufferChanged);
+    if (listenersAdded) {
+        ofRemoveListener(selectionView->selectedFilePathChanged, this, &TextureParameter::updateTextureFromFile);
+        ofRemoveListener(selectionView->wantsWebcamChanged, this, &TextureParameter::wantsWebcamChanged);
+        ofRemoveListener(selectionView->selectedBufferChanged, this, &TextureParameter::wantsBufferChanged);
+        listenersAdded = false;
+    }
 }
 
 void TextureParameter::updateTextureFromFile(string &s) {
@@ -102,11 +102,11 @@ void TextureParameter::updateTextureFromFile(string &s) {
     cout << "Loading " << s << endl;
     if (extension == "png" || extension == "jpg" || extension == "jpeg" || extension == "bmp" || extension == "gif") {
         this->value.load(s);
-        this->type = ImageFile;
+        updateToNewType(ImageFile);
     }
 
-    if (extension == "mp4") {
-        this->type = VideoFile;
+    else if (extension == "mp4" || extension == "mov" || extension == "avi" || extension == "mkv") {
+        updateToNewType(VideoFile);
         this->videoFile.load(s);
         this->videoFile.setUseTexture(true);
         this->videoFile.play();
@@ -116,16 +116,26 @@ void TextureParameter::updateTextureFromFile(string &s) {
 }
 
 void TextureParameter::wantsWebcamChanged(bool &val) {
-    this->type = Webcam;
+    updateToNewType(Webcam);
     cout << "lets go webcam" << endl;
     onHideSelectionView();
 }
 
 void TextureParameter::wantsBufferChanged(string &val) {
-    this->type = Buffer;
+    updateToNewType(Buffer);
     bufferName = val;
     cout << uniform << " wants " << bufferName << endl;
     onHideSelectionView();
+}
+
+void TextureParameter::startDoingThingForType() {
+    cout << getTextureType() << endl;
+    if (type == ImageFile || type == VideoFile) {
+        updateTextureFromFile(filePath);
+    }
+    else if (type == Webcam) {
+        texInput->selectionView->updateWebcam(true);
+    }
 }
 
 void TextureParameter::UpdateJson(Json::Value &val) {
@@ -133,7 +143,8 @@ void TextureParameter::UpdateJson(Json::Value &val) {
     val["filePath"] = this->filePath;
     val["textureIndex"] = this->textureIndex;
     val["show"] = this->show;
-    val["type"] = 2;
+    val["type"] = "texture";
+    val["textype"] = getTextureType();
 }
 
 void TextureParameter::startOfflineRender() {
@@ -148,12 +159,57 @@ void TextureParameter::startOfflineRender() {
 
 void TextureParameter::stopOfflineRender() {
     if (type == VideoFile) {
-        cout << "stop offline render" << endl;
         this->videoFile.setPaused(false);
         this->videoFile.play();
 
         //gstreamer.setFrameByFrame(false);
         //this->videoFile.setPaused(false);
         //this->videoFile.play();
+    }
+}
+
+string TextureParameter::getTextureType() {
+    if (type == ImageFile) {
+        return "ImageFile";
+    } else if (type == VideoFile) {
+        return "VideoFile";
+    } else if (type == Webcam) {
+        return "Webcam";
+    } else if (type == Buffer) {
+        return "Buffer";
+    }
+    return "";
+}
+
+TextureSourceType TextureParameter::getTypeFromString(string s) {
+    if (s == "VideoFile") {
+        return VideoFile;
+    } else if (s == "Webcam") {
+        return Webcam;
+    } else if (s == "Buffer") {
+        return Buffer;
+    }
+    return ImageFile;
+}
+
+bool TextureParameter::isMouseHoveredOver() {
+    return texInput->isMouseOver();
+}
+
+void TextureParameter::handleInputFile(string s) {
+    updateTextureFromFile(s);
+}
+
+bool TextureParameter::getTextureSourceType() {
+    return type;
+}
+
+void TextureParameter::playbackDidToggleState(bool isPaused) {
+    if (type == VideoFile) {
+        this->videoFile.setPaused(isPaused);
+
+        if (!isPaused) {
+            this->videoFile.play();
+        }
     }
 }

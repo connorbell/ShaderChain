@@ -10,7 +10,7 @@
 			 "y" : 10
 		  },
 		  "show" : true,
-		  "type" : 0,
+		  "type" : "float",
 		  "value" : 2.5
 	   },
 	   {
@@ -20,7 +20,7 @@
 			 "y" : 0.1000000014901161
 		  },
 		  "show" : false,
-		  "type" : 0,
+		  "type" : "float",
 		  "value" : 0.001000000047497451
 	   },
 	   {
@@ -30,21 +30,18 @@
 			 "y" : 15
 		  },
 		  "show" : true,
-		  "type" : 0,
+		  "type" : "float",
 		  "value" : 2.5
 	   },
 	   {
 		  "name" : "bgColor",
-		  "range" : {
-			 "x" : 0,
-			 "y" : 1
-		  },
 		  "show" : true,
-		  "type" : 1,
+		  "type" : "color",
 		  "value" : {
-			 "x" : 0,
-			 "y" : 0,
-			 "z" : 0
+			 "r" : 0,
+			 "g" : 1,
+			 "b" : 0,
+ 			 "a" : 0
 		  }
 	   },
    	   {
@@ -176,7 +173,7 @@ uniform vec3 offset;
 uniform vec3 spaceSize;
 
 
-uniform vec3 bgColor;
+uniform vec4 bgColor;
 
 in vec2 texCoordVarying;
 out vec4 outputColor;

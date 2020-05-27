@@ -8,6 +8,14 @@
 #include "TextureInputSelectionView.h"
 #include "RenderStruct.h"
 
+typedef enum {
+    ImageFile,
+    VideoFile,
+    Buffer,
+    Webcam,
+    None
+} TextureSourceType;
+
 class ShaderPass;
 
 class Parameter {
@@ -24,4 +32,8 @@ public:
   virtual void update(RenderStruct *renderStruct) {}
   virtual void startOfflineRender() {}
   virtual void stopOfflineRender() {}
+  virtual bool isMouseHoveredOver() { return false; }
+  virtual void handleInputFile(string s) {}
+  virtual bool getTextureSourceType() { return None; }
+  virtual void playbackDidToggleState(bool isPaused) {}
 };

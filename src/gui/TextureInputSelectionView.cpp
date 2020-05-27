@@ -61,10 +61,9 @@ void TextureInputSelectionView::openFromFileButtonPressed() {
 
 void TextureInputSelectionView::openFromWebcamButtonPressed() {
     if (!this->panel->isEnabled()) return;
-    
-    bool val = true;
+
     hide();
-    ofNotifyEvent(wantsWebcamChanged, val);
+    updateWebcam(true);
 }
 
 void TextureInputSelectionView::bufferButtonPressed() {
@@ -78,4 +77,9 @@ void TextureInputSelectionView::bufferButtonPressed() {
         }
     }
     hide();
+}
+
+void TextureInputSelectionView::updateWebcam(bool val) {
+    cout << "Enable webcam" << endl; 
+    ofNotifyEvent(wantsWebcamChanged, val);
 }

@@ -8,7 +8,7 @@
          "y" : 1
       },
       "show" : true,
-      "type" : 0,
+      "type" : "float",
       "value" : 0.6326530575752258
    },
    {
@@ -18,7 +18,7 @@
          "y" : 1
       },
       "show" : true,
-      "type" : 0,
+      "type" : "float",
       "value" : 0.5
    }
 ]

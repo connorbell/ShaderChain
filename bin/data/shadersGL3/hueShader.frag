@@ -1,7 +1,7 @@
 /*
 {
     "wantsLastBuffer" : true,
-    
+
    "parameters" : [
       {
          "name" : "shift",
@@ -10,7 +10,7 @@
             "y" : 6.28318
          },
          "show" : true,
-         "type" : 0,
+         "type" : "float",
          "value" : 1.0
       }
    ]

@@ -10,7 +10,7 @@
 			 "y" : 10
 		  },
 		  "show" : true,
-		  "type" : 0,
+		  "type" : "float",
 		  "value" : 2.5
 	   },
 	   {
@@ -20,7 +20,7 @@
 			 "y" : 0.1000000014901161
 		  },
 		  "show" : false,
-		  "type" : 0,
+		  "type" : "float",
 		  "value" : 0.001000000047497451
 	   },
 	   {
@@ -30,7 +30,7 @@
 			 "y" : 5
 		  },
 		  "show" : false,
-		  "type" : 0,
+		  "type" : "float",
 		  "value" : 2.5
 	   },
 	   {
@@ -40,7 +40,7 @@
 			 "y" : 1
 		  },
 		  "show" : true,
-		  "type" : 1,
+		  "type" : "vec3",
 		  "value" : {
 			 "x" : 0,
 			 "y" : 0,

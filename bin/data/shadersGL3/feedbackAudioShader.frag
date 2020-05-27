@@ -10,7 +10,7 @@
              "y" : 1
           },
           "show" : true,
-          "type" : 0,
+          "type" : "float",
           "value" : 0.75
        },
        {
@@ -20,7 +20,7 @@
              "y" : 2
           },
           "show" : true,
-          "type" : 0,
+          "type" : "float",
           "value" : 1.0
        },
        {
@@ -30,13 +30,13 @@
              "y" : 5
           },
           "show" : true,
-          "type" : 0,
+          "type" : "float",
           "value" : 0.1
        },
        {
 		  "name" : "_NoiseTexture",
 		  "show" : true,
-		  "type" : 2,
+		  "type" : "texture",
 		  "filePath" : "textures/noise_loop.png",
 		  "textureIndex" : 3
 	   }

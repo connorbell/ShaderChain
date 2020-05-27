@@ -77,5 +77,9 @@ private:
     void encodeMp4Pressed();
     void encodeGifPressed();
     ofPlanePrimitive cumulativeRenderPlane;
-    void startWebcamPressed();
+    void startWebcam();
+    void toggleWebcam(bool &val);
+    void stopWebcam();
+    void freeUnusedResources();
+    void pauseResourcesForCurrentPlaybackState();
 };

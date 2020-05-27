@@ -8,7 +8,7 @@
             "y" : 50
          },
          "show" : true,
-         "type" : 0,
+         "type" : "float",
          "value" : 5.0
       },
       {
@@ -18,7 +18,7 @@
             "y" : 150
          },
          "show" : true,
-         "type" : 0,
+         "type" : "float",
          "value" : 5.0
       },
       {
@@ -28,7 +28,7 @@
             "y" : 15
          },
          "show" : true,
-         "type" : 0,
+         "type" : "float",
          "value" : 10
       }
    ]
@@ -85,7 +85,6 @@ float fbm(in vec2 st, in float edges) {
         scale *= 0.5;
         st *= 2.;
     }
-
     return n;
 }
 

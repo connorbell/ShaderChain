@@ -31,6 +31,7 @@ public:
     void hide();
     void deleteParams();
 
+    void updateWebcam(bool val);
     void openFromFileButtonPressed();
     void openFromWebcamButtonPressed();
     void openFromBufferPressed();

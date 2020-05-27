@@ -16,14 +16,14 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->pngRenderer->saveButton.addListener(this, &ShaderChain::BeginSaveFrames);
     this->pngRenderer->encodeMp4Button.addListener(this, &ShaderChain::encodeMp4Pressed);
     this->pngRenderer->encodeGifButton.addListener(this, &ShaderChain::encodeGifPressed);
-    this->textureInputSelectionView.openFromWebcamButton.addListener(this, &ShaderChain::startWebcamPressed);
+    ofAddListener(this->textureInputSelectionView.wantsWebcamChanged, this, &ShaderChain::toggleWebcam);
     this->showGui = true;
     this->isMouseDown = false;
     this->isShowingFileDialogue = false;
     this->frame = 0;
 	this->time = 0.0;
     this->parameterPanel = gui.addPanel();
-    this->cumulativeShader.load("shadersGL3/internal/cumulativeAdd");
+    this->cumulativeShader.load("shadersGL3/internal/vertex.vert","shadersGL3/internal/cumulativeAdd.frag");
     this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
     this->renderStruct.passes = &this->passes;
     this->renderStruct.time = 0.0;
@@ -228,7 +228,7 @@ void ShaderChain::dragEvent(ofDragInfo info) {
 void ShaderChain::KeyPressed(int key) {
     if (key == ' ') {
         this->isRunning = !this->isRunning;
-        fft.setPaused(!this->isRunning);
+        //setPaused(this->isRunning);
     }
     if (key == 'g') {
         this->showGui = !this->showGui;
@@ -330,7 +330,6 @@ void ShaderChain::ReadFromJson(std::string filepath) {
 void ShaderChain::LoadPassFromFile(string filepath) {
     auto relativeFileName = filepath.substr(filepath.find("data") + 5);
     auto relativeFileNameWithoutExtension = relativeFileName.substr(0,relativeFileName.find("frag")-1);
-
     ShaderPass *pass = new ShaderPass(relativeFileNameWithoutExtension, glm::vec2(this->pngRenderer->resolutionX,this->pngRenderer->resolutionY) );
     pass->LoadJsonParametersFromLoadedShader();
     this->passes.push_back(pass);
@@ -347,6 +346,14 @@ void ShaderChain::processFileInput(string filePath) {
         ReadFromJson(filePath);
     } else if (extension == "mp3") {
         fft.loadSoundFile(filePath);
+    } else if (extension == "png" || extension == "jpeg" || extension == "jpg" || extension == "bmp" || extension == "mp4" || extension == "mov" || extension == "mkv") {
+        for (int i = 0; i < this->passes.size(); i++) {
+            for (int j = 0; j < this->passes[i]->params.size(); j++) {
+                if (this->passes[i]->params[j]->isMouseHoveredOver()) {
+                    this->passes[i]->params[j]->handleInputFile(filePath);
+                }
+            }
+        }
     }
 }
 
@@ -390,6 +397,7 @@ void ShaderChain::WriteToJson() {
 void ShaderChain::removed(RemovedElementData& data) {
 	cout << "removed " + ofToString(data.index) + "\n";
     passes.erase(passes.begin() + data.index);
+    freeUnusedResources();
     SetupGui();
 }
 
@@ -469,6 +477,7 @@ void ShaderChain::updateStatusText(string s) {
 }
 
 void ShaderChain::playingChanged(bool &val) {
+    pauseResourcesForCurrentPlaybackState();
     if (val) {
         updateStatusText("Playing");
     } else {
@@ -506,9 +515,54 @@ void ShaderChain::encodeGifPressed() {
     updateStatusText("Gif saved to " + targetFilename);
 }
 
-void ShaderChain::startWebcamPressed() {
+void ShaderChain::toggleWebcam(bool &val) {
+    if (val) {
+        startWebcam();
+    }
+    else {
+        stopWebcam();
+    }
+}
+
+void ShaderChain::startWebcam() {
     vidGrabber.setDeviceID(0);
     vidGrabber.setUseTexture(true);
     vidGrabber.setDesiredFrameRate(30);
     vidGrabber.initGrabber(pngRenderer->resolutionX, pngRenderer->resolutionY);
+    cout << "start webcam" << endl;
+}
+
+void ShaderChain::stopWebcam() {
+    if (vidGrabber.isInitialized()) {
+    //    vidGrabber.close();
+        cout << "stop webcam" << endl;
+    }
+}
+
+void ShaderChain::freeUnusedResources() {
+    bool needsWebam = false;
+
+    for (int i = 0; i < this->passes.size(); i++) {
+        for (int j = 0; j < this->passes[i]->params.size(); j++) {
+            if (passes[i]->params[j]->getTextureSourceType() == Webcam) {
+                needsWebam = true;
+            }
+        }
+    }
+
+    if (!needsWebam) {
+        stopWebcam();
+    }
+}
+
+void ShaderChain::pauseResourcesForCurrentPlaybackState() {
+
+    fft.setPaused(!this->isRunning);
+
+    for (int i = 0; i < this->passes.size(); i++) {
+        for (int j = 0; j < this->passes[i]->params.size(); j++) {
+            passes[i]->params[j]->playbackDidToggleState(!this->isRunning);
+
+        }
+    }
 }

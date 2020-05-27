@@ -27,7 +27,7 @@ void ColorParameter::UpdateJson(Json::Value &val) {
     val["value"]["b"] = this->value->b;
     val["value"]["a"] = this->value->a;
     val["show"] = this->show;
-    val["type"] = 3;
+    val["type"] = "color";
 }
 
 void ColorParameter::UpdateMidi(int index, float val) {
