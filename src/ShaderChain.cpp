@@ -452,7 +452,9 @@ void ShaderChain::saveVideo(string outputFilename) {
     string f = outputFilename;
 
     int totalFrames = pngRenderer->FPS * pngRenderer->animduration;
-    outputFilename = "data/renders/" + outputFilename;
+    string rendersDirectory =  + "/renders/";
+
+    outputFilename = ofFilePath::getAbsolutePath( ofToDataPath("") ) + rendersDirectory + outputFilename;
 
     string mkdirCommand = "mkdir " + outputFilename;
     system(mkdirCommand.c_str());
