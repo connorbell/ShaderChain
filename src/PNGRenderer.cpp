@@ -90,7 +90,9 @@ void PNGRenderer::WritePNG(ofFbo *buffer) {
 
   s += std::to_string(this->currentFrame);
   buffer->readToPixels(outputPixels);
-  string destFilePath = this->presetFilePath + "_" + s + ".png";
+  string destFilePath = this->renderDirectory + this->presetDisplayName.get() + "_" + s + ".png";
+  cout << destFilePath << endl;
+
   ofSaveImage(outputPixels, destFilePath, OF_IMAGE_QUALITY_BEST);
 }
 

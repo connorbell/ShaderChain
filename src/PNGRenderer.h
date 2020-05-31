@@ -7,6 +7,7 @@
 class PNGRenderer {
 
 public:
+    string renderDirectory = "renders/";
     ofParameter<string> statusLabel;
 
     ofParameter<float> resolutionX;
