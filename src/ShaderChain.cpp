@@ -492,10 +492,10 @@ void ShaderChain::saveVideo(string outputFilename) {
 
         string outputLoopedFilename = outputFilename + "_looped.mp4";
 
-        ffmpegCommand = "ffmpeg -f concat -i list.txt -c copy " + outputLoopedFilename;
+        ffmpegCommand = "ffmpeg -f concat -safe 0 -i list.txt -c copy " + outputLoopedFilename;
         system(ffmpegCommand.c_str());
 
-        remove("list.txt");
+        //remove("list.txt");
         outputMp4Filename = outputLoopedFilename;
     }
 
@@ -525,7 +525,7 @@ void ShaderChain::encodeGifPressed() {
 
     string fileWithoutExtension = pngRenderer->presetDisplayName;
     string rendersDirectory = ofFilePath::getAbsolutePath( ofToDataPath("") ) + "/renders/";
-    string targetDirectory = rendersDirectory + fileWithoutExtension + "_gif/";
+    string targetDirectory = rendersDirectory + fileWithoutExtension + "/";
     cout << "target dir \"" << targetDirectory << "\"" << endl;
     system(("mkdir \"" + targetDirectory + "\"").c_str());
     string moveFilesCommand = "mv " + rendersDirectory + fileWithoutExtension + "_*.png " + targetDirectory;
