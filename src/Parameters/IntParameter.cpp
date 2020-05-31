@@ -21,7 +21,7 @@ void IntParameter::AddToGui(ofxGuiGroup2 *gui) {
 void IntParameter::UpdateJson(Json::Value &val) {
     val["value"] = (int)this->value;
     val["show"] = this->show;
-    val["type"] = "float";
+    val["type"] = "int";
     val["range"]["x"] = this->range.x;
     val["range"]["y"] = this->range.y;
 }

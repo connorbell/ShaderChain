@@ -1,0 +1,108 @@
+{
+   "camrot" : {
+      "x" : 8.605408668518066,
+      "y" : 4.724103450775146,
+      "z" : 0.4040251970291138
+   },
+   "data" : [
+      {
+         "parameters" : [
+            {
+               "midi" : 1,
+               "name" : "focalLength",
+               "range" : {
+                  "x" : 0,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 8.5
+            },
+            {
+               "name" : "minDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 0.1
+               },
+               "show" : false,
+               "type" : 0,
+               "value" : 0.001
+            },
+            {
+               "name" : "maxDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 5
+               },
+               "show" : false,
+               "type" : 0,
+               "value" : 2.5
+            },
+            {
+               "name" : "bgColor",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : 1,
+               "value" : {
+                  "x" : 0,
+                  "y" : 0,
+                  "z" : 0
+               }
+            }
+         ],
+         "params" : [
+            {
+               "name" : "focalLength",
+               "value" : 2.5
+            },
+            {
+               "name" : "minDist",
+               "value" : 0.001000000047497451
+            },
+            {
+               "name" : "maxDist",
+               "value" : 2.5
+            },
+            {
+               "name" : "bgColor",
+               "value" : {
+                  "x" : 0,
+                  "y" : 0,
+                  "z" : 0
+               }
+            }
+         ],
+         "shaderName" : "shadersGL3/testshader",
+         "wantsLastBuffer" : false
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "scale",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : 0,
+               "value" : 0.75
+            }
+         ],
+         "params" : [
+            {
+               "name" : "scale",
+               "value" : 0.75
+            }
+         ],
+         "shaderName" : "shadersGL3/feedbackShader",
+         "wantsLastBuffer" : true
+      }
+   ],
+   "res" : {
+      "x" : 500,
+      "y" : 500
+   }
+}

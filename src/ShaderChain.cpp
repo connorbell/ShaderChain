@@ -13,6 +13,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->pngRenderer->AddToGui(this->guiGlobal);
     this->pngRenderer->savePresetButton.addListener(this, &ShaderChain::WriteToJson);
     this->pngRenderer->openFileButton.addListener(this, &ShaderChain::OpenFilePressed);
+    this->pngRenderer->saveAsPresetButton.addListener(this, &ShaderChain::savePresetAsPressed);
     this->pngRenderer->saveButton.addListener(this, &ShaderChain::BeginSaveFrames);
     this->pngRenderer->encodeMp4Button.addListener(this, &ShaderChain::encodeMp4Pressed);
     this->pngRenderer->encodeGifButton.addListener(this, &ShaderChain::encodeGifPressed);
@@ -23,7 +24,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->frame = 0;
 	this->time = 0.0;
     this->parameterPanel = gui.addPanel();
-    this->cumulativeShader.load("shadersGL3/internal/vertex.vert","shadersGL3/internal/cumulativeAdd.frag");
+    this->cumulativeShader.load("shaders/internal/vertex.vert","shaders/internal/cumulativeAdd.frag");
     this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
     this->renderStruct.passes = &this->passes;
     this->renderStruct.time = 0.0;
@@ -40,6 +41,7 @@ void ShaderChain::Setup(glm::vec2 res) {
 
     ofDisableAlphaBlending();
     SetupMidi();
+    openDefaultPreset();
 }
 
 ShaderChain::~ShaderChain() {
@@ -50,6 +52,17 @@ ShaderChain::~ShaderChain() {
   ofRemoveListener(passesGui->passButtons->elementRemoved, this, &ShaderChain::removed);
   ofRemoveListener(passesGui->passButtons->elementMoved, this, &ShaderChain::moved);
   delete this->passesGui;
+}
+
+void ShaderChain::openDefaultPreset() {
+    ofFile file;
+
+    file.open(ofToDataPath(defaultPresetPath), ofFile::ReadWrite, false);
+
+    if (file.exists()) {
+        ReadFromJson(file.path());
+    }
+    file.close();
 }
 
 void ShaderChain::SetupMidi() {
@@ -115,6 +128,8 @@ void ShaderChain::BeginSaveFrames() {
 }
 
 void ShaderChain::update() {
+    this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
+
     renderStruct.isOfflineRendering = pngRenderer->isCapturing;
     for (int i = 0; i < this->passes.size(); i++) {
         this->passes[i]->update(&renderStruct);
@@ -265,8 +280,11 @@ void ShaderChain::SetupGui() {
         textureInputSelectionView.passNames.push_back(passes[i]->displayName);
     }
 
-    this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
+    cout << "width " << ofGetWidth() << endl;
+
+    cout << "Setup parmaters panel" << endl;
     for (int i = 0; i < this->passes.size(); i++) {
+        cout << i << endl;
         this->passes[i]->AddToGui(parameterPanel, &textureInputSelectionView);
     }
 }
@@ -293,7 +311,6 @@ void ShaderChain::UpdateCamera() {
 
 void ShaderChain::ReadFromJson(std::string filepath) {
     bool parsingSuccessful = result.open(filepath);
-    this->pngRenderer->presetNameParam = filepath;
 
     for (int i = 0; i < this->passes.size(); i++) {
         delete this->passes[i];
@@ -301,6 +318,9 @@ void ShaderChain::ReadFromJson(std::string filepath) {
     this->passes.clear();
 
     if (parsingSuccessful) {
+
+        this->pngRenderer->updatePath(filepath);
+
         float rotX = result["camrot"]["x"].asFloat();
         float rotY = result["camrot"]["y"].asFloat();
         float rotZ = result["camrot"]["z"].asFloat();
@@ -373,24 +393,19 @@ void ShaderChain::WriteToJson() {
 
     for (int i = 0; i < this->passes.size(); i++) {
         this->result["data"][i]["shaderName"] = this->passes[i]->filePath;
-        if (this->passes[i]->lastBufferTextureIndex != -1) {
-            this->result["data"][i]["lastBufferTextureIndex"] = this->passes[i]->lastBufferTextureIndex;
-        }
-        if (this->passes[i]->audioTextureIndex != -1) {
-            this->result["data"][i]["audioTextureIndex"] = this->passes[i]->audioTextureIndex;
-        }
         this->result["data"][i]["wantsCamera"] = this->passes[i]->wantsCamera;
 
         for (int j = 0; j < this->passes[i]->params.size(); j++) {
+            cout << j << endl;
             this->result["data"][i]["parameters"][j]["name"] = this->passes[i]->params[j]->uniform;
             this->passes[i]->params[j]->UpdateJson((this->result["data"][i]["parameters"][j]));
         }
     }
 
-    if (!this->result.save((this->pngRenderer->presetNameParam.get()), true)) {
-        ofLogNotice("ShaderChain::WriteToJson") << this->pngRenderer->presetNameParam << " written unsuccessfully.";
+    if (!this->result.save(pngRenderer->presetFilePath, true)) {
+        updateStatusText("Error saving " + this->pngRenderer->presetDisplayName.get());
     } else {
-        ofLogNotice("ShaderChain::WriteToJson") << this->pngRenderer->presetNameParam << " written successfully.";
+        updateStatusText("Saved " + this->pngRenderer->presetDisplayName.get());
     }
 }
 
@@ -417,6 +432,19 @@ void ShaderChain::OpenFilePressed() {
             processFileInput(result.filePath);
         }
         this->isShowingFileDialogue = false;
+    }
+}
+void ShaderChain::savePresetAsPressed() {
+    if (!isShowingFileDialogue) {
+        isShowingFileDialogue = true;
+        ofFileDialogResult result = ofSystemSaveDialog(pngRenderer->presetDisplayName.get() + ".json", "Save preset");
+        if (result.bSuccess) {
+            string path = result.getPath();
+            pngRenderer->updatePath(path);
+            WriteToJson();
+            updateStatusText("Saved preset");
+        }
+        isShowingFileDialogue = false;
     }
 }
 
@@ -486,22 +514,18 @@ void ShaderChain::playingChanged(bool &val) {
 }
 
 void ShaderChain::encodeMp4Pressed() {
-    string s = pngRenderer->presetNameParam.get();
-    string file = s.substr(s.find_last_of("/") + 1);
-    string fileWithoutExtension = file.substr(0, file.find_last_of("."));
-    saveVideo(fileWithoutExtension);
+    saveVideo(pngRenderer->presetDisplayName);
 }
 
 void ShaderChain::encodeGifPressed() {
     int totalFrames = pngRenderer->FPS * pngRenderer->animduration;
     string totalZerosString = to_string((int)floor(log10 (((float)totalFrames)))+1);
 
-    string s = pngRenderer->presetNameParam.get();
-    string file = s.substr(s.find_last_of("/") + 1);
-    string fileWithoutExtension = file.substr(0, file.find_last_of("."));
-    string rendersDirectory = "data/renders/";
+    string fileWithoutExtension = pngRenderer->presetDisplayName;
+    string rendersDirectory = ofFilePath::getAbsolutePath( ofToDataPath("") ) + "/renders/";
     string targetDirectory = rendersDirectory + fileWithoutExtension + "_gif/";
-    system(("mkdir " + targetDirectory).c_str());
+    cout << "target dir \"" << targetDirectory << "\"" << endl;
+    system(("mkdir \"" + targetDirectory + "\"").c_str());
     string moveFilesCommand = "mv " + rendersDirectory + fileWithoutExtension + "_*.png " + targetDirectory;
     system(moveFilesCommand.c_str());
 

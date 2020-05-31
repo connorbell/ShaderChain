@@ -13,10 +13,13 @@ public:
     ofParameter<float> resolutionY;
 
     ofParameterGroup fileGroup;
+    ofParameter<string> presetDisplayName;
+    ofParameter<string> presetDisplayNameLabel;
+
+    ofParameter<void> saveAsPresetButton;
     ofParameter<void> savePresetButton;
     ofParameter<void> openFileButton;
 
-    ofParameter<string> presetNameParam;
     ofParameter<float> displayScaleParam;
     ofParameter<int> frameskip;
     ofParameter<int> numLoops;
@@ -33,7 +36,8 @@ public:
     ofParameter<int> gifNumColors;
 
     PNGRenderer(float animduration, int fps, glm::vec2 resolution);
-    std::string filePath;
+    string presetFilePath;
+
     bool isCapturing = false;
 
     float Tick();
@@ -41,11 +45,12 @@ public:
     void WritePNG(ofFbo *buffer);
     void AddToGui(ofxGuiPanel *panel);
     void UpdateResolution(int w, int h);
+    void updatePath(string s);
     ofParameter<bool> preview;
     ofParameter<void> saveButton;
     int totalFrames;
     int currentFrame;
-    
+
 private:
     int renderedFrames;
     ofxGuiButton *saveFramesButton;

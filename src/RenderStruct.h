@@ -11,4 +11,5 @@ struct RenderStruct {
     ofVideoGrabber *vidGrabber;
     std::vector<ShaderPass*> *passes;
     bool isOfflineRendering = false;
+    ofFbo *lastBuffer; // This is updated throughout the render process for each pass. Probably don't use this.
 };

@@ -1,6 +1,5 @@
 /*
 {
-    "lastBufferTextureIndex": 1,
     "parameters" : [
        {
           "name" : "intensity",
@@ -21,6 +20,13 @@
           "show" : true,
           "type" : "float",
           "value" : 1.0
+       },
+       {
+          "name" : "lastTex",
+          "show" : true,
+          "type" : "texture",
+          "textype" : "Last",
+          "textureIndex" : 1
        }
     ]
 }
@@ -29,7 +35,7 @@
 #version 150
 
 uniform sampler2DRect _MainTexture;
-uniform sampler2DRect _LastTexture;
+uniform sampler2DRect lastTex;
 //uniform sampler2DRect _AudioTexture;
 uniform float intensity;
 uniform float scale;
@@ -53,7 +59,7 @@ void main()
     vec2 uv = (gl_FragCoord.xy/_Resolution);
     uv = (uv - 0.5) * scale + 0.5;
 
-    vec4 lastColor = texture(_LastTexture, uv*_Resolution);
+    vec4 lastColor = texture(lastTex, uv*_Resolution);
     color.rgb += lastColor.rgb * intensity; // * (1. + audio*.4);
     outputColor = clamp(vec4(color), vec4(0.0), vec4(1.0));
 }

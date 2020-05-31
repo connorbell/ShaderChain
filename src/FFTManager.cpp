@@ -1,6 +1,7 @@
 #include "FFTManager.h"
 
 void FFTManager::Start() {
+    fft = nullptr;
     audioTexture.allocate(1024,1,GL_RGB);
 }
 

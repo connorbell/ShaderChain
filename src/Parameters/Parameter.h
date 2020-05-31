@@ -13,6 +13,8 @@ typedef enum {
     VideoFile,
     Buffer,
     Webcam,
+    Last,
+    Audio,
     None
 } TextureSourceType;
 
@@ -23,6 +25,7 @@ public:
   std::string uniform;
   bool show;
   TextureInputSelectionView *selectionView;
+  string parentBufferName;
 
   virtual void UpdateShader(ofxAutoReloadedShader *shader, RenderStruct *renderStruct) {}
   virtual void AddToGui(ofxGuiGroup2 *gui) {}

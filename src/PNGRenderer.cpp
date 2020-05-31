@@ -5,12 +5,12 @@
 PNGRenderer::PNGRenderer(float animduration, int fps, glm::vec2 resolution) {
     this->animduration = animduration;
     this->FPS = fps;
-
+    this->presetFilePath = "";
+    this->presetDisplayName = "";
     this->currentFrame = 0;
     this->totalFrames = animduration * fps;
     this->resolutionX = resolution.x;
     this->resolutionY = resolution.y;
-    this->filePath = "renders/cool";
     this->displayScaleParam = 1.0;
     this->renderedFrames = 1;
     this->frameskip = 1;
@@ -25,16 +25,20 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
     panel->add(statusLabel.set("Playing",""));
 
     panel->addFpsPlotter();
-    panel->add(openFileButton.set("Open File"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
 
-    panel->add(savePresetButton.set("Save Preset"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
-    panel->add<ofxGuiTextField>(presetNameParam.set("Preset name", "name"));
-    panel->add(displayScaleParam.set("Display scale", displayScaleParam, 0.1, 5.0));
+    fileGroup.setName("File");
+
+    ofxGuiMenu* fileMenu = panel->addMenu(fileGroup);
+
+    fileMenu->add(presetDisplayNameLabel.set("Preset: default"));
+    fileMenu->add(openFileButton.set("Open File"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+    fileMenu->add(saveAsPresetButton.set("Save Preset As…"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+    fileMenu->add(savePresetButton.set("Save Preset"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
 
     vidMenuGroup.setName("Mp4");
     vidMenuGroup.add(numLoops.set("Num loops", numLoops, 1, 32));
 
-    renderParameterGroup.setName("Rendering");
+    renderParameterGroup.setName("Render");
 
     gifNumColors = 256;
     gifMenuGroup.setName("Gif");
@@ -49,6 +53,8 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
     renderingMenu->add(frameskip.set("Frameskip", frameskip, 1, 10));
     renderingMenu->add(preview.set("Preview", preview));
     saveFramesButton = renderingMenu->add(saveButton.set("Save Frames"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+
+    panel->add(displayScaleParam.set("Display scale", displayScaleParam, 0.1, 5.0));
 
     ofxGuiMenu* gifGroup = renderingMenu->addMenu(gifMenuGroup);
     ofxGuiMenu* vidGroup = renderingMenu->addMenu(vidMenuGroup);
@@ -84,9 +90,8 @@ void PNGRenderer::WritePNG(ofFbo *buffer) {
 
   s += std::to_string(this->currentFrame);
   buffer->readToPixels(outputPixels);
-  string destFilePath = this->filePath + "_" + s + ".png";
+  string destFilePath = this->presetFilePath + "_" + s + ".png";
   ofSaveImage(outputPixels, destFilePath, OF_IMAGE_QUALITY_BEST);
-  cout << destFilePath << endl;
 }
 
 void PNGRenderer::Start() {
@@ -95,15 +100,19 @@ void PNGRenderer::Start() {
         this->isCapturing = false;
         return;
     }
-    string s = presetNameParam.get();
-    string file = s.substr(s.find_last_of("/") + 1);
-    string fileWithoutExtension = file.substr(0, file.find_last_of("."));
-    this->filePath = "renders/" + fileWithoutExtension;
     this->renderedFrames = 0;
     this->totalFrames = animduration * FPS;
     this->isCapturing = true;
 
     saveFramesButton->setName("Cancel");
+}
+
+void PNGRenderer::updatePath(string s) {
+    string file = s.substr(s.find_last_of("/") + 1);
+    string fileWithoutExtension = file.substr(0, file.find_last_of("."));
+    presetDisplayName.set(fileWithoutExtension);
+    presetDisplayNameLabel.set("Preset: " + presetDisplayName.get());
+    presetFilePath = s;
 }
 
 void PNGRenderer::UpdateResolution(int w, int h) {

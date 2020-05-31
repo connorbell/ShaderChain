@@ -25,7 +25,7 @@
 class ShaderPass {
   public:
     std::string filePath;
-    std::string vertexShaderPath = "shadersGL3/internal/vertex.vert";
+    std::string vertexShaderPath = "shaders/internal/vertex.vert";
     std::string displayName;
     std::vector<std::unique_ptr<Parameter>> params;
     glm::vec2 targetResolution;
@@ -35,10 +35,9 @@ class ShaderPass {
     ofFbo buffer;
     ofFbo lastBuffer;
     ofPlanePrimitive plane;
-    int lastBufferTextureIndex = -1;
     int audioTextureIndex = -1;
-    bool wantsCamera;
-
+    bool wantsCamera = false;
+    bool wantsLastBuffer = false;
     ShaderPass();
     ~ShaderPass();
     ShaderPass(std::string shaderPath, glm::vec2 res);
@@ -52,7 +51,7 @@ class ShaderPass {
     void AddVector2Parameter(std::string s, glm::vec2 val, bool show, glm::vec2 range, int midi[]);
     void AddVector3Parameter(std::string s, glm::vec3 val, bool show, glm::vec2 range, int midi[]);
     void AddVector4Parameter(std::string s, glm::vec4 val, bool show, glm::vec2 range, int midi[]);
-    void AddTextureParameter(string s, string filePath, int textureIndex, bool show,string texType);
+    void AddTextureParameter(string s, string filePath, int textureIndex, bool show, string texType, string targetBufferName);
     void AddColorParameter(string s, float r, float g, float b, float a, bool show, int midi[]);
     void Render(ofFbo *previousBuffer, RenderStruct *renderStruct);
     void SetInputTexture(ofFbo *buffer);

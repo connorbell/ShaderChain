@@ -13,7 +13,9 @@
 
 class ShaderChain: public ofxMidiListener {
 public:
-    std::vector<ShaderPass*> passes;
+
+    string defaultPresetPath = "presets/default.json";
+    vector<ShaderPass*> passes;
     float time;
     ofParameter<bool> isRunning;
     ofxMidiIn midiIn;
@@ -63,11 +65,13 @@ private:
     int frame;
     RenderStruct renderStruct;
 
+    void openDefaultPreset();
     void RenderPasses();
     void removed(RemovedElementData& data);
     void moved(MovingElementData& data);
     void UpdateResolutionIfChanged(bool force);
     void OpenFilePressed();
+    void savePresetAsPressed();
     void LoadPassFromFile(string path);
     void playingChanged(bool &val);
     void updateStatusText(string s);

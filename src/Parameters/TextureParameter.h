@@ -8,13 +8,13 @@
 class TextureParameter : public Parameter {
 
 public:
-    TextureParameter(string uniform, string filePath, int textureIndex, bool show, string texType);
+    TextureParameter(string uniform, string filePath, int textureIndex, bool show, string texType, string targetBufferName);
     ofImage value;
     string filePath;
     TextureSourceType type;
     int textureIndex;
     ofVideoPlayer videoFile;
-    string bufferName;
+    string targetBufferName;
     ofxGuiTextureInput *texInput;
     ofGstVideoPlayer gstreamer;
     void updateTextureFromFile(string &s);
@@ -34,6 +34,7 @@ public:
     virtual void handleInputFile(string s) override;
     virtual bool getTextureSourceType() override;
     virtual void playbackDidToggleState(bool isPaused) override;
+
 private:
     string getTextureType();
     TextureSourceType getTypeFromString(string s);

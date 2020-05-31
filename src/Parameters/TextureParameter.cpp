@@ -1,7 +1,7 @@
 #include "TextureParameter.h"
 #include "ShaderPass.h"
 
-TextureParameter::TextureParameter(string uniform, string filePath, int textureIndex, bool show, string texType) {
+TextureParameter::TextureParameter(string uniform, string filePath, int textureIndex, bool show, string texType, string targetBufferName) {
     this->textureIndex = textureIndex;
     this->filePath = filePath;
     this->uniform = uniform;
@@ -10,17 +10,17 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
     this->videoFile.setPlayer(player);
     this->show = show;
     this->type = getTypeFromString(texType);
+    this->targetBufferName = targetBufferName;
 }
 
 void TextureParameter::update(RenderStruct *renderStruct) {
     if (this->type == VideoFile) {
 
         if (renderStruct->isOfflineRendering) {
-            int targetFrame = renderStruct->frame % this->videoFile.getTotalNumFrames();
             this->videoFile.nextFrame();
             this->videoFile.update();
         } else {
-            this->videoFile.update();
+        //    this->videoFile.update();
         }
     }
 }
@@ -28,6 +28,25 @@ void TextureParameter::update(RenderStruct *renderStruct) {
 void TextureParameter::updateToNewType(TextureSourceType t) {
     if (this->type == Webcam && t != Webcam) {
         texInput->selectionView->updateWebcam(false);
+    }
+    if (this->type == VideoFile) {
+        cout << "unLoading video file" << endl;
+        this->texInput->setGraphics(&this->value.getTexture());
+
+        if (videoFile.isLoaded()) {
+            cout << "video is loaded" << endl;
+
+            videoFile.stop();
+            cout << "stopped" << endl;
+
+            videoFile.close();
+            cout << "closed" << endl;
+
+
+        }
+
+        cout << "unLoaded video file" << endl;
+
     }
     this->type = t;
 }
@@ -51,30 +70,41 @@ void TextureParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct 
         this->texInput->setGraphics(&renderStruct->vidGrabber->getTexture());
         shader->setUniformTexture(this->uniform, renderStruct->vidGrabber->getTexture(), this->textureIndex);
         shader->setUniform2f(this->uniform+"_res", renderStruct->vidGrabber->getWidth(), renderStruct->vidGrabber->getHeight());
-
-
-    } else if (this->type == Buffer) {
+    } else if (this->type == Buffer || this->type == Last) {
 
         int targetBufferIndex = -1;
 
         for (unsigned int i = 0; i < renderStruct->passes->size(); i++) {
-            if (renderStruct->passes->at(i)->displayName == bufferName) {
+            if (renderStruct->passes->at(i)->displayName == targetBufferName) {
                 targetBufferIndex = i;
                 break;
             }
         }
 
         if (targetBufferIndex != -1) {
-            this->texInput->setGraphics(&renderStruct->passes->at(targetBufferIndex)->buffer.getTexture());
-            shader->setUniformTexture(this->uniform, renderStruct->passes->at(targetBufferIndex)->buffer.getTexture(), this->textureIndex);
-            shader->setUniform2f(this->uniform+"_res", renderStruct->passes->at(targetBufferIndex)->buffer.getWidth(), renderStruct->passes->at(targetBufferIndex)->buffer.getHeight());
+
+            if (this->type == Buffer) {
+                this->texInput->setGraphics(&renderStruct->passes->at(targetBufferIndex)->buffer.getTexture());
+                shader->setUniformTexture(this->uniform, renderStruct->passes->at(targetBufferIndex)->buffer.getTexture(), this->textureIndex);
+                shader->setUniform2f(this->uniform+"_res", renderStruct->passes->at(targetBufferIndex)->buffer.getWidth(), renderStruct->passes->at(targetBufferIndex)->buffer.getHeight());
+            }
+            if (this->type == Last) {
+                if (renderStruct->lastBuffer->isAllocated()) {
+                    this->texInput->setGraphics(&renderStruct->lastBuffer->getTexture());
+                    shader->setUniformTexture(this->uniform, renderStruct->lastBuffer->getTexture(), targetBufferIndex);
+                    shader->setUniformTexture(this->uniform, renderStruct->lastBuffer->getTexture(), this->textureIndex);
+                    shader->setUniform2f(this->uniform+"_res", renderStruct->lastBuffer->getWidth(), renderStruct->lastBuffer->getHeight());
+                }
+            }
         }
     }
 }
 
 void TextureParameter::AddToGui(ofxGuiGroup2 *gui) {
     if (this->show) {
+        cout << "adding to gui " << endl;
         texInput = gui->add<ofxGuiTextureInput>(this->uniform, &value.getTexture(), ofJson({{"height", 200}}));
+        cout << "added to gui" << endl;
         texInput->selectionView = selectionView;
         ofAddListener(texInput->showEvent, this, &TextureParameter::onShowSelectionView);
     }
@@ -103,14 +133,16 @@ void TextureParameter::updateTextureFromFile(string &s) {
     if (extension == "png" || extension == "jpg" || extension == "jpeg" || extension == "bmp" || extension == "gif") {
         this->value.load(s);
         updateToNewType(ImageFile);
+        filePath = s;
     }
 
     else if (extension == "mp4" || extension == "mov" || extension == "avi" || extension == "mkv") {
         updateToNewType(VideoFile);
+        cout << "Loading video file" << endl;
         this->videoFile.load(s);
         this->videoFile.setUseTexture(true);
         this->videoFile.play();
-    //    this->texInput->setGraphics(&this->videoFile.getTexture());
+        filePath = s;
     }
     onHideSelectionView();
 }
@@ -122,9 +154,15 @@ void TextureParameter::wantsWebcamChanged(bool &val) {
 }
 
 void TextureParameter::wantsBufferChanged(string &val) {
-    updateToNewType(Buffer);
-    bufferName = val;
-    cout << uniform << " wants " << bufferName << endl;
+
+    if (val == this->parentBufferName) {
+        updateToNewType(Last);
+    } else {
+        updateToNewType(Buffer);
+    }
+
+    targetBufferName = val;
+    cout << uniform << " wants " << targetBufferName << endl;
     onHideSelectionView();
 }
 
@@ -145,6 +183,7 @@ void TextureParameter::UpdateJson(Json::Value &val) {
     val["show"] = this->show;
     val["type"] = "texture";
     val["textype"] = getTextureType();
+    val["targetBufferName"] = targetBufferName;
 }
 
 void TextureParameter::startOfflineRender() {
@@ -177,6 +216,8 @@ string TextureParameter::getTextureType() {
         return "Webcam";
     } else if (type == Buffer) {
         return "Buffer";
+    } else if (type == Last) {
+        return "Last";
     }
     return "";
 }
@@ -188,6 +229,8 @@ TextureSourceType TextureParameter::getTypeFromString(string s) {
         return Webcam;
     } else if (s == "Buffer") {
         return Buffer;
+    } else if (s == "Last") {
+        return Last;
     }
     return ImageFile;
 }
@@ -207,7 +250,7 @@ bool TextureParameter::getTextureSourceType() {
 void TextureParameter::playbackDidToggleState(bool isPaused) {
     if (type == VideoFile) {
         this->videoFile.setPaused(isPaused);
-
+        cout << "Toggle paused " << isPaused << endl;
         if (!isPaused) {
             this->videoFile.play();
         }

@@ -40,11 +40,10 @@ void ShaderPass::LoadDisplayNameFromFileName() {
 }
 
 void ShaderPass::UpdateResolution(int x, int y) {
-    cout << "update resolution" << endl;
     this->targetResolution = glm::vec2(x * scale, y * scale);
     this->buffer.allocate(targetResolution.x, targetResolution.y, GL_RGBA32F);
 
-    if (lastBufferTextureIndex != -1) {
+    if (wantsLastBuffer) {
         this->lastBuffer.allocate(targetResolution.x, targetResolution.y, GL_RGBA32F);
     }
     this->plane.set(this->targetResolution.x, this->targetResolution.y, 2, 2);
@@ -81,8 +80,9 @@ void ShaderPass::AddVector4Parameter(std::string s, glm::vec4 val, bool show, gl
     this->params.push_back(std::move(ptr));
 }
 
-void ShaderPass::AddTextureParameter(string s, string filePath, int textureIndex, bool show, string texType) {
-    auto ptr = std::make_unique<TextureParameter>(s, filePath, textureIndex, show, texType);
+void ShaderPass::AddTextureParameter(string s, string filePath, int textureIndex, bool show, string texType, string targetBufferName) {
+    auto ptr = std::make_unique<TextureParameter>(s, filePath, textureIndex, show, texType, targetBufferName);
+    ptr->parentBufferName = displayName;
     this->params.push_back(std::move(ptr));
 }
 
@@ -114,13 +114,11 @@ void ShaderPass::Render(ofFbo *previousBuffer, RenderStruct *renderStruct) {
         this->shader.setUniform3f("_CamRight", renderStruct->cam->getXAxis());
     }
 
-    if (this->lastBufferTextureIndex != -1 && this->lastBuffer.isAllocated()) {
-        this->shader.setUniformTexture("_LastTexture", this->lastBuffer.getTexture(), this->lastBufferTextureIndex);
-    }
     if (this->audioTextureIndex != -1) {
         this->shader.setUniformTexture("_AudioTexture", renderStruct->fft->audioTexture, this->audioTextureIndex);
     }
 
+    renderStruct->lastBuffer = &this->lastBuffer;
     for (unsigned int i = 0; i < params.size(); i++) {
         this->params[i]->UpdateShader(&(this->shader), renderStruct);
     }
@@ -129,7 +127,7 @@ void ShaderPass::Render(ofFbo *previousBuffer, RenderStruct *renderStruct) {
     this->shader.end();
     this->buffer.end();
 
-    if (this->lastBufferTextureIndex != -1) {
+    if (wantsLastBuffer) {
         this->lastBuffer.begin();
         this->buffer.draw(0,0);
         this->lastBuffer.end();
@@ -173,13 +171,8 @@ void ShaderPass::LoadJsonParametersFromLoadedShader() {
 }
 
 void ShaderPass::LoadParametersFromJson(Json::Value &json) {
-    if (json.isMember("lastBufferTextureIndex")) this->lastBufferTextureIndex = json["lastBufferTextureIndex"].asInt();
     if (json.isMember("audioTextureIndex")) this->audioTextureIndex = json["audioTextureIndex"].asInt();
     this->wantsCamera = json["wantsCamera"].asBool();
-    cout << "last texture index: " << this->lastBufferTextureIndex << endl;
-    if (lastBufferTextureIndex != -1) {
-        this->lastBuffer.allocate(targetResolution.x, targetResolution.y, GL_RGBA32F);
-    }
 
     for (unsigned int j = 0; j < json["parameters"].size(); j++)
     {
@@ -189,6 +182,7 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
         if (type == "float") {
             float val = json["parameters"][j]["value"].asFloat();
             std::string name = json["parameters"][j]["name"].asString();
+            cout << "loading float " << name << " with " << val << endl;
             float x = json["parameters"][j]["range"]["x"].asFloat();
             float y = json["parameters"][j]["range"]["y"].asFloat();
             bool show = json["parameters"][j]["show"].asBool();
@@ -226,8 +220,17 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
             bool show = json["parameters"][j]["show"].asBool();
             int index = json["parameters"][j]["textureIndex"].asInt();
             string texType = json["parameters"][j]["textype"].asString();
+            string targetBufferName = "";
 
-            AddTextureParameter(name, path, index, show, texType);
+            if (texType == "Last") {
+                wantsLastBuffer = true;
+            }
+
+            if (texType == "Buffer") {
+                targetBufferName = json["parameters"][j]["targetBufferName"].asString();
+            }
+
+            AddTextureParameter(name, path, index, show, texType, targetBufferName);
         }
         // colors
         else if (type == "color") {
@@ -301,6 +304,10 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
             AddBoolParameter(name, val, show, midi);
         }
     }
+
+    if (wantsLastBuffer) {
+        this->lastBuffer.allocate(targetResolution.x, targetResolution.y, GL_RGBA32F);
+    }
 }
 
 void ShaderPass::LoadFromJson(Json::Value &json, float width, float height) {
@@ -315,6 +322,7 @@ void ShaderPass::AddToGui(ofxGuiPanel *gui, TextureInputSelectionView *selection
     parameterGroup->setName(displayName);
 
     for (unsigned int i = 0; i < this->params.size(); i++) {
+        cout << "param " << i << endl;
         params[i]->selectionView = selectionView;
         params[i]->AddToGui(parameterGroup);
     }

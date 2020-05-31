@@ -39,12 +39,14 @@ git clone https://github.com/danomatika/ofxMidi
 git clone https://github.com/andreasmuller/ofxAutoReloadedShader
 git clone https://github.com/moebiussurfing/ofxGuiExtended2
 git clone https://github.com/connorbell/ofxSortableList2
-git clone https://github.com/liquidzym/ofxGStreamer.git
+git clone https://github.com/arturoc/ofxGStreamer
 ```
 
 ## Install
 
 Make sure you have all the addons.
+
+If you're on Mac or Windows: Install GStreamer from the instructions on https://github.com/arturoc/ofxGStreamer
 
 Checkout this repo into your OpenFrameworks "apps" folder.
 
