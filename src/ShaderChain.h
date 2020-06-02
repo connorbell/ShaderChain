@@ -86,4 +86,5 @@ private:
     void stopWebcam();
     void freeUnusedResources();
     void pauseResourcesForCurrentPlaybackState();
+    string createUniqueFilePath(string path);
 };

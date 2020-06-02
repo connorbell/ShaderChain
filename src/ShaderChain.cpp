@@ -464,6 +464,7 @@ void ShaderChain::saveVideo(string outputFilename) {
 
     cout << "Creating mp4 " << outputFilename << endl;
     string outputMp4Filename = outputFilename + ".mp4";
+    outputMp4Filename = createUniqueFilePath(outputMp4Filename);
     string fpsString = to_string(pngRenderer->FPS);
     string totalZerosString = to_string((int)floor(log10 (((float)totalFrames)))+1);
 
@@ -474,6 +475,7 @@ void ShaderChain::saveVideo(string outputFilename) {
 
     if (fft.currentState == InputStateSoundFile) {
         string outputMp4AudioFilename = outputFilename + "_audio.mp4";
+        outputMp4AudioFilename = createUniqueFilePath(outputMp4AudioFilename);
         string addSoundCommand = "ffmpeg -i " + outputMp4Filename + " -i \"" + fft.soundFilePath + "\" -vcodec copy -acodec aac -shortest " + outputMp4AudioFilename;
         system(addSoundCommand.c_str());
         outputMp4Filename = outputMp4AudioFilename;
@@ -491,6 +493,7 @@ void ShaderChain::saveVideo(string outputFilename) {
         file.close();
 
         string outputLoopedFilename = outputFilename + "_looped.mp4";
+        outputLoopedFilename = createUniqueFilePath(outputLoopedFilename);
 
         ffmpegCommand = "ffmpeg -f concat -safe 0 -i list.txt -c copy " + outputLoopedFilename;
         system(ffmpegCommand.c_str());
@@ -535,6 +538,7 @@ void ShaderChain::encodeGifPressed() {
     system(ffmpegCommand.c_str());
 
     string targetFilename = targetDirectory + fileWithoutExtension +".gif";
+    targetFilename = createUniqueFilePath(targetFilename);
     ffmpegCommand = "ffmpeg -v warning -thread_queue_size 512 -start_number 0 -i " + targetDirectory + fileWithoutExtension + "_%0" + totalZerosString+"d.png -i "+ targetDirectory + "palette.png -r 30 -lavfi scale=500:-1:flags=\"lanczos [x]; [x][1:v] paletteuse\" -y " + targetFilename;
     system(ffmpegCommand.c_str());
 
@@ -591,4 +595,34 @@ void ShaderChain::pauseResourcesForCurrentPlaybackState() {
 
         }
     }
+}
+
+string ShaderChain::createUniqueFilePath(string path) {
+    bool found = false;
+    auto pathWithoutExtension = path.substr(0, path.find_last_of("."));
+    auto extension = path.substr(path.find_last_of(".") + 1);
+    int tries = 0;
+
+    while (!found) {
+        ofFile file;
+
+        string p = "";
+
+        if (tries == 0) {
+            p = pathWithoutExtension + "." + extension;
+        } else {
+            p = pathWithoutExtension + to_string(tries) + "." + extension;
+        }
+
+        cout << p << endl;
+        file.open(p, ofFile::ReadWrite, false);
+
+        if (!file.exists()) {
+            found = true;
+            path = p;
+        }
+        file.close();
+        tries++;
+    }
+    return path;
 }
