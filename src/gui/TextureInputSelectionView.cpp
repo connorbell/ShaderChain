@@ -1,11 +1,11 @@
 #include "TextureInputSelectionView.h"
 
 TextureInputSelectionView::TextureInputSelectionView() {
-    this->panel = gui.addPanel();
-    this->panel->setPosition(ofPoint(ofGetWidth()/2, ofGetHeight()/2));
+    this->panel = gui.addContainer();
 
     this->openFromFileButton.addListener(this, &TextureInputSelectionView::openFromFileButtonPressed);
     this->openFromWebcamButton.addListener(this, &TextureInputSelectionView::openFromWebcamButtonPressed);
+    this->cancelButton.addListener(this, &TextureInputSelectionView::cancelButtonPressed);
     this->panel->setEnabled(false);
 }
 
@@ -34,6 +34,10 @@ void TextureInputSelectionView::show() {
         ofxGuiButton *btn = this->panel->add(passParameter->set(passNames[i]), ofJson({{"type", "fullsize"}, {"text-align", "center"}}) );
         this->bufferButtons.push_back(btn);
     }
+
+    this->panel->add(cancelButton.set("Cancel"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+
+    this->panel->setPosition(ofPoint(ofGetWidth()/2-this->panel->getWidth()/2, ofGetHeight()/2-this->panel->getHeight()/2));
 
     this->panel->setEnabled(true);
 }
@@ -80,6 +84,10 @@ void TextureInputSelectionView::bufferButtonPressed() {
 }
 
 void TextureInputSelectionView::updateWebcam(bool val) {
-    cout << "Enable webcam" << endl; 
+    cout << "Enable webcam" << endl;
     ofNotifyEvent(wantsWebcamChanged, val);
+}
+
+void TextureInputSelectionView::cancelButtonPressed() {
+    hide();
 }

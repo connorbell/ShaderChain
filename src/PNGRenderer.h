@@ -44,7 +44,7 @@ public:
     float Tick();
     void Start();
     void WritePNG(ofFbo *buffer);
-    void AddToGui(ofxGuiPanel *panel);
+    void AddToGui(ofxGuiContainer *panel);
     void UpdateResolution(int w, int h);
     void updatePath(string s);
     ofParameter<bool> preview;

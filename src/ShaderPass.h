@@ -58,7 +58,7 @@ class ShaderPass {
     void UpdateTime(float time);
     void UpdateResolution(int x, int y);
     void LoadJsonParametersFromLoadedShader();
-    void AddToGui(ofxGuiPanel *gui, TextureInputSelectionView *selectionView);
+    void AddToGui(ofxGuiContainer *gui, TextureInputSelectionView *selectionView);
     void LoadDisplayNameFromFileName();
     void update(RenderStruct *renderStruct);
     void startOfflineRender();

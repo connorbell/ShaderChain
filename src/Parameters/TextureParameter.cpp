@@ -243,7 +243,7 @@ void TextureParameter::handleInputFile(string s) {
     updateTextureFromFile(s);
 }
 
-bool TextureParameter::getTextureSourceType() {
+TextureSourceType TextureParameter::getTextureSourceType() {
     return type;
 }
 

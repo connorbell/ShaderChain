@@ -316,7 +316,7 @@ void ShaderPass::LoadFromJson(Json::Value &json, float width, float height) {
     LoadParametersFromJson(json);
 }
 
-void ShaderPass::AddToGui(ofxGuiPanel *gui, TextureInputSelectionView *selectionView) {
+void ShaderPass::AddToGui(ofxGuiContainer *gui, TextureInputSelectionView *selectionView) {
 
     parameterGroup = gui->addGroup();
     parameterGroup->setName(displayName);

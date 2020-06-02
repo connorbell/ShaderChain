@@ -9,7 +9,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->pngRenderer = new PNGRenderer(3.14159, 30, res);
     this->isRunning.set("isRunning", true);
     this->isRunning.addListener(this, &ShaderChain::playingChanged);
-    this->guiGlobal = gui.addPanel();
+    this->guiGlobal = gui.addContainer();
     this->pngRenderer->AddToGui(this->guiGlobal);
     this->pngRenderer->savePresetButton.addListener(this, &ShaderChain::WriteToJson);
     this->pngRenderer->openFileButton.addListener(this, &ShaderChain::OpenFilePressed);
@@ -23,7 +23,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->isShowingFileDialogue = false;
     this->frame = 0;
 	this->time = 0.0;
-    this->parameterPanel = gui.addPanel();
+    this->parameterPanel = gui.addContainer();
     this->cumulativeShader.load("shaders/internal/vertex.vert","shaders/internal/cumulativeAdd.frag");
     this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
     this->renderStruct.passes = &this->passes;

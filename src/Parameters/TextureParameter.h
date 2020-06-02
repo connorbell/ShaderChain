@@ -32,7 +32,7 @@ public:
     virtual void stopOfflineRender() override;
     virtual bool isMouseHoveredOver() override;
     virtual void handleInputFile(string s) override;
-    virtual bool getTextureSourceType() override;
+    virtual TextureSourceType getTextureSourceType() override;
     virtual void playbackDidToggleState(bool isPaused) override;
 
 private:

@@ -20,7 +20,7 @@ PNGRenderer::PNGRenderer(float animduration, int fps, glm::vec2 resolution) {
     this->preview = false;
 }
 
-void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
+void PNGRenderer::AddToGui(ofxGuiContainer *panel) {
 
     panel->add(statusLabel.set("Playing",""));
 

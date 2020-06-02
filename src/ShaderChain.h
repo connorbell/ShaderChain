@@ -50,9 +50,9 @@ private:
     PNGRenderer *pngRenderer;
     ofxGui gui;
     ofxGuiGroup2 *parametersGuiGroup;
-    ofxGuiPanel *guiGlobal;
+    ofxGuiContainer *guiGlobal;
     PassesGui *passesGui;
-    ofxGuiPanel *parameterPanel;
+    ofxGuiContainer *parameterPanel;
     FFTManager fft;
     TextureInputSelectionView textureInputSelectionView;
     ofVideoGrabber vidGrabber;

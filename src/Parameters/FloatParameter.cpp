@@ -19,7 +19,6 @@ void FloatParameter::AddToGui(ofxGuiGroup2 *gui) {
 }
 
 void FloatParameter::UpdateJson(Json::Value &val) {
-    cout << "update " << this->uniform << " " << this->value << endl;
     val["value"] = (float)this->value;
     val["show"] = this->show;
     val["type"] = "float";

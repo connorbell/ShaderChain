@@ -37,6 +37,6 @@ public:
   virtual void stopOfflineRender() {}
   virtual bool isMouseHoveredOver() { return false; }
   virtual void handleInputFile(string s) {}
-  virtual bool getTextureSourceType() { return None; }
+  virtual TextureSourceType getTextureSourceType() { return None; }
   virtual void playbackDidToggleState(bool isPaused) {}
 };
