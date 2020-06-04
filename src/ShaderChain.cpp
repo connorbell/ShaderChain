@@ -632,21 +632,12 @@ string ShaderChain::createUniqueFilePath(string path) {
 
 bool ShaderChain::mouseScrolled(ofMouseEventArgs & args) {
 	if (parameterPanel->isMouseOver()) {
-        bool isScrollingUp = args.scrollY > 0;
-        bool canScroll = true;
+        auto boundarylow = 10;
+        auto boundaryHigh = ofGetHeight() - 10 - parameterPanel->getHeight();
+        auto val = MIN(MAX(parameterPanel->getY() - args.scrollY, boundarylow), boundaryHigh);
 
-        if (parameterPanel->getY() < 10 && !isScrollingUp) {
-            canScroll = false;
-        }
-
-        if (parameterPanel->getHeight() + parameterPanel->getY() > ofGetHeight() && isScrollingUp) {
-            canScroll = false;
-        }
-
-        if (canScroll) {
-            parameterPanel->setPosition(parameterPanel->getX(), parameterPanel->getY() + args.scrollY);
-            parameterPanel->updateLayout();
-        }
+        parameterPanel->setPosition(parameterPanel->getX(), val);
+        parameterPanel->updateLayout();
 
         return true;
 
