@@ -49,7 +49,6 @@ public:
 private:
     PNGRenderer *pngRenderer;
     ofxGui gui;
-    ofxGuiGroup2 *parametersGuiGroup;
     ofxGuiContainer *guiGlobal;
     PassesGui *passesGui;
     ofxGuiContainer *parameterPanel;
@@ -87,4 +86,5 @@ private:
     void freeUnusedResources();
     void pauseResourcesForCurrentPlaybackState();
     string createUniqueFilePath(string path);
+    bool mouseScrolled(ofMouseEventArgs & args);
 };

@@ -6,6 +6,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->passesGui = new PassesGui();
     ofAddListener(passesGui->passButtons->elementRemoved, this, &ShaderChain::removed);
     ofAddListener(passesGui->passButtons->elementMoved, this, &ShaderChain::moved);
+    ofAddListener(ofEvents().mouseScrolled, this, &ShaderChain::mouseScrolled);
     this->pngRenderer = new PNGRenderer(3.14159, 30, res);
     this->isRunning.set("isRunning", true);
     this->isRunning.addListener(this, &ShaderChain::playingChanged);
@@ -128,7 +129,9 @@ void ShaderChain::BeginSaveFrames() {
 }
 
 void ShaderChain::update() {
-    this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
+    if (frame < 10) {
+        this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
+    }
 
     renderStruct.isOfflineRendering = pngRenderer->isCapturing;
     for (int i = 0; i < this->passes.size(); i++) {
@@ -625,4 +628,29 @@ string ShaderChain::createUniqueFilePath(string path) {
         tries++;
     }
     return path;
+}
+
+bool ShaderChain::mouseScrolled(ofMouseEventArgs & args) {
+	if (parameterPanel->isMouseOver()) {
+        bool isScrollingUp = args.scrollY > 0;
+        bool canScroll = true;
+
+        if (parameterPanel->getY() < 10 && !isScrollingUp) {
+            canScroll = false;
+        }
+
+        if (parameterPanel->getHeight() + parameterPanel->getY() > ofGetHeight() && isScrollingUp) {
+            canScroll = false;
+        }
+
+        if (canScroll) {
+            parameterPanel->setPosition(parameterPanel->getX(), parameterPanel->getY() + args.scrollY);
+            parameterPanel->updateLayout();
+        }
+
+        return true;
+
+    } else {
+		return false;
+	}
 }
