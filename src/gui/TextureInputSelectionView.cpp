@@ -6,6 +6,7 @@ TextureInputSelectionView::TextureInputSelectionView() {
     this->openFromFileButton.addListener(this, &TextureInputSelectionView::openFromFileButtonPressed);
     this->openFromWebcamButton.addListener(this, &TextureInputSelectionView::openFromWebcamButtonPressed);
     this->cancelButton.addListener(this, &TextureInputSelectionView::cancelButtonPressed);
+    this->openFromAudioButton.addListener(this, &TextureInputSelectionView::audioButtonPressed);
     this->panel->setEnabled(false);
 }
 
@@ -26,6 +27,7 @@ void TextureInputSelectionView::show() {
     this->bufferButtons.clear();
     this->panel->add(openFromFileButton.set("Open From File"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
     this->panel->add(openFromWebcamButton.set("Webcam"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+    this->panel->add(openFromAudioButton.set("Audio"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
 
     for (unsigned int i = 0; i < passNames.size(); i++) {
         ofParameter<void> *passParameter = new ofParameter<void>();
@@ -84,10 +86,19 @@ void TextureInputSelectionView::bufferButtonPressed() {
 }
 
 void TextureInputSelectionView::updateWebcam(bool val) {
-    cout << "Enable webcam" << endl;
     ofNotifyEvent(wantsWebcamChanged, val);
 }
 
 void TextureInputSelectionView::cancelButtonPressed() {
     hide();
+}
+
+void TextureInputSelectionView::audioButtonPressed() {
+    if (!this->panel->isEnabled()) return;
+    updateAudio(true);
+    hide();
+}
+
+void TextureInputSelectionView::updateAudio(bool val) {
+    ofNotifyEvent(wantsAudioChanged, val);
 }

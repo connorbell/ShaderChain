@@ -20,7 +20,7 @@ PNGRenderer::PNGRenderer(float animduration, int fps, glm::vec2 resolution) {
     this->preview = false;
 }
 
-void PNGRenderer::AddToGui(ofxGuiContainer *panel) {
+void PNGRenderer::AddToGui(ofxGuiContainer *panel, FFTManager *fft) {
 
     panel->add(statusLabel.set("Playing",""));
 
@@ -29,6 +29,8 @@ void PNGRenderer::AddToGui(ofxGuiContainer *panel) {
     fileGroup.setName("File");
 
     ofxGuiMenu* fileMenu = panel->addMenu(fileGroup);
+
+    fft->addToGui(panel);
 
     fileMenu->add(presetDisplayNameLabel.set("Preset: default"));
     fileMenu->add(openFileButton.set("Open File"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));

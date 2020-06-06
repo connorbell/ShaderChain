@@ -97,6 +97,10 @@ void TextureParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct 
                 }
             }
         }
+    } else if (type == Audio) {
+        this->texInput->setGraphics(&renderStruct->fft->audioTexture);
+        shader->setUniformTexture(this->uniform, renderStruct->fft->audioTexture, this->textureIndex);
+        shader->setUniform2f(this->uniform+"_res", renderStruct->fft->audioTexture.getWidth(), renderStruct->fft->audioTexture.getHeight());
     }
 }
 
@@ -115,6 +119,8 @@ void TextureParameter::onShowSelectionView() {
     ofAddListener(selectionView->selectedFilePathChanged, this, &TextureParameter::updateTextureFromFile);
     ofAddListener(selectionView->wantsWebcamChanged, this, &TextureParameter::wantsWebcamChanged);
     ofAddListener(selectionView->selectedBufferChanged, this, &TextureParameter::wantsBufferChanged);
+    ofAddListener(selectionView->wantsAudioChanged, this, &TextureParameter::wantsAudioChanged);
+
     listenersAdded = true;
 }
 
@@ -123,6 +129,8 @@ void TextureParameter::onHideSelectionView() {
         ofRemoveListener(selectionView->selectedFilePathChanged, this, &TextureParameter::updateTextureFromFile);
         ofRemoveListener(selectionView->wantsWebcamChanged, this, &TextureParameter::wantsWebcamChanged);
         ofRemoveListener(selectionView->selectedBufferChanged, this, &TextureParameter::wantsBufferChanged);
+        ofRemoveListener(selectionView->wantsAudioChanged, this, &TextureParameter::wantsAudioChanged);
+
         listenersAdded = false;
     }
 }
@@ -148,8 +156,9 @@ void TextureParameter::updateTextureFromFile(string &s) {
 }
 
 void TextureParameter::wantsWebcamChanged(bool &val) {
-    updateToNewType(Webcam);
-    cout << "lets go webcam" << endl;
+    if (val) {
+        updateToNewType(Webcam);
+    }
     onHideSelectionView();
 }
 
@@ -167,7 +176,6 @@ void TextureParameter::wantsBufferChanged(string &val) {
 }
 
 void TextureParameter::startDoingThingForType() {
-    cout << getTextureType() << endl;
     if (type == ImageFile || type == VideoFile) {
         updateTextureFromFile(filePath);
     }
@@ -218,6 +226,8 @@ string TextureParameter::getTextureType() {
         return "Buffer";
     } else if (type == Last) {
         return "Last";
+    } else if (type == Audio) {
+        return "Audio";
     }
     return "";
 }
@@ -231,6 +241,8 @@ TextureSourceType TextureParameter::getTypeFromString(string s) {
         return Buffer;
     } else if (s == "Last") {
         return Last;
+    } else if (s == "Audio") {
+        return Audio;
     }
     return ImageFile;
 }
@@ -255,4 +267,9 @@ void TextureParameter::playbackDidToggleState(bool isPaused) {
             this->videoFile.play();
         }
     }
+}
+
+void TextureParameter::wantsAudioChanged(bool &val) {
+    type = Audio;
+    cout << "wants audio changed" << endl;
 }

@@ -35,7 +35,6 @@ class ShaderPass {
     ofFbo buffer;
     ofFbo lastBuffer;
     ofPlanePrimitive plane;
-    int audioTextureIndex = -1;
     bool wantsCamera = false;
     bool wantsLastBuffer = false;
     ShaderPass();

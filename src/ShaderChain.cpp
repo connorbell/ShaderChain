@@ -11,7 +11,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->isRunning.set("isRunning", true);
     this->isRunning.addListener(this, &ShaderChain::playingChanged);
     this->guiGlobal = gui.addContainer();
-    this->pngRenderer->AddToGui(this->guiGlobal);
+    this->pngRenderer->AddToGui(this->guiGlobal, &this->fft);
     this->pngRenderer->savePresetButton.addListener(this, &ShaderChain::WriteToJson);
     this->pngRenderer->openFileButton.addListener(this, &ShaderChain::OpenFilePressed);
     this->pngRenderer->saveAsPresetButton.addListener(this, &ShaderChain::savePresetAsPressed);
@@ -39,7 +39,6 @@ void ShaderChain::Setup(glm::vec2 res) {
     cumulativeBufferSwap.allocate(this->pngRenderer->resolutionX, this->pngRenderer->resolutionY, GL_RGBA32F);
     cumulativeBufferSwap.clearColorBuffer(black);
     cumulativeBuffer.clearColorBuffer(black);
-
     ofDisableAlphaBlending();
     SetupMidi();
     openDefaultPreset();
@@ -283,9 +282,6 @@ void ShaderChain::SetupGui() {
         textureInputSelectionView.passNames.push_back(passes[i]->displayName);
     }
 
-    cout << "width " << ofGetWidth() << endl;
-
-    cout << "Setup parmaters panel" << endl;
     for (int i = 0; i < this->passes.size(); i++) {
         cout << i << endl;
         this->passes[i]->AddToGui(parameterPanel, &textureInputSelectionView);
@@ -562,13 +558,11 @@ void ShaderChain::startWebcam() {
     vidGrabber.setUseTexture(true);
     vidGrabber.setDesiredFrameRate(30);
     vidGrabber.initGrabber(pngRenderer->resolutionX, pngRenderer->resolutionY);
-    cout << "start webcam" << endl;
 }
 
 void ShaderChain::stopWebcam() {
     if (vidGrabber.isInitialized()) {
     //    vidGrabber.close();
-        cout << "stop webcam" << endl;
     }
 }
 

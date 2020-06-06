@@ -39,5 +39,6 @@ private:
     string getTextureType();
     TextureSourceType getTypeFromString(string s);
     void startDoingThingForType();
+    void wantsAudioChanged(bool &val);
     bool listenersAdded = false;
 };

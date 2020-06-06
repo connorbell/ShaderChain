@@ -10,6 +10,7 @@ public:
     ofxGuiContainer *panel;
 
     ofParameter<void> openFromFileButton;
+    ofParameter<void> openFromAudioButton;
     ofParameter<void> openFromWebcamButton;
     ofParameter<void> cancelButton;
 
@@ -19,6 +20,7 @@ public:
 
     ofEvent<string> selectedFilePathChanged;
     ofEvent<bool> wantsWebcamChanged;
+    ofEvent<bool> wantsAudioChanged;
     ofEvent<string> selectedBufferChanged;
 
     ofEvent<void> hideEvent;
@@ -38,4 +40,6 @@ public:
     void openFromBufferPressed();
     void bufferButtonPressed();
     void cancelButtonPressed();
+    void audioButtonPressed();
+    void updateAudio(bool val);
 };

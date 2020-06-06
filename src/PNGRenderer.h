@@ -3,6 +3,7 @@
 #include <string>
 #include "ofMain.h"
 #include "ofxGuiExtended2.h"
+#include "FFTManager.h"
 
 class PNGRenderer {
 
@@ -44,7 +45,7 @@ public:
     float Tick();
     void Start();
     void WritePNG(ofFbo *buffer);
-    void AddToGui(ofxGuiContainer *panel);
+    void AddToGui(ofxGuiContainer *panel, FFTManager *fft);
     void UpdateResolution(int w, int h);
     void updatePath(string s);
     ofParameter<bool> preview;

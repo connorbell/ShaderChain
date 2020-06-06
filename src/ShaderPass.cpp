@@ -114,10 +114,6 @@ void ShaderPass::Render(ofFbo *previousBuffer, RenderStruct *renderStruct) {
         this->shader.setUniform3f("_CamRight", renderStruct->cam->getXAxis());
     }
 
-    if (this->audioTextureIndex != -1) {
-        this->shader.setUniformTexture("_AudioTexture", renderStruct->fft->audioTexture, this->audioTextureIndex);
-    }
-
     renderStruct->lastBuffer = &this->lastBuffer;
     for (unsigned int i = 0; i < params.size(); i++) {
         this->params[i]->UpdateShader(&(this->shader), renderStruct);
@@ -171,7 +167,6 @@ void ShaderPass::LoadJsonParametersFromLoadedShader() {
 }
 
 void ShaderPass::LoadParametersFromJson(Json::Value &json) {
-    if (json.isMember("audioTextureIndex")) this->audioTextureIndex = json["audioTextureIndex"].asInt();
     this->wantsCamera = json["wantsCamera"].asBool();
 
     for (unsigned int j = 0; j < json["parameters"].size(); j++)
