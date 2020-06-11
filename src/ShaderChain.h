@@ -20,7 +20,6 @@ public:
     ofParameter<bool> isRunning;
     ofxMidiIn midiIn;
     ofxJSONElement result;
-    ofNode camera;
     bool isMouseDown;
     ofFbo cumulativeBuffer;
     ofFbo cumulativeBufferSwap;
@@ -36,14 +35,11 @@ public:
     void draw();
     void AddPass(ShaderPass *pass);
 
-    void UpdateCamera();
     void KeyPressed(int key);
     void newMidiMessage(ofxMidiMessage& eventArgs);
     void WriteToJson();
     void ReadFromJson(std::string path);
     void SetupMidi();
-    void AudioTextureUpdate(ofTexture *audioTexture);
-    void UpdateFft();
     void dragEvent(ofDragInfo info);
 
 private:

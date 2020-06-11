@@ -30,7 +30,6 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->renderStruct.passes = &this->passes;
     this->renderStruct.time = 0.0;
     this->renderStruct.fft = &this->fft;
-    this->renderStruct.cam = &this->camera;
     this->renderStruct.vidGrabber = &this->vidGrabber;
 
     ofFloatColor black;
@@ -146,7 +145,6 @@ void ShaderChain::draw() {
     ofClear(25);
     if (this->passes.size() > 0) {
         UpdateResolutionIfChanged(false);
-        UpdateCamera();
         fft.Update();
 
         ofFloatColor black;
@@ -245,7 +243,6 @@ void ShaderChain::dragEvent(ofDragInfo info) {
 void ShaderChain::KeyPressed(int key) {
     if (key == ' ') {
         this->isRunning = !this->isRunning;
-        //setPaused(this->isRunning);
     }
     if (key == 'g') {
         this->showGui = !this->showGui;
@@ -255,18 +252,6 @@ void ShaderChain::KeyPressed(int key) {
     }
     if (key == 'f') {
         ofToggleFullscreen();
-    }
-    if (key == 'w') {
-        camera.move(-camera.getLookAtDir() * ofGetLastFrameTime());
-    }
-    if (key == 's') {
-        camera.move(camera.getLookAtDir() * ofGetLastFrameTime());
-    }
-    if (key == 'd') {
-        camera.move(camera.getXAxis() * ofGetLastFrameTime());
-    }
-    if (key == 'a') {
-        camera.move(-camera.getXAxis() * ofGetLastFrameTime());
     }
     if (key == 'r') {
         this->time = 0.0;
@@ -283,7 +268,6 @@ void ShaderChain::SetupGui() {
     }
 
     for (int i = 0; i < this->passes.size(); i++) {
-        cout << i << endl;
         this->passes[i]->AddToGui(parameterPanel, &textureInputSelectionView);
     }
 }
@@ -295,16 +279,6 @@ void ShaderChain::newMidiMessage(ofxMidiMessage& msg) {
                 this->passes[0]->params[j]->UpdateMidi(msg.control, msg.value);
             }
         }
-    }
-}
-
-void ShaderChain::UpdateCamera() {
-    if (isMouseDown && !pngRenderer->isCapturing) {
-        float xDelta = ofGetMouseX() - ofGetPreviousMouseX();
-        float yDelta = ofGetMouseY() - ofGetPreviousMouseY();
-
-        camera.panDeg(xDelta * ofGetLastFrameTime() * mouseMoveSpeed);
-        camera.tiltDeg(yDelta * ofGetLastFrameTime() * mouseMoveSpeed);
     }
 }
 
@@ -320,24 +294,30 @@ void ShaderChain::ReadFromJson(std::string filepath) {
 
         this->pngRenderer->updatePath(filepath);
 
-        float rotX = result["camrot"]["x"].asFloat();
-        float rotY = result["camrot"]["y"].asFloat();
-        float rotZ = result["camrot"]["z"].asFloat();
-        this->camera.setOrientation(glm::vec3(rotX, rotY, rotZ));
-
-        float camX = result["campos"]["x"].asFloat();
-        float camY = result["campos"]["y"].asFloat();
-        float camZ = result["campos"]["z"].asFloat();
-        this->camera.setPosition(camX, camY, camZ);
-
         this->pngRenderer->resolutionX = result["res"]["x"].asFloat();
         this->pngRenderer->resolutionY = result["res"]["y"].asFloat();
+
+        if (result.isMember("duration")) {
+            this->pngRenderer->animduration.set(this->result["duration"].asFloat());
+        }
+        if (result.isMember("fps")) {
+            this->pngRenderer->FPS.set(this->result["fps"].asFloat());
+        }
+
+        if (result.isMember("blend")) {
+            this->pngRenderer->numBlendFrames.set(this->result["blend"].asInt());
+        }
+
+        if (result.isMember("scale")) {
+            this->pngRenderer->displayScaleParam.set(this->result["scale"].asFloat());
+        }
 
         for (int i = 0; i < result["data"].size(); i++) {
             ShaderPass *pass = new ShaderPass();
             pass->LoadFromJson(result["data"][i], this->pngRenderer->resolutionX, this->pngRenderer->resolutionY);
             this->passes.push_back(pass);
         }
+
         this->passesGui->Setup(&this->passes);
         SetupGui();
 		UpdateResolutionIfChanged(true);
@@ -346,6 +326,7 @@ void ShaderChain::ReadFromJson(std::string filepath) {
         ofLogError("ofApp::setup")  << "Failed to parse JSON" << endl;
     }
 }
+
 void ShaderChain::LoadPassFromFile(string filepath) {
     auto relativeFileName = filepath.substr(filepath.find("data") + 5);
     auto relativeFileNameWithoutExtension = relativeFileName.substr(0,relativeFileName.find("frag")-1);
@@ -381,21 +362,15 @@ void ShaderChain::WriteToJson() {
     this->result["res"]["x"] = (float)this->pngRenderer->resolutionX;
     this->result["res"]["y"] = (float)this->pngRenderer->resolutionY;
 
-    this->result["campos"]["x"] = camera.getX();
-    this->result["campos"]["y"] = camera.getY();
-    this->result["campos"]["z"] = camera.getZ();
-
-    glm::vec3 rot = camera.getOrientationEulerDeg();
-    this->result["camrot"]["x"] = rot.x;
-    this->result["camrot"]["y"] = rot.y;
-    this->result["camrot"]["z"] = rot.z;
+    this->result["duration"] = (float)this->pngRenderer->animduration;
+    this->result["fps"] = (float)this->pngRenderer->FPS;
+    this->result["blend"] = (float)this->pngRenderer->numBlendFrames;
+    this->result["scale"] = (float)this->pngRenderer->displayScaleParam;
 
     for (int i = 0; i < this->passes.size(); i++) {
         this->result["data"][i]["shaderName"] = this->passes[i]->filePath;
-        this->result["data"][i]["wantsCamera"] = this->passes[i]->wantsCamera;
 
         for (int j = 0; j < this->passes[i]->params.size(); j++) {
-            cout << j << endl;
             this->result["data"][i]["parameters"][j]["name"] = this->passes[i]->params[j]->uniform;
             this->passes[i]->params[j]->UpdateJson((this->result["data"][i]["parameters"][j]));
         }
@@ -409,7 +384,6 @@ void ShaderChain::WriteToJson() {
 }
 
 void ShaderChain::removed(RemovedElementData& data) {
-	cout << "removed " + ofToString(data.index) + "\n";
     passes.erase(passes.begin() + data.index);
     freeUnusedResources();
     SetupGui();
@@ -417,7 +391,6 @@ void ShaderChain::removed(RemovedElementData& data) {
 
 void ShaderChain::moved(MovingElementData &data) {
     iter_swap(passes.begin() + data.old_index, passes.begin() + data.new_index);
-	cout << "moved " + data.name + " from index " + ofToString(data.old_index) + " to index " + ofToString(data.new_index) + "\n";
     SetupGui();
 }
 
@@ -528,7 +501,6 @@ void ShaderChain::encodeGifPressed() {
     string fileWithoutExtension = pngRenderer->presetDisplayName;
     string rendersDirectory = ofFilePath::getAbsolutePath( ofToDataPath("") ) + "/renders/";
     string targetDirectory = rendersDirectory + fileWithoutExtension + "/";
-    cout << "target dir \"" << targetDirectory << "\"" << endl;
     system(("mkdir \"" + targetDirectory + "\"").c_str());
     string moveFilesCommand = "mv " + rendersDirectory + fileWithoutExtension + "_*.png " + targetDirectory;
     system(moveFilesCommand.c_str());
@@ -611,7 +583,6 @@ string ShaderChain::createUniqueFilePath(string path) {
             p = pathWithoutExtension + to_string(tries) + "." + extension;
         }
 
-        cout << p << endl;
         file.open(p, ofFile::ReadWrite, false);
 
         if (!file.exists()) {

@@ -17,6 +17,7 @@
 #include "Parameters/ColorParameter.h"
 #include "Parameters/BoolParameter.h"
 #include "Parameters/IntParameter.h"
+#include "Parameters/CameraParameter.h"
 
 #include "ofxAutoReloadedShader.h"
 #include "FFTManager.h"
@@ -35,7 +36,6 @@ class ShaderPass {
     ofFbo buffer;
     ofFbo lastBuffer;
     ofPlanePrimitive plane;
-    bool wantsCamera = false;
     bool wantsLastBuffer = false;
     ShaderPass();
     ~ShaderPass();
@@ -52,6 +52,7 @@ class ShaderPass {
     void AddVector4Parameter(std::string s, glm::vec4 val, bool show, glm::vec2 range, int midi[]);
     void AddTextureParameter(string s, string filePath, int textureIndex, bool show, string texType, string targetBufferName);
     void AddColorParameter(string s, float r, float g, float b, float a, bool show, int midi[]);
+    void addCameraParameter(glm::vec3 pos, glm::vec3 rot);
     void Render(ofFbo *previousBuffer, RenderStruct *renderStruct);
     void SetInputTexture(ofFbo *buffer);
     void UpdateTime(float time);

@@ -18,7 +18,6 @@ void ShaderPass::Load(std::string shaderPath, glm::vec2 res) {
     this->targetResolution = glm::vec2(res.x * scale, res.y * scale);
     this->parameterGroup = nullptr;
     this->LoadDisplayNameFromFileName();
-    cout << filePath << " Target Resolution: " << std::to_string(this->targetResolution.x) << " " << std::to_string(this->targetResolution.y) << endl;
     UpdateResolution(this->targetResolution.x, this->targetResolution.y);
 }
 
@@ -52,6 +51,11 @@ void ShaderPass::UpdateResolution(int x, int y) {
 
 void ShaderPass::AddBoolParameter(std::string s, bool startValue, bool show, int midi) {
     auto ptr = std::make_unique<BoolParameter>(s, startValue, show, midi);
+    this->params.push_back(std::move(ptr));
+}
+
+void ShaderPass::addCameraParameter(glm::vec3 pos, glm::vec3 rot) {
+    auto ptr = std::make_unique<CameraParameter>(pos, rot);
     this->params.push_back(std::move(ptr));
 }
 
@@ -107,12 +111,6 @@ void ShaderPass::Render(ofFbo *previousBuffer, RenderStruct *renderStruct) {
         SetInputTexture(previousBuffer);
     }
     this->shader.setUniform2f("_Resolution", this->targetResolution.x, this->targetResolution.y);
-    if (wantsCamera) {
-        this->shader.setUniform3f("_CamPos", renderStruct->cam->getPosition());
-        this->shader.setUniform3f("_CamForward", renderStruct->cam->getZAxis());
-        this->shader.setUniform3f("_CamUp", renderStruct->cam->getYAxis());
-        this->shader.setUniform3f("_CamRight", renderStruct->cam->getXAxis());
-    }
 
     renderStruct->lastBuffer = &this->lastBuffer;
     for (unsigned int i = 0; i < params.size(); i++) {
@@ -167,7 +165,6 @@ void ShaderPass::LoadJsonParametersFromLoadedShader() {
 }
 
 void ShaderPass::LoadParametersFromJson(Json::Value &json) {
-    this->wantsCamera = json["wantsCamera"].asBool();
 
     for (unsigned int j = 0; j < json["parameters"].size(); j++)
     {
@@ -177,7 +174,6 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
         if (type == "float") {
             float val = json["parameters"][j]["value"].asFloat();
             std::string name = json["parameters"][j]["name"].asString();
-            cout << "loading float " << name << " with " << val << endl;
             float x = json["parameters"][j]["range"]["x"].asFloat();
             float y = json["parameters"][j]["range"]["y"].asFloat();
             bool show = json["parameters"][j]["show"].asBool();
@@ -297,6 +293,20 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
             int midi = -1;
 
             AddBoolParameter(name, val, show, midi);
+        } else if (type == "camera") {
+            float xPos = json["parameters"][j]["pos"]["x"].asFloat();
+            float yPos = json["parameters"][j]["pos"]["y"].asFloat();
+            float zPos = json["parameters"][j]["pos"]["z"].asFloat();
+
+            glm::vec3 pos = glm::vec3(xPos, yPos, zPos);
+
+            float xRot = json["parameters"][j]["rot"]["x"].asFloat();
+            float yRot = json["parameters"][j]["rot"]["y"].asFloat();
+            float zRot = json["parameters"][j]["rot"]["z"].asFloat();
+
+            glm::vec3 rot = glm::vec3(xPos, yPos, zPos);
+            
+            addCameraParameter(pos, rot);
         }
     }
 
@@ -317,7 +327,6 @@ void ShaderPass::AddToGui(ofxGuiContainer *gui, TextureInputSelectionView *selec
     parameterGroup->setName(displayName);
 
     for (unsigned int i = 0; i < this->params.size(); i++) {
-        cout << "param " << i << endl;
         params[i]->selectionView = selectionView;
         params[i]->AddToGui(parameterGroup);
     }

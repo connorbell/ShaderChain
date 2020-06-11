@@ -1,14 +1,5 @@
 {
-   "campos" : {
-      "x" : 0,
-      "y" : 0,
-      "z" : 0
-   },
-   "camrot" : {
-      "x" : 45.24757766723633,
-      "y" : -41.65290832519531,
-      "z" : 55.03693771362305
-   },
+   "blend" : 1,
    "data" : [
       {
          "shaderName" : "shaders/shaderchain_logo",
@@ -60,9 +51,10 @@
          "wantsCamera" : false
       }
    ],
+   "duration" : 6.283180236816406,
+   "fps" : 30,
    "res" : {
       "x" : 500,
       "y" : 500
    }
 }
-
