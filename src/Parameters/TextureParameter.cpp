@@ -20,7 +20,7 @@ void TextureParameter::update(RenderStruct *renderStruct) {
             this->videoFile.nextFrame();
             this->videoFile.update();
         } else {
-        //    this->videoFile.update();
+            this->videoFile.update();
         }
     }
 }
