@@ -18,7 +18,7 @@ This tool is a development interface for chaining glsl fragment shaders.
 
 ✔️  Texture input
 
-🔜 Audio input
+✔️  Audio input
 
 🔜 Lotsss
 
@@ -26,9 +26,9 @@ Disclaimer: Very early stages. Great tools I've used like this in the past inclu
 
 ## Controls
 
-F - Fullscreen
-
-space - Pause / play
+F - Fullscreen  
+G - Hide / Show GUI  
+Space - Pause / play  
 
 ## Dependencies
 
@@ -49,5 +49,7 @@ Make sure you have all the addons.
 If you're on Mac or Windows: Install GStreamer from the instructions on https://github.com/arturoc/ofxGStreamer
 
 Checkout this repo into your OpenFrameworks "apps" folder.
+
+If you are on Linux, remove ofxGStreamer from addons.make (better solution coming soon).
 
 Run "make" then "make run"
