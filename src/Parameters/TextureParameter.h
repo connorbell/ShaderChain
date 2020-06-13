@@ -9,6 +9,7 @@ class TextureParameter : public Parameter {
 
 public:
     TextureParameter(string uniform, string filePath, int textureIndex, bool show, string texType, string targetBufferName);
+    ~TextureParameter();
     ofImage value;
     string filePath;
     TextureSourceType type;
@@ -41,4 +42,5 @@ private:
     void startDoingThingForType();
     void wantsAudioChanged(bool &val);
     bool listenersAdded = false;
+    void closeVideoFile();
 };

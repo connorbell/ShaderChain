@@ -107,6 +107,7 @@ void ShaderChain::UpdateResolutionIfChanged(bool force) {
 }
 
 void ShaderChain::BeginSaveFrames() {
+    this->isRunning = true;
 
     for (int i = 0; i < this->passes.size(); i++) {
         passes[i]->startOfflineRender();
@@ -122,7 +123,6 @@ void ShaderChain::BeginSaveFrames() {
         }
         delete black;
     }
-    this->isRunning = true;
     pngRenderer->Start();
 }
 
@@ -558,10 +558,11 @@ void ShaderChain::pauseResourcesForCurrentPlaybackState() {
 
     fft.setPaused(!this->isRunning);
 
-    for (int i = 0; i < this->passes.size(); i++) {
-        for (int j = 0; j < this->passes[i]->params.size(); j++) {
-            passes[i]->params[j]->playbackDidToggleState(!this->isRunning);
-
+    if (!pngRenderer->isCapturing) {
+        for (int i = 0; i < this->passes.size(); i++) {
+            for (int j = 0; j < this->passes[i]->params.size(); j++) {
+                passes[i]->params[j]->playbackDidToggleState(!this->isRunning);
+            }
         }
     }
 }
