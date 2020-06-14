@@ -10,6 +10,7 @@ Vector4Parameter::Vector4Parameter(std::string uniform, ofVec3f defaultVal, bool
   this->midi[1] = midi[1];
   this->midi[2] = midi[2];
   this->midi[3] = midi[3];
+  this->type = "vec4";
 }
 
 void Vector4Parameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct *renderStruct) {
@@ -44,4 +45,8 @@ void Vector4Parameter::UpdateMidi(int index, float val) {
         float adjustedValue = ofLerp(this->range.x, this->range.y, val/127.0);
         this->value = glm::vec3(this->value->x, this->value->y, adjustedValue);
     }
+}
+
+void Vector4Parameter::bindMidi(int midiIndex, int subParamIndex) {
+    this->midi[subParamIndex] = midiIndex;
 }

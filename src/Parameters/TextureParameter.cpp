@@ -9,6 +9,7 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
     this->videoFile.setPlayer(player);
     this->show = show;
     this->type = getTypeFromString(texType);
+    cout << "tex type " << texType << endl;
     this->targetBufferName = targetBufferName;
 }
 

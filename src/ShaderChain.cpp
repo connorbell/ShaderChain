@@ -12,6 +12,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->isRunning.addListener(this, &ShaderChain::playingChanged);
     this->guiGlobal = gui.addContainer();
     this->pngRenderer->AddToGui(this->guiGlobal, &this->fft);
+    this->pngRenderer->mapMidiButton.addListener(this, &ShaderChain::midiButtonPressed);
     this->pngRenderer->savePresetButton.addListener(this, &ShaderChain::WriteToJson);
     this->pngRenderer->openFileButton.addListener(this, &ShaderChain::OpenFilePressed);
     this->pngRenderer->saveAsPresetButton.addListener(this, &ShaderChain::savePresetAsPressed);
@@ -67,7 +68,7 @@ void ShaderChain::openDefaultPreset() {
 void ShaderChain::SetupMidi() {
     midiIn.listInPorts();
     // open port by number (you may need to change this)
-    midiIn.openPort(1);
+    midiIn.openPort(0);
 
     // don't ignore sysex, timing, & active sense messages,
     // these are ignored by default
@@ -275,8 +276,14 @@ void ShaderChain::SetupGui() {
 void ShaderChain::newMidiMessage(ofxMidiMessage& msg) {
     if(msg.status < MIDI_SYSEX) {
         if(msg.status == MIDI_CONTROL_CHANGE) {
-            for (int j = 0; j < this->passes[0]->params.size(); j++) {
-                this->passes[0]->params[j]->UpdateMidi(msg.control, msg.value);
+            if (midiMapper.isShowing) {
+                midiMapper.midiSet(msg.control);
+            } else {
+                for (int i = 0; i < this->passes.size(); i++) {
+                    for (int j = 0; j < this->passes[i]->params.size(); j++) {
+                        this->passes[i]->params[j]->UpdateMidi(msg.control, msg.value);
+                    }
+                }
             }
         }
     }
@@ -323,6 +330,7 @@ void ShaderChain::ReadFromJson(std::string filepath) {
 		UpdateResolutionIfChanged(true);
     }
     else {
+        updateStatusText("Error parsing JSON");
         ofLogError("ofApp::setup")  << "Failed to parse JSON" << endl;
     }
 }
@@ -610,4 +618,8 @@ bool ShaderChain::mouseScrolled(ofMouseEventArgs & args) {
     } else {
 		return false;
 	}
+}
+
+void ShaderChain::midiButtonPressed() {
+    midiMapper.show(&gui, &renderStruct);
 }

@@ -21,6 +21,8 @@ public:
     ofParameter<void> saveAsPresetButton;
     ofParameter<void> savePresetButton;
     ofParameter<void> openFileButton;
+    ofParameter<void> mapMidiButton;
+    ofParameter<void> webExportButton;
 
     ofParameter<float> displayScaleParam;
     ofParameter<int> frameskip;
@@ -56,4 +58,5 @@ public:
 private:
     int renderedFrames;
     ofxGuiButton *saveFramesButton;
+    void saveButtonPressed();
 };

@@ -4,7 +4,7 @@
 #include "ofxGuiExtended2.h"
 #include "ofxMidi.h"
 #include "ofxJSON.h"
-
+#include "MidiMapper.h"
 #include "ShaderPass.h"
 #include "PNGRenderer.h"
 #include "FFTManager.h"
@@ -83,4 +83,7 @@ private:
     void pauseResourcesForCurrentPlaybackState();
     string createUniqueFilePath(string path);
     bool mouseScrolled(ofMouseEventArgs & args);
+
+    void midiButtonPressed();
+    MidiMapper midiMapper;
 };

@@ -36,6 +36,8 @@ void PNGRenderer::AddToGui(ofxGuiContainer *panel, FFTManager *fft) {
     fileMenu->add(openFileButton.set("Open File"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
     fileMenu->add(saveAsPresetButton.set("Save Preset As…"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
     fileMenu->add(savePresetButton.set("Save Preset"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+    fileMenu->add(mapMidiButton.set("Midi mapper"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+
 
     vidMenuGroup.setName("Mp4");
     vidMenuGroup.add(numLoops.set("Num loops", numLoops, 1, 32));

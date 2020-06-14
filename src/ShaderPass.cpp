@@ -305,7 +305,7 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
             float zRot = json["parameters"][j]["rot"]["z"].asFloat();
 
             glm::vec3 rot = glm::vec3(xPos, yPos, zPos);
-            
+
             addCameraParameter(pos, rot);
         }
     }

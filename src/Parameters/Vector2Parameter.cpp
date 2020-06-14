@@ -8,6 +8,7 @@ Vector2Parameter::Vector2Parameter(std::string uniform, ofVec2f defaultVal, bool
   this->midi = new int[2];
   this->midi[0] = midi[0];
   this->midi[1] = midi[1];
+  this->type = "vec2";
 }
 
 void Vector2Parameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct *renderStruct) {
@@ -38,4 +39,8 @@ void Vector2Parameter::UpdateMidi(int index, float val) {
         float adjustedValue = ofLerp(this->range.x, this->range.y, val/127.0);
         this->value = glm::vec2(this->value->x, adjustedValue);
     }
+}
+
+void Vector2Parameter::bindMidi(int midiIndex, int subParamIndex) {
+    this->midi[subParamIndex] = midiIndex;   
 }

@@ -6,6 +6,7 @@ FloatParameter::FloatParameter(std::string uniform, float currentValue, glm::vec
   this->range = range;
   this->show = show;
   this->midiIndex = midi;
+  this->type = "float";
 }
 
 void FloatParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct *renderStruct) {
@@ -34,4 +35,8 @@ void FloatParameter::UpdateMidi(int index, float value) {
 
 void FloatParameter::BindMidi(int midiIndices[]) {
     this->midiIndex = midiIndices[0];
+}
+
+void FloatParameter::bindMidi(int index, int subParamIndex) {
+    this->midiIndex = index;
 }

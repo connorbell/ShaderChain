@@ -1,18 +1,6 @@
 /*
 {
-    "lastBufferTextureIndex": 1,
-    "audioTextureIndex": 2,
     "parameters" : [
-      {
-         "name" : "edges",
-         "range" : {
-            "x" : 0,
-            "y" : 50
-         },
-         "show" : true,
-         "type" : "float",
-         "value" : 5.0
-      },
       {
          "name" : "midi1",
          "range" : {
@@ -80,27 +68,32 @@
          "value" : 0.5
       },
       {
-         "name" : "midi7",
+         "name" : "offset",
          "range" : {
             "x" : 0,
             "y" : 1
          },
          "show" : true,
-         "type" : "float",
-         "midi" : 7,
-         "value" : 0.5
+         "type" : "vec2",
+         "value" : {
+            "x": 0.5,
+            "y": 0.5
+         }
       },
       {
-         "name" : "midi8",
-         "range" : {
-            "x" : 0,
-            "y" : 1
-         },
+         "name" : "lastTex",
          "show" : true,
-         "type" : "float",
-         "midi" : 8,
-         "value" : 0.5
+         "type" : "texture",
+         "textype" : "Last",
+         "textureIndex" : 1
       },
+      {
+         "name" : "audioTex",
+         "show" : true,
+         "type" : "texture",
+         "textype" : "Audio",
+         "textureIndex" : 2
+      }
    ]
 }
 */
@@ -112,8 +105,8 @@ out vec4 outputColor;
 
 uniform float _Time;
 uniform sampler2DRect _MainTexture;
-uniform sampler2DRect _LastTexture;
-uniform sampler2DRect _AudioTexture;
+uniform sampler2DRect lastTex;
+uniform sampler2DRect audioTex;
 uniform vec2 _Resolution;
 
 uniform float midi1;
@@ -122,8 +115,7 @@ uniform float midi3;
 uniform float midi4;
 uniform float midi5;
 uniform float midi6;
-uniform float midi7;
-uniform float midi8;
+uniform vec2 offset;
 
 vec3 hue(vec3 color, float shift) {
 
@@ -253,7 +245,7 @@ void main() {
     float uvOffsetStrength = midi5;
     float audioStrength = 1.65;
     float t = _Time * 0.1;
-    float feedbackStrength = midi7 * 4.;
+    float feedbackStrength = 4.;
 
     vec2 centerOffset =  vec2(cos(_Time*0.2), sin(_Time*0.2))*0.015;
     uv += centerOffset;
@@ -261,12 +253,11 @@ void main() {
     vec2 uv_c = texCoordVarying * 2.0 - 1.0;
 
     float a = atan(uv_c.y, uv_c.x);
-    float samp = texture(_AudioTexture, vec2(texCoordVarying.x*256., 0.)).r;
+    float samp = texture(audioTex, vec2(texCoordVarying.x*256., 0.)).r;
     float l = length(uv_c)*(0.5-samp*0.5);
     uv_c = vec2(cos(a), sin(a)) * l + 0.5;
-    uv_c += vec2(fbm(uv*15.+ vec2(l,sin(_Time+a+l))), fbm(-uv*15.+ vec2(l,-cos(t+a+l))) )*midi1;
 
-    vec4 last = texture(_LastTexture, uv_c*_Resolution);
+    vec4 last = texture(lastTex, uv_c*_Resolution);
 
     last.g -= 0.15;
     last.r -= 0.025;
@@ -279,7 +270,7 @@ void main() {
    	vec2 dist = vec2(0., -1.);
     const int passes = 8;
 
-    vec2 offset = vec2(midi8,midi3);
+    vec2 offs = offset;
     uv = uv * 2.0 - 1.0;
     uv.x *= _Resolution.x / _Resolution.y;
 
@@ -291,15 +282,14 @@ void main() {
 
         vec2 cell = floor(uv / scale);
 
-        offset.xy *= (1. + sin(cell.x+cell.y+float(i)*0.5+_Time)*midi2);
+        offs.xy *= (1. + sin(cell.x+cell.y+float(i)*0.5+_Time)*midi2);
 
-        uv -= offset * scale;
+        uv -= offs * scale;
         pR(uv, _Time*0.05+ midi6*4.+ float(i)*0.25+ noise(vec2(cell.x+cell.y+float(i),_Time*0.1))*midi2);
         dist = opU(dist,vec2(shape(uv, scale, midi4*2.), i));
     }
 
     col.rgb = vec3(dist.x);
-    col = vec4(vec3(samp), 1.0);
 
     outputColor = col;
 }
