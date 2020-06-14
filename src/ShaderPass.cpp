@@ -215,6 +215,7 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
 
             if (texType == "Last") {
                 wantsLastBuffer = true;
+                cout << " setting wants last buffer " << endl;
             }
 
             if (texType == "Buffer") {

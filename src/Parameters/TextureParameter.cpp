@@ -9,7 +9,6 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
     this->videoFile.setPlayer(player);
     this->show = show;
     this->type = getTypeFromString(texType);
-    cout << "tex type " << texType << endl;
     this->targetBufferName = targetBufferName;
 }
 
@@ -78,19 +77,21 @@ void TextureParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct 
                 shader->setUniformTexture(this->uniform, renderStruct->passes->at(targetBufferIndex)->buffer.getTexture(), this->textureIndex);
                 shader->setUniform2f(this->uniform+"_res", renderStruct->passes->at(targetBufferIndex)->buffer.getWidth(), renderStruct->passes->at(targetBufferIndex)->buffer.getHeight());
             }
-            if (this->type == Last) {
-                if (renderStruct->lastBuffer->isAllocated()) {
-                    this->texInput->setGraphics(&renderStruct->lastBuffer->getTexture());
-                    shader->setUniformTexture(this->uniform, renderStruct->lastBuffer->getTexture(), targetBufferIndex);
-                    shader->setUniformTexture(this->uniform, renderStruct->lastBuffer->getTexture(), this->textureIndex);
-                    shader->setUniform2f(this->uniform+"_res", renderStruct->lastBuffer->getWidth(), renderStruct->lastBuffer->getHeight());
-                }
+        }
+        if (this->type == Last) {
+            if (renderStruct->lastBuffer->isAllocated()) {
+                this->texInput->setGraphics(&renderStruct->lastBuffer->getTexture());
+                shader->setUniformTexture(this->uniform, renderStruct->lastBuffer->getTexture(), targetBufferIndex);
+                shader->setUniformTexture(this->uniform, renderStruct->lastBuffer->getTexture(), this->textureIndex);
+                shader->setUniform2f(this->uniform+"_res", renderStruct->lastBuffer->getWidth(), renderStruct->lastBuffer->getHeight());
             }
         }
     } else if (type == Audio) {
-        this->texInput->setGraphics(&renderStruct->fft->audioTexture);
-        shader->setUniformTexture(this->uniform, renderStruct->fft->audioTexture, this->textureIndex);
-        shader->setUniform2f(this->uniform+"_res", renderStruct->fft->audioTexture.getWidth(), renderStruct->fft->audioTexture.getHeight());
+        if (renderStruct->fft->audioTexture.isAllocated()) {
+            this->texInput->setGraphics(&renderStruct->fft->audioTexture);
+            shader->setUniformTexture(this->uniform, renderStruct->fft->audioTexture, this->textureIndex);
+            shader->setUniform2f(this->uniform+"_res", renderStruct->fft->audioTexture.getWidth(), renderStruct->fft->audioTexture.getHeight());
+        }
     }
 }
 
