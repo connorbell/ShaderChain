@@ -81,7 +81,7 @@ void TextureParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct 
         if (this->type == Last) {
             if (renderStruct->lastBuffer->isAllocated()) {
                 this->texInput->setGraphics(&renderStruct->lastBuffer->getTexture());
-                shader->setUniformTexture(this->uniform, renderStruct->lastBuffer->getTexture(), targetBufferIndex);
+                shader->setUniformTexture(this->uniform, renderStruct->lastBuffer->getTexture(), textureIndex);
                 shader->setUniformTexture(this->uniform, renderStruct->lastBuffer->getTexture(), this->textureIndex);
                 shader->setUniform2f(this->uniform+"_res", renderStruct->lastBuffer->getWidth(), renderStruct->lastBuffer->getHeight());
             }
