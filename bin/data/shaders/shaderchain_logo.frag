@@ -66,9 +66,6 @@ void main()
     vec2 bottomPos = uv+vec2(0.,circleSize);
     float circleBottom = length(bottomPos) - circleSize;
 
-    //circleTop = max(circleTop, -box(uv - vec2(0.025, 0.), vec2(0.25)));
-    //circleBottom = max(circleBottom, -box(uv + vec2(0.025, 0.), vec2(0.25)));
-
     float dist = 0.0;
     float a = atan(bottomPos.y, bottomPos.x);
     float tempA = mod(a + 3.14159 + 0.5, 6.28318);
@@ -88,28 +85,6 @@ void main()
     float circleTop = length(topPos) - circleSize;
 
     dist += (1.-smoothstep(0.0, 0.01, abs(circleTop))) * edge;
-/*
-    uv -= vec2(0., circleSize*0.5);
-    float l = length(uv);
-    float a = atan(uv.y, uv.x);
-    float aClamp = (a > -1.570795 && a < -0.) ? 0.0 : 1.0;
-
-    color.rgb = mix(color.rgb, vec3(1.), smoothstep(0.01 * aClamp, 0.0, abs(l - 0.5)));
-
-    uv += vec2(0., circleSize);
-    l = length(uv);
-    a = atan(uv.y, uv.x);
-    aClamp = (a > 1.570795 && a < 3.14159) ? 0.0 : 1.0;
-
-    color.rgb = mix(color.rgb, vec3(1.), smoothstep(0.01 * aClamp, 0.0, abs(l - 0.5)));
-
-    uv -= vec2(0., circleSize*0.5);
-    float line = abs (uv.y);
-
-    float x = uv.x + step(0., -sign(uv.y)) * 0.5;
-    float lineBoundary = (x >= 0. && x <= 0.5) ? 1.0 : 0.0;
-    color.rgb = mix(color.rgb, vec3(1.), smoothstep(0.01*lineBoundary, 0.0, abs(line-0.25)));
-*/
 
     color = vec4(vec3(dist), progress);
     outputColor = color;

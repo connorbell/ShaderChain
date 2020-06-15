@@ -65,7 +65,7 @@ void main()
         float angle = float(i)/float(iter)*2.*3.14159;
 
         // Calculate the offset
-        vec2 offs = vec2(cos(angle + _Time), sin(angle+_Time))*blurVal;
+        vec2 offs = vec2(cos(angle + _Time*2.), sin(angle+_Time*2.))*blurVal;
         if (sign(uv_c.y) < 0) {
             offs = mix(offs, normalize(uv_c)*22.5, vec2(clamp(1.-taper,0., 1.)));
         } else {
