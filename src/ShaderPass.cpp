@@ -22,7 +22,9 @@ void ShaderPass::Load(std::string shaderPath, glm::vec2 res) {
 }
 
 ShaderPass::~ShaderPass(){
+    cout << "clear" << endl;
     params.clear();
+    cout << "cleared" << endl;
 }
 
 void ShaderPass::LoadDisplayNameFromFileName() {
@@ -295,15 +297,16 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
 
             AddBoolParameter(name, val, show, midi);
         } else if (type == "camera") {
-            float xPos = json["parameters"][j]["pos"]["x"].asFloat();
-            float yPos = json["parameters"][j]["pos"]["y"].asFloat();
-            float zPos = json["parameters"][j]["pos"]["z"].asFloat();
+            float xPos = json["parameters"][j]["value"]["pos"]["x"].asFloat();
+            float yPos = json["parameters"][j]["value"]["pos"]["y"].asFloat();
+            float zPos = json["parameters"][j]["value"]["pos"]["z"].asFloat();
+            cout << "ypos " << yPos << endl;
 
             glm::vec3 pos = glm::vec3(xPos, yPos, zPos);
 
-            float xRot = json["parameters"][j]["rot"]["x"].asFloat();
-            float yRot = json["parameters"][j]["rot"]["y"].asFloat();
-            float zRot = json["parameters"][j]["rot"]["z"].asFloat();
+            float xRot = json["parameters"][j]["value"]["rot"]["x"].asFloat();
+            float yRot = json["parameters"][j]["value"]["rot"]["y"].asFloat();
+            float zRot = json["parameters"][j]["value"]["rot"]["z"].asFloat();
 
             glm::vec3 rot = glm::vec3(xPos, yPos, zPos);
 
@@ -331,4 +334,26 @@ void ShaderPass::AddToGui(ofxGuiContainer *gui, TextureInputSelectionView *selec
         params[i]->selectionView = selectionView;
         params[i]->AddToGui(parameterGroup);
     }
+}
+
+void ShaderPass::updateShaderJson() {
+    ofFile textFile(filePath + ".frag");
+    ofBuffer buffer(textFile, 1024);
+    std::string shaderSource = buffer.getText();
+
+    std::size_t startJsonIndex = shaderSource.find("/*");
+    std::size_t endJsonIndex = shaderSource.find("*/");
+
+    if (startJsonIndex != std::string::npos && endJsonIndex != std::string::npos) {
+        for (int j = 0; j < params.size(); j++) {
+            cout << to_string(j) << endl;
+            this->params[j]->UpdateJson(json);
+        }
+    }
+
+    cout << "hi" << endl;
+    shaderSource.replace(startJsonIndex, endJsonIndex, json.getRawString());
+    cout << "asdad" << endl;
+    buffer.set(shaderSource.c_str(), shaderSource.size());
+    textFile.writeFromBuffer(buffer);
 }

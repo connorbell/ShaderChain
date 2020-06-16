@@ -46,14 +46,14 @@ void CameraParameter::AddToGui(ofxGuiGroup2 *gui) {
 }
 
 void CameraParameter::UpdateJson(Json::Value &val) {
-    val["pos"]["x"] = camera.getX();
-    val["pos"]["y"] = camera.getY();
-    val["pos"]["z"] = camera.getZ();
+    val["value"]["pos"]["x"] = camera.getX();
+    val["value"]["pos"]["y"] = camera.getY();
+    val["value"]["pos"]["z"] = camera.getZ();
 
     glm::vec3 rot = camera.getOrientationEulerDeg();
-    val["rot"]["x"] = rot.x;
-    val["rot"]["y"] = rot.y;
-    val["rot"]["z"] = rot.z;
+    val["value"]["rot"]["x"] = rot.x;
+    val["value"]["rot"]["y"] = rot.y;
+    val["value"]["rot"]["z"] = rot.z;
 
     val["type"] = "camera";
 }

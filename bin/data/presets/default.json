@@ -2,7 +2,19 @@
    "blend" : 1,
    "data" : [
       {
-         "shaderName" : "shaders/shaderchain_logo"
+         "shaderName" : "shaders/shaderchain_logo",
+         "parameters" : [
+             {
+                "name" : "size",
+                "range" : {
+                   "x" : 0,
+                   "y" : 0.5
+                },
+                "show" : true,
+                "type" : "float",
+                "value" : 0.25
+             }
+         ]
       },
       {
          "shaderName" : "shaders/multisample-hueshift"
@@ -89,4 +101,3 @@
    },
    "scale" : 1
 }
-

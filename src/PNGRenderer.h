@@ -18,11 +18,13 @@ public:
     ofParameter<string> presetDisplayName;
     ofParameter<string> presetDisplayNameLabel;
 
+    ofParameter<void> newPresetButton;
     ofParameter<void> saveAsPresetButton;
     ofParameter<void> savePresetButton;
     ofParameter<void> openFileButton;
     ofParameter<void> mapMidiButton;
     ofParameter<void> webExportButton;
+    ofParameter<void> updateShaderJsonButton;
 
     ofParameter<float> displayScaleParam;
     ofParameter<int> frameskip;

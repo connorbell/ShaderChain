@@ -1,6 +1,5 @@
 /*
 {
-"wantsCamera" : true,
 "parameters" : [
 	   {
 		  "midi" : 1,
@@ -51,7 +50,7 @@
    			 "y" : 2
    		  },
    		  "show" : true,
-   		  "type" : 0,
+   		  "type" : "float",
    		  "value" : 0.75
    	   },
 	   {
@@ -60,8 +59,8 @@
 			 "x" : 0,
 			 "y" : 1
 		  },
+		  "type" : "float",
 		  "show" : true,
-		  "type" : 0,
 		  "value" : 0.575
 	   },
 	   {
@@ -71,7 +70,7 @@
 			 "y" : 4
 		  },
 		  "show" : true,
-		  "type" : 1,
+		  "type" : "vec3",
 		  "value" : {
 			 "x" : 0.75,
 			 "y" : 1,
@@ -85,7 +84,7 @@
 			 "y" : 5
 		  },
 		  "show" : true,
-		  "type" : 1,
+		  "type" : "vec3",
 		  "value" : {
 			 "x" : 3,
 			 "y" : 3,
@@ -99,7 +98,7 @@
 			 "y" : 2
 		  },
 		  "show" : true,
-		  "type" : 0,
+		  "type" : "float",
 		  "value" : 0.5
 	   },
 	   {
@@ -109,7 +108,7 @@
 			 "y" : 7
 		  },
 		  "show" : true,
-		  "type" : 0,
+		  "type" : "float",
 		  "value" : 2.5
 	   },
 	   {
@@ -119,7 +118,7 @@
 			 "y" : 7
 		  },
 		  "show" : true,
-		  "type" : 0,
+		  "type" : "float",
 		  "value" : 2.5
 	   },
 	   {
@@ -129,7 +128,7 @@
 			 "y" : 0.5
 		  },
 		  "show" : true,
-		  "type" : 0,
+		  "type" : "float",
 		  "value" : 0.05
 	   },
 	   {
@@ -139,8 +138,23 @@
 			 "y" : 0.5
 		  },
 		  "show" : true,
-		  "type" : 0,
+		  "type" : "float",
 		  "value" : 0.015
+	   },
+	   {
+		  "type" : "camera",
+		  "value" : {
+			 "pos" : {
+			 	"x" : 1.0,
+				"y" : 2.0,
+				"z" : 1.0
+			 },
+			 "rot" : {
+			 	"x" : 0.0,
+				"y" : 0.0,
+				"z" : 0.0
+			 }
+		  }
 	   }
 	]
 }
@@ -197,10 +211,8 @@ float map(in vec3 pos) {
     pos.xyz = mod(pos.xyz, spacesize) - spacesize*0.5;
 
     vec3 p = pos;
-	vec2 mouse = vec2(0.7, 1.05);
 
-    float cube = 1e20;
-    float res = cube;
+    float res = 1e20;
 
     for (int i = 0; i < 8; i++) {
         p.xyz = abs(p.xyz);
@@ -214,11 +226,10 @@ float map(in vec3 pos) {
         pR(p.xz,-distFromCam+rotationPhaseY+anim.x*animationAmpY);
         pR(p.zy,distFromCam+rotationPhaseX+anim.y*animationAmpX);
 
-		scale *= scaleFactor;
-
-        float octa = fIcosahedron(p,scale);
+        float octa = fOctahedron(p, scale);
 
         res = min(res,octa);
+		scale *= scaleFactor;
     }
 
     // Animate the pos of the icosahedron
@@ -263,7 +274,7 @@ vec4 render(in vec3 camPos, in vec3 rayDir) {
     float fres = (1.+dot(rayDir, nor));
     col *= fres;
     col = pow(col, vec3(0.666));
-    col = mix(col, bgColor, clamp(dist/maxDist, 0.0, 1.0));
+    col = mix(col, bgColor.rgb, clamp(dist/maxDist, 0.0, 1.0));
     return vec4(col, dist);
 }
 #define AA 1
@@ -277,14 +288,14 @@ void main()
             vec2 o = vec2(float(j), float(k)) / float(AA);
             vec2 uv = (texCoordVarying + o / _Resolution) * 2. - 1. ;
             uv.x *= _Resolution.x/_Resolution.y;
-            vec3 ray = normalize ((_CamRight) * uv.x +
-                                  (_CamUp) * uv.y +
-                                  (_CamForward) * focalLength);
+            vec3 ray = normalize (_CamRight * uv.x +
+                                  _CamUp * uv.y +
+                                  _CamForward * focalLength);
 
             color += vec4(render(_CamPos, ray));
         }
     }
 
     color /= float(AA * AA);
-    outputColor = color;
+    outputColor = vec4(color.rgb, 1.);
 }

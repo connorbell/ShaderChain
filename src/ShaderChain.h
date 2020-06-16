@@ -86,4 +86,7 @@ private:
 
     void midiButtonPressed();
     MidiMapper midiMapper;
+
+    void newPresetButtonPressed();
+    void updateShaderJsonPressed();
 };

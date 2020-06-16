@@ -5,4 +5,3 @@ ofxMidi
 ofxAutoReloadedShader
 ofxGuiExtended2
 ofxSortableList2
-ofxGStreamer

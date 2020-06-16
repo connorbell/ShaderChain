@@ -18,9 +18,12 @@ public:
     virtual void UpdateJson(Json::Value &val) override;
 
 
+    void keyPressed(int key);
+    void keyReleased(int key);
+
 private:
     ofNode camera;
-    void keyPressed(int key);
     float mouseMoveSpeed = 2.0;
+
 
 };

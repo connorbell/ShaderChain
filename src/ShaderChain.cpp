@@ -19,6 +19,9 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->pngRenderer->saveButton.addListener(this, &ShaderChain::BeginSaveFrames);
     this->pngRenderer->encodeMp4Button.addListener(this, &ShaderChain::encodeMp4Pressed);
     this->pngRenderer->encodeGifButton.addListener(this, &ShaderChain::encodeGifPressed);
+    this->pngRenderer->newPresetButton.addListener(this, &ShaderChain::newPresetButtonPressed);
+    this->pngRenderer->updateShaderJsonButton.addListener(this, &ShaderChain::updateShaderJsonPressed);
+
     ofAddListener(this->textureInputSelectionView.wantsWebcamChanged, this, &ShaderChain::toggleWebcam);
     this->showGui = true;
     this->isMouseDown = false;
@@ -622,4 +625,20 @@ bool ShaderChain::mouseScrolled(ofMouseEventArgs & args) {
 
 void ShaderChain::midiButtonPressed() {
     midiMapper.show(&gui, &renderStruct);
+}
+
+void ShaderChain::newPresetButtonPressed() {
+    for (int i = 0; i < this->passes.size(); i++) {
+        cout << to_string(i) << endl;
+        delete this->passes[i];
+    }
+    cout << "beep";
+    this->passes.clear();
+    cout << "boop";
+}
+
+void ShaderChain::updateShaderJsonPressed() {
+    for (int i = 0; i < this->passes.size(); i++) {
+        passes[i]->updateShaderJson();
+    }
 }
