@@ -20,6 +20,7 @@ void FloatParameter::AddToGui(ofxGuiGroup2 *gui) {
 }
 
 void FloatParameter::UpdateJson(Json::Value &val) {
+    val["name"] = uniform;
     val["value"] = (float)this->value;
     val["show"] = this->show;
     val["type"] = "float";
@@ -39,4 +40,14 @@ void FloatParameter::BindMidi(int midiIndices[]) {
 
 void FloatParameter::bindMidi(int index, int subParamIndex) {
     this->midiIndex = index;
+}
+Json::Value FloatParameter::getDict() {
+    Json::Value val;
+    val["name"] = uniform;
+    val["value"] = (float)this->value;
+    val["show"] = this->show;
+    val["type"] = "float";
+    val["range"]["x"] = this->range.x;
+    val["range"]["y"] = this->range.y;
+    return val;
 }

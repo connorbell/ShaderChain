@@ -12,7 +12,7 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
     this->targetBufferName = targetBufferName;
 }
 
-TextureParameter::~TextureParameter() {
+void TextureParameter::close() {
     closeVideoFile();
 }
 

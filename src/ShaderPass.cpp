@@ -22,6 +22,10 @@ void ShaderPass::Load(std::string shaderPath, glm::vec2 res) {
 }
 
 ShaderPass::~ShaderPass(){
+
+    for (unsigned int i = 0; i < this->params.size(); i++) {
+        params[i]->close();
+    }
     params.clear();
 }
 
@@ -295,15 +299,16 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
 
             AddBoolParameter(name, val, show, midi);
         } else if (type == "camera") {
-            float xPos = json["parameters"][j]["pos"]["x"].asFloat();
-            float yPos = json["parameters"][j]["pos"]["y"].asFloat();
-            float zPos = json["parameters"][j]["pos"]["z"].asFloat();
+            float xPos = json["parameters"][j]["value"]["pos"]["x"].asFloat();
+            float yPos = json["parameters"][j]["value"]["pos"]["y"].asFloat();
+            float zPos = json["parameters"][j]["value"]["pos"]["z"].asFloat();
+            cout << "ypos " << yPos << endl;
 
             glm::vec3 pos = glm::vec3(xPos, yPos, zPos);
 
-            float xRot = json["parameters"][j]["rot"]["x"].asFloat();
-            float yRot = json["parameters"][j]["rot"]["y"].asFloat();
-            float zRot = json["parameters"][j]["rot"]["z"].asFloat();
+            float xRot = json["parameters"][j]["value"]["rot"]["x"].asFloat();
+            float yRot = json["parameters"][j]["value"]["rot"]["y"].asFloat();
+            float zRot = json["parameters"][j]["value"]["rot"]["z"].asFloat();
 
             glm::vec3 rot = glm::vec3(xPos, yPos, zPos);
 
@@ -331,4 +336,32 @@ void ShaderPass::AddToGui(ofxGuiContainer *gui, TextureInputSelectionView *selec
         params[i]->selectionView = selectionView;
         params[i]->AddToGui(parameterGroup);
     }
+}
+
+void ShaderPass::updateShaderJson() {
+    ofFile textFile(filePath + ".frag", ofFile::ReadWrite);
+    ofBuffer buffer(textFile, 1024);
+    std::string shaderSource = buffer.getText();
+
+    std::size_t startJsonIndex = shaderSource.find("/*");
+    std::size_t endJsonIndex = shaderSource.find("*/");
+
+    if (startJsonIndex != std::string::npos && endJsonIndex != std::string::npos) {
+        Json::Value content(Json::arrayValue);
+
+        for(Json::Value::ArrayIndex j=0; j<params.size(); j++) {
+            content[j] = this->params[(int)j]->getDict();
+        }
+
+        json["parameters"] = content;
+
+        shaderSource.replace(startJsonIndex+2, endJsonIndex+1, "\n" + json.getRawString() + "*/\n");
+        buffer.set(shaderSource.c_str(), shaderSource.size());
+        textFile.close();
+        bool fileWritten = ofBufferToFile(filePath + ".frag", buffer);
+    }
+    else {
+        cout << "Couldn't locate shader json" << endl;
+    }
+
 }

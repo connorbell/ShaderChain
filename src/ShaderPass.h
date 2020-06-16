@@ -63,7 +63,7 @@ class ShaderPass {
     void update(RenderStruct *renderStruct);
     void startOfflineRender();
     void stopOfflineRender();
-
+    void updateShaderJson();
   private:
     ofxJSON json;
     void LoadParametersFromJson(Json::Value &json);

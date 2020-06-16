@@ -1,6 +1,5 @@
 /*
 {
-"wantsCamera" : true,
 "parameters" : [
 	   {
 		  "midi" : 1,
@@ -40,11 +39,26 @@
 			 "y" : 1
 		  },
 		  "show" : true,
-		  "type" : "vec3",
+		  "type" : "color",
 		  "value" : {
 			 "x" : 0,
 			 "y" : 0,
 			 "z" : 0
+		  }
+	   },
+	   {
+		  "type" : "camera",
+		  "value" : {
+			 "pos" : {
+				"x" : 1.0,
+				"y" : 4.0,
+				"z" : 0.0
+			 },
+			 "rot" : {
+				"x" : 0.0,
+				"y" : 0.0,
+				"z" : 0.0
+			 }
 		  }
 	   }
 	]
@@ -66,7 +80,7 @@ uniform float focalLength;
 uniform float minDist;
 uniform float maxDist;
 
-uniform vec3 bgColor;
+uniform vec4 bgColor;
 
 in vec2 texCoordVarying;
 out vec4 outputColor;
@@ -116,7 +130,7 @@ vec4 render(in vec3 camPos, in vec3 rayDir) {
     float fres = (1.+dot(rayDir, nor));
     col *= fres;
     //col = pow(col, vec3(0.666));
-    col = mix(col, bgColor, clamp(dist/maxDist, 0.0, 1.0));
+    col = mix(col, bgColor.rgb, clamp(dist/maxDist, 0.0, 1.0));
     return vec4(col, dist);
 }
 #define AA 1

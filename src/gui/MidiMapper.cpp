@@ -119,4 +119,5 @@ int MidiMapper::indexFromSub(string s) {
     } else if (s == "w") {
         return 3;
     }
+    return 0;
 }

@@ -19,6 +19,9 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->pngRenderer->saveButton.addListener(this, &ShaderChain::BeginSaveFrames);
     this->pngRenderer->encodeMp4Button.addListener(this, &ShaderChain::encodeMp4Pressed);
     this->pngRenderer->encodeGifButton.addListener(this, &ShaderChain::encodeGifPressed);
+    this->pngRenderer->newPresetButton.addListener(this, &ShaderChain::newPresetButtonPressed);
+    this->pngRenderer->updateShaderJsonButton.addListener(this, &ShaderChain::updateShaderJsonPressed);
+
     ofAddListener(this->textureInputSelectionView.wantsWebcamChanged, this, &ShaderChain::toggleWebcam);
     this->showGui = true;
     this->isMouseDown = false;
@@ -128,6 +131,7 @@ void ShaderChain::BeginSaveFrames() {
 }
 
 void ShaderChain::update() {
+
     if (frame < 10) {
         this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
     }
@@ -139,7 +143,6 @@ void ShaderChain::update() {
 }
 
 void ShaderChain::draw() {
-
     bool capturingThisFrame = pngRenderer->isCapturing;
     renderStruct.frame = pngRenderer->currentFrame;
 
@@ -197,8 +200,7 @@ void ShaderChain::draw() {
                 this->cumulativeBufferSwap = swap;
             }
         }
-    }
-    if (this->passes.size() > 0) {
+
         int idx = this->passes.size()-1;
         float x = ofGetWidth()/2.-this->pngRenderer->resolutionX*0.5*this->pngRenderer->displayScaleParam;
         float y = ofGetHeight()/2.-this->pngRenderer->resolutionY*0.5*this->pngRenderer->displayScaleParam;
@@ -219,10 +221,6 @@ void ShaderChain::draw() {
         }
     }
     frame++;
-}
-
-void ShaderChain::AddPass(ShaderPass *pass) {
-    this->passes.push_back(pass);
 }
 
 void ShaderChain::RenderPasses() {
@@ -622,4 +620,20 @@ bool ShaderChain::mouseScrolled(ofMouseEventArgs & args) {
 
 void ShaderChain::midiButtonPressed() {
     midiMapper.show(&gui, &renderStruct);
+}
+
+void ShaderChain::newPresetButtonPressed() {
+    for (int i = 0; i < this->passes.size(); i++) {
+        delete this->passes[i];
+    }
+    this->passes.clear();
+    this->passesGui->Setup(&this->passes);
+    SetupGui();
+}
+
+void ShaderChain::updateShaderJsonPressed() {
+    for (int i = 0; i < this->passes.size(); i++) {
+        passes[i]->updateShaderJson();
+    }
+    updateStatusText("Updated shader json");
 }

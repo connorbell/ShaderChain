@@ -9,7 +9,6 @@ class TextureParameter : public Parameter {
 
 public:
     TextureParameter(string uniform, string filePath, int textureIndex, bool show, string texType, string targetBufferName);
-    ~TextureParameter();
     ofImage value;
     string filePath;
     TextureSourceType type;
@@ -35,6 +34,7 @@ public:
     virtual void handleInputFile(string s) override;
     virtual TextureSourceType getTextureSourceType() override;
     virtual void playbackDidToggleState(bool isPaused) override;
+    virtual void close() override;
 
 private:
     string getTextureType();
