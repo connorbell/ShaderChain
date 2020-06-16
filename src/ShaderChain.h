@@ -33,7 +33,6 @@ public:
     void BeginSaveFrames();
     void update();
     void draw();
-    void AddPass(ShaderPass *pass);
 
     void KeyPressed(int key);
     void newMidiMessage(ofxMidiMessage& eventArgs);

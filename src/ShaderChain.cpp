@@ -131,6 +131,7 @@ void ShaderChain::BeginSaveFrames() {
 }
 
 void ShaderChain::update() {
+
     if (frame < 10) {
         this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
     }
@@ -142,7 +143,6 @@ void ShaderChain::update() {
 }
 
 void ShaderChain::draw() {
-
     bool capturingThisFrame = pngRenderer->isCapturing;
     renderStruct.frame = pngRenderer->currentFrame;
 
@@ -200,8 +200,7 @@ void ShaderChain::draw() {
                 this->cumulativeBufferSwap = swap;
             }
         }
-    }
-    if (this->passes.size() > 0) {
+
         int idx = this->passes.size()-1;
         float x = ofGetWidth()/2.-this->pngRenderer->resolutionX*0.5*this->pngRenderer->displayScaleParam;
         float y = ofGetHeight()/2.-this->pngRenderer->resolutionY*0.5*this->pngRenderer->displayScaleParam;
@@ -222,10 +221,6 @@ void ShaderChain::draw() {
         }
     }
     frame++;
-}
-
-void ShaderChain::AddPass(ShaderPass *pass) {
-    this->passes.push_back(pass);
 }
 
 void ShaderChain::RenderPasses() {
@@ -629,16 +624,16 @@ void ShaderChain::midiButtonPressed() {
 
 void ShaderChain::newPresetButtonPressed() {
     for (int i = 0; i < this->passes.size(); i++) {
-        cout << to_string(i) << endl;
         delete this->passes[i];
     }
-    cout << "beep";
     this->passes.clear();
-    cout << "boop";
+    this->passesGui->Setup(&this->passes);
+    SetupGui();
 }
 
 void ShaderChain::updateShaderJsonPressed() {
     for (int i = 0; i < this->passes.size(); i++) {
         passes[i]->updateShaderJson();
     }
+    updateStatusText("Updated shader json");
 }

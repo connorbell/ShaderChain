@@ -1,17 +1,17 @@
 /*
 {
-"parameters" : [
-   {
-      "name" : "size",
-      "range" : {
-         "x" : 0,
-         "y" : 0.5
-      },
-      "show" : true,
-      "type" : "float",
-      "value" : 0.25
-   }
-]
+   "parameters" : [
+      {
+         "name" : "size",
+         "range" : {
+            "x" : 0,
+            "y" : 0.5
+         },
+         "show" : true,
+         "type" : "float",
+         "value" : 0.1086956486105919
+      }
+   ]
 }
 */
 #version 150

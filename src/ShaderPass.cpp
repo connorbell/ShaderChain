@@ -22,9 +22,11 @@ void ShaderPass::Load(std::string shaderPath, glm::vec2 res) {
 }
 
 ShaderPass::~ShaderPass(){
-    cout << "clear" << endl;
+
+    for (unsigned int i = 0; i < this->params.size(); i++) {
+        params[i]->close();
+    }
     params.clear();
-    cout << "cleared" << endl;
 }
 
 void ShaderPass::LoadDisplayNameFromFileName() {
@@ -337,7 +339,7 @@ void ShaderPass::AddToGui(ofxGuiContainer *gui, TextureInputSelectionView *selec
 }
 
 void ShaderPass::updateShaderJson() {
-    ofFile textFile(filePath + ".frag");
+    ofFile textFile(filePath + ".frag", ofFile::ReadWrite);
     ofBuffer buffer(textFile, 1024);
     std::string shaderSource = buffer.getText();
 
@@ -345,15 +347,21 @@ void ShaderPass::updateShaderJson() {
     std::size_t endJsonIndex = shaderSource.find("*/");
 
     if (startJsonIndex != std::string::npos && endJsonIndex != std::string::npos) {
-        for (int j = 0; j < params.size(); j++) {
-            cout << to_string(j) << endl;
-            this->params[j]->UpdateJson(json);
+        Json::Value content(Json::arrayValue);
+
+        for(Json::Value::ArrayIndex j=0; j<params.size(); j++) {
+            content[j] = this->params[(int)j]->getDict();
         }
+
+        json["parameters"] = content;
+
+        shaderSource.replace(startJsonIndex+2, endJsonIndex+1, "\n" + json.getRawString() + "*/\n");
+        buffer.set(shaderSource.c_str(), shaderSource.size());
+        textFile.close();
+        bool fileWritten = ofBufferToFile(filePath + ".frag", buffer);
+    }
+    else {
+        cout << "Couldn't locate shader json" << endl;
     }
 
-    cout << "hi" << endl;
-    shaderSource.replace(startJsonIndex, endJsonIndex, json.getRawString());
-    cout << "asdad" << endl;
-    buffer.set(shaderSource.c_str(), shaderSource.size());
-    textFile.writeFromBuffer(buffer);
 }
