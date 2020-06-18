@@ -136,7 +136,25 @@ void ShaderChain::update() {
         this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
     }
 
+    float mouseX = ofMap((float)ofGetMouseX(),
+                        ofGetWidth()/2.0-pngRenderer->resolutionX*0.5,
+                        ofGetWidth()/2.0+pngRenderer->resolutionX*0.5,
+                        0.0,
+                        1.0);
+
+    float mouseY = ofMap((float)ofGetMouseY(),
+                        ofGetHeight()/2.0-pngRenderer->resolutionY*0.5,
+                        ofGetHeight()/2.0+pngRenderer->resolutionY*0.5,
+                        0.0,
+                        1.0);
+
+    mouseX = MIN(1.0, MAX(0.0, mouseX));
+    mouseY = MIN(1.0, MAX(0.0, 1.0 - mouseY));
+
+    renderStruct.mousePosition = glm::vec2(mouseX, mouseY);
+
     renderStruct.isOfflineRendering = pngRenderer->isCapturing;
+
     for (int i = 0; i < this->passes.size(); i++) {
         this->passes[i]->update(&renderStruct);
     }

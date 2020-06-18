@@ -115,7 +115,7 @@ void ShaderPass::Render(ofFbo *previousBuffer, RenderStruct *renderStruct) {
         SetInputTexture(previousBuffer);
     }
     this->shader.setUniform2f("_Resolution", this->targetResolution.x, this->targetResolution.y);
-
+    this->shader.setUniform2f("_Mouse", renderStruct->mousePosition.x, renderStruct->mousePosition.y);
     renderStruct->lastBuffer = &this->lastBuffer;
     for (unsigned int i = 0; i < params.size(); i++) {
         this->params[i]->UpdateShader(&(this->shader), renderStruct);
