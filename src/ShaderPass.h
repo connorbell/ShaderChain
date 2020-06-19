@@ -17,6 +17,7 @@
 #include "Parameters/ColorParameter.h"
 #include "Parameters/BoolParameter.h"
 #include "Parameters/IntParameter.h"
+#include "Parameters/AudioFloatParameter.h"
 
 #include "ofxAutoReloadedShader.h"
 #include "FFTManager.h"
@@ -52,6 +53,7 @@ class ShaderPass {
     void AddVector3Parameter(std::string s, glm::vec3 val, bool show, glm::vec2 range, int midi[]);
     void AddVector4Parameter(std::string s, glm::vec4 val, bool show, glm::vec2 range, int midi[]);
     void AddTextureParameter(string s, string filePath, int textureIndex, bool show, string texType, string targetBufferName);
+    void AddAudioFloatParameter(std::string s, float startValue, glm::vec2 range, glm::vec2 frequencyRange, float scaleFactor, float expFactor, bool accumulate, bool show, int midi);
     void AddColorParameter(string s, float r, float g, float b, float a, bool show, int midi[]);
     void Render(ofFbo *previousBuffer, RenderStruct *renderStruct);
     void SetInputTexture(ofFbo *buffer);

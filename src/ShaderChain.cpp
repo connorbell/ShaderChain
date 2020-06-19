@@ -169,10 +169,11 @@ void ShaderChain::draw() {
                 if (capturingThisFrame) {
                     this->time = this->time + deltaTime;
                     fft.setTime(this->time);
+                    fft.Update();
                 }
                 else {
                     this->time = pngRenderer->preview ? fmod(this->time + deltaTime, pngRenderer->animduration) : this->time + deltaTime;
-				}
+                }
 
                 this->renderStruct.time = this->time;
 
