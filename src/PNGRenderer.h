@@ -3,6 +3,7 @@
 #include <string>
 #include "ofMain.h"
 #include "ofxGuiExtended2.h"
+#include "FFTManager.h"
 
 class PNGRenderer {
 
@@ -17,9 +18,13 @@ public:
     ofParameter<string> presetDisplayName;
     ofParameter<string> presetDisplayNameLabel;
 
+    ofParameter<void> newPresetButton;
     ofParameter<void> saveAsPresetButton;
     ofParameter<void> savePresetButton;
     ofParameter<void> openFileButton;
+    ofParameter<void> mapMidiButton;
+    ofParameter<void> webExportButton;
+    ofParameter<void> updateShaderJsonButton;
 
     ofParameter<float> displayScaleParam;
     ofParameter<int> frameskip;
@@ -44,7 +49,7 @@ public:
     float Tick();
     void Start();
     void WritePNG(ofFbo *buffer);
-    void AddToGui(ofxGuiPanel *panel);
+    void AddToGui(ofxGuiContainer *panel, FFTManager *fft);
     void UpdateResolution(int w, int h);
     void updatePath(string s);
     ofParameter<bool> preview;
@@ -55,4 +60,5 @@ public:
 private:
     int renderedFrames;
     ofxGuiButton *saveFramesButton;
+    void saveButtonPressed();
 };

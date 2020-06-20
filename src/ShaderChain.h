@@ -4,7 +4,7 @@
 #include "ofxGuiExtended2.h"
 #include "ofxMidi.h"
 #include "ofxJSON.h"
-
+#include "MidiMapper.h"
 #include "ShaderPass.h"
 #include "PNGRenderer.h"
 #include "FFTManager.h"
@@ -20,7 +20,6 @@ public:
     ofParameter<bool> isRunning;
     ofxMidiIn midiIn;
     ofxJSONElement result;
-    ofNode camera;
     bool isMouseDown;
     ofFbo cumulativeBuffer;
     ofFbo cumulativeBufferSwap;
@@ -34,25 +33,20 @@ public:
     void BeginSaveFrames();
     void update();
     void draw();
-    void AddPass(ShaderPass *pass);
 
-    void UpdateCamera();
     void KeyPressed(int key);
     void newMidiMessage(ofxMidiMessage& eventArgs);
     void WriteToJson();
     void ReadFromJson(std::string path);
     void SetupMidi();
-    void AudioTextureUpdate(ofTexture *audioTexture);
-    void UpdateFft();
     void dragEvent(ofDragInfo info);
 
 private:
     PNGRenderer *pngRenderer;
     ofxGui gui;
-    ofxGuiGroup2 *parametersGuiGroup;
-    ofxGuiPanel *guiGlobal;
+    ofxGuiContainer *guiGlobal;
     PassesGui *passesGui;
-    ofxGuiPanel *parameterPanel;
+    ofxGuiContainer *parameterPanel;
     FFTManager fft;
     TextureInputSelectionView textureInputSelectionView;
     ofVideoGrabber vidGrabber;
@@ -86,4 +80,12 @@ private:
     void stopWebcam();
     void freeUnusedResources();
     void pauseResourcesForCurrentPlaybackState();
+    string createUniqueFilePath(string path);
+    bool mouseScrolled(ofMouseEventArgs & args);
+
+    void midiButtonPressed();
+    MidiMapper midiMapper;
+
+    void newPresetButtonPressed();
+    void updateShaderJsonPressed();
 };

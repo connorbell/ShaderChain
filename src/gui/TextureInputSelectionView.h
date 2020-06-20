@@ -7,10 +7,12 @@ class TextureInputSelectionView {
 
 public:
     ofxGui gui;
-    ofxGuiPanel *panel;
+    ofxGuiContainer *panel;
 
     ofParameter<void> openFromFileButton;
+    ofParameter<void> openFromAudioButton;
     ofParameter<void> openFromWebcamButton;
+    ofParameter<void> cancelButton;
 
     vector<ofxGuiButton*> bufferButtons;
     vector<ofParameter<void>*> bufferParameters;
@@ -18,6 +20,7 @@ public:
 
     ofEvent<string> selectedFilePathChanged;
     ofEvent<bool> wantsWebcamChanged;
+    ofEvent<bool> wantsAudioChanged;
     ofEvent<string> selectedBufferChanged;
 
     ofEvent<void> hideEvent;
@@ -36,4 +39,7 @@ public:
     void openFromWebcamButtonPressed();
     void openFromBufferPressed();
     void bufferButtonPressed();
+    void cancelButtonPressed();
+    void audioButtonPressed();
+    void updateAudio(bool val);
 };

@@ -5,7 +5,6 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
     this->textureIndex = textureIndex;
     this->filePath = filePath;
     this->uniform = uniform;
-    gstreamer.setFrameByFrame(true);
     auto player = ofPtr<ofBaseVideoPlayer>(&gstreamer);
     this->videoFile.setPlayer(player);
     this->show = show;
@@ -13,14 +12,20 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
     this->targetBufferName = targetBufferName;
 }
 
+void TextureParameter::close() {
+    closeVideoFile();
+}
+
 void TextureParameter::update(RenderStruct *renderStruct) {
     if (this->type == VideoFile) {
-
         if (renderStruct->isOfflineRendering) {
-            this->videoFile.nextFrame();
             this->videoFile.update();
+            this->videoFile.nextFrame();
+
         } else {
-        //    this->videoFile.update();
+            if (this->videoFile.isPlaying()) {
+                this->videoFile.update();
+            }
         }
     }
 }
@@ -30,23 +35,7 @@ void TextureParameter::updateToNewType(TextureSourceType t) {
         texInput->selectionView->updateWebcam(false);
     }
     if (this->type == VideoFile) {
-        cout << "unLoading video file" << endl;
-        this->texInput->setGraphics(&this->value.getTexture());
-
-        if (videoFile.isLoaded()) {
-            cout << "video is loaded" << endl;
-
-            videoFile.stop();
-            cout << "stopped" << endl;
-
-            videoFile.close();
-            cout << "closed" << endl;
-
-
-        }
-
-        cout << "unLoaded video file" << endl;
-
+        closeVideoFile();
     }
     this->type = t;
 }
@@ -88,23 +77,27 @@ void TextureParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct 
                 shader->setUniformTexture(this->uniform, renderStruct->passes->at(targetBufferIndex)->buffer.getTexture(), this->textureIndex);
                 shader->setUniform2f(this->uniform+"_res", renderStruct->passes->at(targetBufferIndex)->buffer.getWidth(), renderStruct->passes->at(targetBufferIndex)->buffer.getHeight());
             }
-            if (this->type == Last) {
-                if (renderStruct->lastBuffer->isAllocated()) {
-                    this->texInput->setGraphics(&renderStruct->lastBuffer->getTexture());
-                    shader->setUniformTexture(this->uniform, renderStruct->lastBuffer->getTexture(), targetBufferIndex);
-                    shader->setUniformTexture(this->uniform, renderStruct->lastBuffer->getTexture(), this->textureIndex);
-                    shader->setUniform2f(this->uniform+"_res", renderStruct->lastBuffer->getWidth(), renderStruct->lastBuffer->getHeight());
-                }
+        }
+        if (this->type == Last) {
+            if (renderStruct->lastBuffer->isAllocated()) {
+                this->texInput->setGraphics(&renderStruct->lastBuffer->getTexture());
+                shader->setUniformTexture(this->uniform, renderStruct->lastBuffer->getTexture(), textureIndex);
+                shader->setUniformTexture(this->uniform, renderStruct->lastBuffer->getTexture(), this->textureIndex);
+                shader->setUniform2f(this->uniform+"_res", renderStruct->lastBuffer->getWidth(), renderStruct->lastBuffer->getHeight());
             }
+        }
+    } else if (type == Audio) {
+        if (renderStruct->fft->audioTexture.isAllocated()) {
+            this->texInput->setGraphics(&renderStruct->fft->audioTexture);
+            shader->setUniformTexture(this->uniform, renderStruct->fft->audioTexture, this->textureIndex);
+            shader->setUniform2f(this->uniform+"_res", renderStruct->fft->audioTexture.getWidth(), renderStruct->fft->audioTexture.getHeight());
         }
     }
 }
 
 void TextureParameter::AddToGui(ofxGuiGroup2 *gui) {
     if (this->show) {
-        cout << "adding to gui " << endl;
         texInput = gui->add<ofxGuiTextureInput>(this->uniform, &value.getTexture(), ofJson({{"height", 200}}));
-        cout << "added to gui" << endl;
         texInput->selectionView = selectionView;
         ofAddListener(texInput->showEvent, this, &TextureParameter::onShowSelectionView);
     }
@@ -115,6 +108,8 @@ void TextureParameter::onShowSelectionView() {
     ofAddListener(selectionView->selectedFilePathChanged, this, &TextureParameter::updateTextureFromFile);
     ofAddListener(selectionView->wantsWebcamChanged, this, &TextureParameter::wantsWebcamChanged);
     ofAddListener(selectionView->selectedBufferChanged, this, &TextureParameter::wantsBufferChanged);
+    ofAddListener(selectionView->wantsAudioChanged, this, &TextureParameter::wantsAudioChanged);
+
     listenersAdded = true;
 }
 
@@ -123,6 +118,8 @@ void TextureParameter::onHideSelectionView() {
         ofRemoveListener(selectionView->selectedFilePathChanged, this, &TextureParameter::updateTextureFromFile);
         ofRemoveListener(selectionView->wantsWebcamChanged, this, &TextureParameter::wantsWebcamChanged);
         ofRemoveListener(selectionView->selectedBufferChanged, this, &TextureParameter::wantsBufferChanged);
+        ofRemoveListener(selectionView->wantsAudioChanged, this, &TextureParameter::wantsAudioChanged);
+
         listenersAdded = false;
     }
 }
@@ -138,7 +135,6 @@ void TextureParameter::updateTextureFromFile(string &s) {
 
     else if (extension == "mp4" || extension == "mov" || extension == "avi" || extension == "mkv") {
         updateToNewType(VideoFile);
-        cout << "Loading video file" << endl;
         this->videoFile.load(s);
         this->videoFile.setUseTexture(true);
         this->videoFile.play();
@@ -148,8 +144,9 @@ void TextureParameter::updateTextureFromFile(string &s) {
 }
 
 void TextureParameter::wantsWebcamChanged(bool &val) {
-    updateToNewType(Webcam);
-    cout << "lets go webcam" << endl;
+    if (val) {
+        updateToNewType(Webcam);
+    }
     onHideSelectionView();
 }
 
@@ -162,12 +159,10 @@ void TextureParameter::wantsBufferChanged(string &val) {
     }
 
     targetBufferName = val;
-    cout << uniform << " wants " << targetBufferName << endl;
     onHideSelectionView();
 }
 
 void TextureParameter::startDoingThingForType() {
-    cout << getTextureType() << endl;
     if (type == ImageFile || type == VideoFile) {
         updateTextureFromFile(filePath);
     }
@@ -188,18 +183,19 @@ void TextureParameter::UpdateJson(Json::Value &val) {
 
 void TextureParameter::startOfflineRender() {
     if (type == VideoFile) {
-        cout << "start offline render" << endl;
+        //this->videoFile.setPaused(true);
+        //cout << "set paused" << endl;
+        gstreamer.setFrameByFrame(true);
         this->videoFile.setPaused(true);
         this->videoFile.setFrame(0);
-        gstreamer.setFrameByFrame(true);
-        //gstreamer.setFrameByFrame(true);
+        this->videoFile.update();
     }
 }
 
 void TextureParameter::stopOfflineRender() {
     if (type == VideoFile) {
-        this->videoFile.setPaused(false);
-        this->videoFile.play();
+        gstreamer.setFrameByFrame(false);
+        //this->videoFile.setPaused(false);
 
         //gstreamer.setFrameByFrame(false);
         //this->videoFile.setPaused(false);
@@ -218,6 +214,8 @@ string TextureParameter::getTextureType() {
         return "Buffer";
     } else if (type == Last) {
         return "Last";
+    } else if (type == Audio) {
+        return "Audio";
     }
     return "";
 }
@@ -231,6 +229,8 @@ TextureSourceType TextureParameter::getTypeFromString(string s) {
         return Buffer;
     } else if (s == "Last") {
         return Last;
+    } else if (s == "Audio") {
+        return Audio;
     }
     return ImageFile;
 }
@@ -243,16 +243,27 @@ void TextureParameter::handleInputFile(string s) {
     updateTextureFromFile(s);
 }
 
-bool TextureParameter::getTextureSourceType() {
+TextureSourceType TextureParameter::getTextureSourceType() {
     return type;
 }
 
 void TextureParameter::playbackDidToggleState(bool isPaused) {
     if (type == VideoFile) {
-        this->videoFile.setPaused(isPaused);
-        cout << "Toggle paused " << isPaused << endl;
-        if (!isPaused) {
-            this->videoFile.play();
+        if (isPaused) {
+            this->videoFile.setPaused(true);
+        } else {
+            this->videoFile.setPaused(false);
         }
+    }
+}
+
+void TextureParameter::wantsAudioChanged(bool &val) {
+    updateToNewType(Audio);
+}
+
+void TextureParameter::closeVideoFile() {
+    if (videoFile.isLoaded() || videoFile.isPlaying()) {
+        videoFile.stop();
+        videoFile.close();
     }
 }

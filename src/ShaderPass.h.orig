@@ -17,8 +17,11 @@
 #include "Parameters/ColorParameter.h"
 #include "Parameters/BoolParameter.h"
 #include "Parameters/IntParameter.h"
-#include "Parameters/CameraParameter.h"
+<<<<<<< HEAD
 #include "Parameters/AudioFloatParameter.h"
+=======
+#include "Parameters/CameraParameter.h"
+>>>>>>> df015eec6b348e821c5f14daba7f7c27205a6479
 
 #include "ofxAutoReloadedShader.h"
 #include "FFTManager.h"

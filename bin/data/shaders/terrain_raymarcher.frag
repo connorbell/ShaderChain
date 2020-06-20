@@ -1,6 +1,5 @@
 /*
 {
-"wantsCamera" : true,
 "parameters" : [
 	   {
 		  "midi" : 1,
@@ -70,6 +69,21 @@
 		  "type" : "texture",
 		  "filePath" : "textures/noise_loop.png",
 		  "textureIndex" : 1
+	   },
+	   {
+		  "type" : "camera",
+		  "value" : {
+			 "pos" : {
+				"x" : 1.0,
+				"y" : 4.0,
+				"z" : 0.0
+			 },
+			 "rot" : {
+				"x" : 0.0,
+				"y" : 0.0,
+				"z" : 0.0
+			 }
+		  }
 	   }
 	]
 }
@@ -129,9 +143,6 @@ float map2(in vec3 pos) {
 	//pos = mod(pos - .5, 1.) - .5;
     float s = 0.065;
 	pR(pos.xz, _Time*0.125);
-//	pos.y += sin(_Time + pos.y*10.)*0.00025;
-
-//	pos.y = mod(pos.y - s*0.5, s) - s*0.5;
 	float b = fOctahedron(pos,0.125);
 	b = max(b, -(length(pos)-0.145));
 	return b;
@@ -169,7 +180,7 @@ float terrainMarch(in vec3 camPos, in vec3 rayDir) {
 		lastHeight = res;
     }
 
-    return 100000;
+    return dist;
 }
 
 vec3 calcNormal2(in vec3 pos) {

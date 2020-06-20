@@ -15,4 +15,6 @@ public:
   virtual void UpdateJson(Json::Value &val) override;
   virtual void UpdateMidi(int index, float value) override;
   virtual void BindMidi(int midiIndices[]) override;
+  virtual void bindMidi(int index, int subParamIndex) override;
+  virtual Json::Value getDict() override;
 };

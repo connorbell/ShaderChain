@@ -303,6 +303,34 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
             int midi = -1;
 
             AddBoolParameter(name, val, show, midi);
+<<<<<<< HEAD
+        } else if (type == "audioFloat") {
+          float val = json["parameters"][j]["value"].asFloat();
+          std::string name = json["parameters"][j]["name"].asString();
+          cout << "loading audio float " << name << " with " << val << endl;
+          float x = json["parameters"][j]["range"]["x"].asFloat();
+          float y = json["parameters"][j]["range"]["y"].asFloat();
+          float fx = json["parameters"][j]["frequencyRange"]["x"].asFloat();
+          float fy = json["parameters"][j]["frequencyRange"]["y"].asFloat();
+          float scaleFactor = 1, expFactor = 1;
+          bool accumulate = true;
+          if(json["parameters"][j].isMember("scaleFactor")) {
+            scaleFactor = json["parameters"][j]["scaleFactor"].asFloat();
+          }
+          if(json["parameters"][j].isMember("expFactor")) {
+            expFactor = json["parameters"][j]["expFactor"].asFloat();
+          }
+          if(json["parameters"][j].isMember("accumulate")) {
+            accumulate = json["parameters"][j]["accumulate"].asBool();
+          }
+          bool show = json["parameters"][j]["show"].asBool();
+          int midi = -1;
+          if (json["parameters"][j].isMember("midi")) {
+              midi = json["parameters"][j]["midi"].asInt();
+          }
+
+          AddAudioFloatParameter(name, val, glm::vec2(x, y), glm::vec2(fx, fy), scaleFactor, expFactor, accumulate, show, midi);
+=======
         } else if (type == "camera") {
             float xPos = json["parameters"][j]["value"]["pos"]["x"].asFloat();
             float yPos = json["parameters"][j]["value"]["pos"]["y"].asFloat();
@@ -318,32 +346,7 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
             glm::vec3 rot = glm::vec3(xPos, yPos, zPos);
 
             addCameraParameter(pos, rot);
-        } else if (type == "audioFloat") {
-            float val = json["parameters"][j]["value"].asFloat();
-            std::string name = json["parameters"][j]["name"].asString();
-            cout << "loading audio float " << name << " with " << val << endl;
-            float x = json["parameters"][j]["range"]["x"].asFloat();
-            float y = json["parameters"][j]["range"]["y"].asFloat();
-            float fx = json["parameters"][j]["frequencyRange"]["x"].asFloat();
-            float fy = json["parameters"][j]["frequencyRange"]["y"].asFloat();
-            float scaleFactor = 1, expFactor = 1;
-            bool accumulate = true;
-            if(json["parameters"][j].isMember("scaleFactor")) {
-                scaleFactor = json["parameters"][j]["scaleFactor"].asFloat();
-            }
-            if(json["parameters"][j].isMember("expFactor")) {
-                expFactor = json["parameters"][j]["expFactor"].asFloat();
-            }
-            if(json["parameters"][j].isMember("accumulate")) {
-                accumulate = json["parameters"][j]["accumulate"].asBool();
-            }
-            bool show = json["parameters"][j]["show"].asBool();
-            int midi = -1;
-            if (json["parameters"][j].isMember("midi")) {
-                midi = json["parameters"][j]["midi"].asInt();
-            }
-            
-            AddAudioFloatParameter(name, val, glm::vec2(x, y), glm::vec2(fx, fy), scaleFactor, expFactor, accumulate, show, midi);
+>>>>>>> df015eec6b348e821c5f14daba7f7c27205a6479
         }
     }
 

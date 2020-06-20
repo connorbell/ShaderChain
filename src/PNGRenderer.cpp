@@ -20,9 +20,9 @@ PNGRenderer::PNGRenderer(float animduration, int fps, glm::vec2 resolution) {
     this->preview = false;
 }
 
-void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
+void PNGRenderer::AddToGui(ofxGuiContainer *panel, FFTManager *fft) {
 
-    panel->add(statusLabel.set("Playing",""));
+    panel->add(statusLabel.set("Playing"));
 
     panel->addFpsPlotter();
 
@@ -30,10 +30,15 @@ void PNGRenderer::AddToGui(ofxGuiPanel *panel) {
 
     ofxGuiMenu* fileMenu = panel->addMenu(fileGroup);
 
+    fft->addToGui(panel);
+
     fileMenu->add(presetDisplayNameLabel.set("Preset: default"));
+    fileMenu->add(newPresetButton.set("New Preset"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
     fileMenu->add(openFileButton.set("Open File"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
     fileMenu->add(saveAsPresetButton.set("Save Preset As…"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
     fileMenu->add(savePresetButton.set("Save Preset"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+    fileMenu->add(updateShaderJsonButton.set("Update Shader JSON"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+    fileMenu->add(mapMidiButton.set("Midi Mapper"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
 
     vidMenuGroup.setName("Mp4");
     vidMenuGroup.add(numLoops.set("Num loops", numLoops, 1, 32));

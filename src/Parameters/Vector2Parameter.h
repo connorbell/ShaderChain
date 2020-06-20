@@ -14,4 +14,5 @@ public:
   virtual void AddToGui(ofxGuiGroup2 *gui) override;
   virtual void UpdateJson(Json::Value &val) override;
   virtual void UpdateMidi(int index, float val) override;
+    virtual void bindMidi(int midiIndex, int subParamIndex) override;
 };

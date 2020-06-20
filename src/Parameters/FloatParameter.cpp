@@ -6,6 +6,7 @@ FloatParameter::FloatParameter(std::string uniform, float currentValue, glm::vec
   this->range = range;
   this->show = show;
   this->midiIndex = midi;
+  this->type = "float";
 }
 
 void FloatParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct *renderStruct) {
@@ -19,7 +20,7 @@ void FloatParameter::AddToGui(ofxGuiGroup2 *gui) {
 }
 
 void FloatParameter::UpdateJson(Json::Value &val) {
-    cout << "update " << this->uniform << " " << this->value << endl;
+    val["name"] = uniform;
     val["value"] = (float)this->value;
     val["show"] = this->show;
     val["type"] = "float";
@@ -35,4 +36,18 @@ void FloatParameter::UpdateMidi(int index, float value) {
 
 void FloatParameter::BindMidi(int midiIndices[]) {
     this->midiIndex = midiIndices[0];
+}
+
+void FloatParameter::bindMidi(int index, int subParamIndex) {
+    this->midiIndex = index;
+}
+Json::Value FloatParameter::getDict() {
+    Json::Value val;
+    val["name"] = uniform;
+    val["value"] = (float)this->value;
+    val["show"] = this->show;
+    val["type"] = "float";
+    val["range"]["x"] = this->range.x;
+    val["range"]["y"] = this->range.y;
+    return val;
 }

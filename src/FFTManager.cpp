@@ -1,12 +1,8 @@
 #include "FFTManager.h"
 
-void FFTManager::Start() {
-    fft = nullptr;
-    audioTexture.allocate(1024,1,GL_RGB);
-}
-
 FFTManager::FFTManager() {
-    audioTexture.allocate(1024,1,GL_RGB);
+    fft = nullptr;
+    this->volume = 1.0;
 }
 
 FFTManager::~FFTManager() {
@@ -19,55 +15,78 @@ void FFTManager::StartMicInput() {
     fft = new ofxEasyFft();
     fft->setup(1024, OF_FFT_WINDOW_HAMMING);
     fft->setUseNormalization(true);
+    cout << "starting mic input" << endl;
     currentState = InputStateMicInput;
 }
 
-void FFTManager::Update() {
+void FFTManager::stopMicInput() {
+    currentState = InputStateNone;
+}
 
-    if (isPaused) {
-        return;
-    }
+void FFTManager::addToGui(ofxGuiContainer *container) {
+    parameterGroup.setName("Audio");
+
+    ofxGuiMenu* audioMenu = container->addMenu(parameterGroup);
+
+    this->dampening = 0.85;
+    this->isMicrophoneEnabled = false;
+
+    audioMenu->add(playingState.set("-"));
+    audioMenu->add(dampening.set("Dampening", dampening, 0.0, 1.0));
+    audioMenu->add(volume.set("Volume", volume, 0.0, 1.0));
+    audioMenu->add(isMicrophoneEnabled.set("Use Microphone", isMicrophoneEnabled));
+
+    this->volume.addListener(this, &FFTManager::volumeToggled);
+    this->isMicrophoneEnabled.addListener(this, &FFTManager::micToggled);
+}
+
+void FFTManager::Update() {
 
     if (currentState == InputStateMicInput) {
         fft->update();
 
         vector<float>& buffer = fft->getBins();
-        int n = MIN(1024, buffer.size());
-
-        unsigned char signal[1024*3];
+        int n = MIN(numSamples, buffer.size());
+        unsigned char signal[numSamples*3];
         int audioIndex = 0;
-
-        for (int i = 0; i < n; i+=3) {
-            float v = MIN(255,buffer.at(audioIndex) * 255 + (float)lastBuffer[i] * 0.85 ); // FFT
+        for (int i = 0; i < numSamples*3; i+=3) {
+            float v = MIN(255,buffer.at(audioIndex%buffer.size())) * 255;
             signal[i] = (unsigned char) v;
             signal[i+1] = (unsigned char)v;
             signal[i+2] = (unsigned char)v;
             audioIndex++;
         }
-        audioTexture.loadData(signal, 1024, 1, GL_RGB);
+        audioTexture.loadData(signal, numSamples, 1, GL_RGB);
 
-        for (int i = 0; i < n; i+=3) {
-            lastBuffer[i] = signal[i];
+        int lastBufferIndex = 0;
+        for (int i = 0; i < numSamples*3; i+=3) {
+            lastBuffer[lastBufferIndex] = signal[i];
+            lastBufferIndex++;
         }
     }
 
     else if (currentState == InputStateSoundFile) {
+        if (isPaused) {
+            return;
+        }
 
-        float *buffer = ofSoundGetSpectrum(1024);
+        float *buffer = ofSoundGetSpectrum(numSamples);
         unsigned char signal[1024*3];
         int audioIndex = 0;
-
-        for (int i = 0; i < 1024; i+=3) {
-            float v = MIN(255,buffer[audioIndex] * 255 + (float)lastBuffer[i] * 0.85 ); // FFT
+        for (int i = 0; i < numSamples*3; i+=3) {
+            float v = MIN(255,buffer[audioIndex] * 255 + (float)lastBuffer[audioIndex] * dampening ); // FFT
             signal[i] = (unsigned char) v;
-            signal[i+1] = (unsigned char)v;
-            signal[i+2] = (unsigned char)v;
+            signal[i+1] = (unsigned char) v;
+            signal[i+2] = (unsigned char) v;
             audioIndex++;
         }
-        audioTexture.loadData(signal, 1024, 1, GL_RGB);
 
-        for (int i = 0; i < 1024; i+=3) {
-            lastBuffer[i] = signal[i];
+        audioTexture.loadData(signal, numSamples, 1, GL_RGB);
+
+        int lastBufferIndex = 0;
+        for (int i = 0; i < numSamples*3; i+=3) {
+            lastBuffer[lastBufferIndex] = signal[i];
+            lastBufferIndex++;
         }
     }
 }
@@ -78,11 +97,12 @@ void FFTManager::UpdateShader(ofShader *shader, int textureIndex) {
 
 void FFTManager::loadSoundFile(string filePath) {
     soundFilePath = filePath;
-    audioTexture.allocate(1024,1,GL_RGB);
+    ofDisableArbTex();
+    audioTexture.allocate(numSamples,1,GL_RGB, false);
     soundPlayer.load(filePath);
     soundPlayer.play();
 
-    soundPlayer.setPosition(0.9999);
+    soundPlayer.setPosition(0.99999);
     soundFileDuration = soundPlayer.getPositionMS() / 1000;
     cout << "sound file duration: " << soundFileDuration << endl;
     soundPlayer.setPosition(0.0);
@@ -102,11 +122,23 @@ void FFTManager::setTime(float time) {
     //soundPlayer.setPaused(true);
 
     if (currentState != InputStateNone) {
-        float t = fmod(time,soundFileDuration)*1000.;
+        float t = fmod(time,soundFileDuration) * 1000.;
         soundPlayer.setPositionMS(t);
     }
 }
 
 void FFTManager::resetSongIfPlaying() {
     setTime(0.0);
+}
+
+void FFTManager::volumeToggled(float &val) {
+    soundPlayer.setVolume(val);
+}
+
+void FFTManager::micToggled(bool &val) {
+    if (val) {
+        StartMicInput();
+    } else {
+        stopMicInput();
+    }
 }

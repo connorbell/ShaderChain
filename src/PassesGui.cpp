@@ -1,9 +1,9 @@
 #include "PassesGui.h"
 
 PassesGui::PassesGui() {
-    this->panel = gui.addPanel();
+    this->panel = gui.addContainer();
     passButtons = panel->add<ofxSortableList>("Passes");
-    this->panel->setPosition(ofPoint(10, 280));
+    this->panel->setPosition(ofPoint(10, 210));
 }
 
 PassesGui::~PassesGui() {

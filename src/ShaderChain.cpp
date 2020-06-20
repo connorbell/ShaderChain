@@ -6,30 +6,34 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->passesGui = new PassesGui();
     ofAddListener(passesGui->passButtons->elementRemoved, this, &ShaderChain::removed);
     ofAddListener(passesGui->passButtons->elementMoved, this, &ShaderChain::moved);
+    ofAddListener(ofEvents().mouseScrolled, this, &ShaderChain::mouseScrolled);
     this->pngRenderer = new PNGRenderer(3.14159, 30, res);
     this->isRunning.set("isRunning", true);
     this->isRunning.addListener(this, &ShaderChain::playingChanged);
-    this->guiGlobal = gui.addPanel();
-    this->pngRenderer->AddToGui(this->guiGlobal);
+    this->guiGlobal = gui.addContainer();
+    this->pngRenderer->AddToGui(this->guiGlobal, &this->fft);
+    this->pngRenderer->mapMidiButton.addListener(this, &ShaderChain::midiButtonPressed);
     this->pngRenderer->savePresetButton.addListener(this, &ShaderChain::WriteToJson);
     this->pngRenderer->openFileButton.addListener(this, &ShaderChain::OpenFilePressed);
     this->pngRenderer->saveAsPresetButton.addListener(this, &ShaderChain::savePresetAsPressed);
     this->pngRenderer->saveButton.addListener(this, &ShaderChain::BeginSaveFrames);
     this->pngRenderer->encodeMp4Button.addListener(this, &ShaderChain::encodeMp4Pressed);
     this->pngRenderer->encodeGifButton.addListener(this, &ShaderChain::encodeGifPressed);
+    this->pngRenderer->newPresetButton.addListener(this, &ShaderChain::newPresetButtonPressed);
+    this->pngRenderer->updateShaderJsonButton.addListener(this, &ShaderChain::updateShaderJsonPressed);
+
     ofAddListener(this->textureInputSelectionView.wantsWebcamChanged, this, &ShaderChain::toggleWebcam);
     this->showGui = true;
     this->isMouseDown = false;
     this->isShowingFileDialogue = false;
     this->frame = 0;
 	this->time = 0.0;
-    this->parameterPanel = gui.addPanel();
+    this->parameterPanel = gui.addContainer();
     this->cumulativeShader.load("shaders/internal/vertex.vert","shaders/internal/cumulativeAdd.frag");
     this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
     this->renderStruct.passes = &this->passes;
     this->renderStruct.time = 0.0;
     this->renderStruct.fft = &this->fft;
-    this->renderStruct.cam = &this->camera;
     this->renderStruct.vidGrabber = &this->vidGrabber;
 
     ofFloatColor black;
@@ -38,7 +42,6 @@ void ShaderChain::Setup(glm::vec2 res) {
     cumulativeBufferSwap.allocate(this->pngRenderer->resolutionX, this->pngRenderer->resolutionY, GL_RGBA32F);
     cumulativeBufferSwap.clearColorBuffer(black);
     cumulativeBuffer.clearColorBuffer(black);
-
     ofDisableAlphaBlending();
     SetupMidi();
     openDefaultPreset();
@@ -68,7 +71,7 @@ void ShaderChain::openDefaultPreset() {
 void ShaderChain::SetupMidi() {
     midiIn.listInPorts();
     // open port by number (you may need to change this)
-    midiIn.openPort(1);
+    midiIn.openPort(0);
 
     // don't ignore sysex, timing, & active sense messages,
     // these are ignored by default
@@ -108,6 +111,7 @@ void ShaderChain::UpdateResolutionIfChanged(bool force) {
 }
 
 void ShaderChain::BeginSaveFrames() {
+    this->isRunning = true;
 
     for (int i = 0; i < this->passes.size(); i++) {
         passes[i]->startOfflineRender();
@@ -123,28 +127,46 @@ void ShaderChain::BeginSaveFrames() {
         }
         delete black;
     }
-    this->isRunning = true;
     pngRenderer->Start();
 }
 
 void ShaderChain::update() {
-    this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
+
+    if (frame < 10) {
+        this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
+    }
+
+    float mouseX = ofMap((float)ofGetMouseX(),
+                        ofGetWidth()/2.0-pngRenderer->resolutionX*0.5,
+                        ofGetWidth()/2.0+pngRenderer->resolutionX*0.5,
+                        0.0,
+                        1.0);
+
+    float mouseY = ofMap((float)ofGetMouseY(),
+                        ofGetHeight()/2.0-pngRenderer->resolutionY*0.5,
+                        ofGetHeight()/2.0+pngRenderer->resolutionY*0.5,
+                        0.0,
+                        1.0);
+
+    mouseX = MIN(1.0, MAX(0.0, mouseX));
+    mouseY = MIN(1.0, MAX(0.0, 1.0 - mouseY));
+
+    renderStruct.mousePosition = glm::vec2(mouseX, mouseY);
 
     renderStruct.isOfflineRendering = pngRenderer->isCapturing;
+
     for (int i = 0; i < this->passes.size(); i++) {
         this->passes[i]->update(&renderStruct);
     }
 }
 
 void ShaderChain::draw() {
-
     bool capturingThisFrame = pngRenderer->isCapturing;
     renderStruct.frame = pngRenderer->currentFrame;
 
     ofClear(25);
     if (this->passes.size() > 0) {
         UpdateResolutionIfChanged(false);
-        UpdateCamera();
         fft.Update();
 
         ofFloatColor black;
@@ -197,8 +219,7 @@ void ShaderChain::draw() {
                 this->cumulativeBufferSwap = swap;
             }
         }
-    }
-    if (this->passes.size() > 0) {
+
         int idx = this->passes.size()-1;
         float x = ofGetWidth()/2.-this->pngRenderer->resolutionX*0.5*this->pngRenderer->displayScaleParam;
         float y = ofGetHeight()/2.-this->pngRenderer->resolutionY*0.5*this->pngRenderer->displayScaleParam;
@@ -221,10 +242,6 @@ void ShaderChain::draw() {
     frame++;
 }
 
-void ShaderChain::AddPass(ShaderPass *pass) {
-    this->passes.push_back(pass);
-}
-
 void ShaderChain::RenderPasses() {
     for (int i = 0; i < this->passes.size(); i++) {
         if (i > 0) {
@@ -244,7 +261,6 @@ void ShaderChain::dragEvent(ofDragInfo info) {
 void ShaderChain::KeyPressed(int key) {
     if (key == ' ') {
         this->isRunning = !this->isRunning;
-        //setPaused(this->isRunning);
     }
     if (key == 'g') {
         this->showGui = !this->showGui;
@@ -254,18 +270,6 @@ void ShaderChain::KeyPressed(int key) {
     }
     if (key == 'f') {
         ofToggleFullscreen();
-    }
-    if (key == 'w') {
-        camera.move(-camera.getLookAtDir() * ofGetLastFrameTime());
-    }
-    if (key == 's') {
-        camera.move(camera.getLookAtDir() * ofGetLastFrameTime());
-    }
-    if (key == 'd') {
-        camera.move(camera.getXAxis() * ofGetLastFrameTime());
-    }
-    if (key == 'a') {
-        camera.move(-camera.getXAxis() * ofGetLastFrameTime());
     }
     if (key == 'r') {
         this->time = 0.0;
@@ -281,11 +285,7 @@ void ShaderChain::SetupGui() {
         textureInputSelectionView.passNames.push_back(passes[i]->displayName);
     }
 
-    cout << "width " << ofGetWidth() << endl;
-
-    cout << "Setup parmaters panel" << endl;
     for (int i = 0; i < this->passes.size(); i++) {
-        cout << i << endl;
         this->passes[i]->AddToGui(parameterPanel, &textureInputSelectionView);
     }
 }
@@ -293,20 +293,16 @@ void ShaderChain::SetupGui() {
 void ShaderChain::newMidiMessage(ofxMidiMessage& msg) {
     if(msg.status < MIDI_SYSEX) {
         if(msg.status == MIDI_CONTROL_CHANGE) {
-            for (int j = 0; j < this->passes[0]->params.size(); j++) {
-                this->passes[0]->params[j]->UpdateMidi(msg.control, msg.value);
+            if (midiMapper.isShowing) {
+                midiMapper.midiSet(msg.control);
+            } else {
+                for (int i = 0; i < this->passes.size(); i++) {
+                    for (int j = 0; j < this->passes[i]->params.size(); j++) {
+                        this->passes[i]->params[j]->UpdateMidi(msg.control, msg.value);
+                    }
+                }
             }
         }
-    }
-}
-
-void ShaderChain::UpdateCamera() {
-    if (isMouseDown && !pngRenderer->isCapturing) {
-        float xDelta = ofGetMouseX() - ofGetPreviousMouseX();
-        float yDelta = ofGetMouseY() - ofGetPreviousMouseY();
-
-        camera.panDeg(xDelta * ofGetLastFrameTime() * mouseMoveSpeed);
-        camera.tiltDeg(yDelta * ofGetLastFrameTime() * mouseMoveSpeed);
     }
 }
 
@@ -322,32 +318,40 @@ void ShaderChain::ReadFromJson(std::string filepath) {
 
         this->pngRenderer->updatePath(filepath);
 
-        float rotX = result["camrot"]["x"].asFloat();
-        float rotY = result["camrot"]["y"].asFloat();
-        float rotZ = result["camrot"]["z"].asFloat();
-        this->camera.setOrientation(glm::vec3(rotX, rotY, rotZ));
-
-        float camX = result["campos"]["x"].asFloat();
-        float camY = result["campos"]["y"].asFloat();
-        float camZ = result["campos"]["z"].asFloat();
-        this->camera.setPosition(camX, camY, camZ);
-
         this->pngRenderer->resolutionX = result["res"]["x"].asFloat();
         this->pngRenderer->resolutionY = result["res"]["y"].asFloat();
+
+        if (result.isMember("duration")) {
+            this->pngRenderer->animduration.set(this->result["duration"].asFloat());
+        }
+        if (result.isMember("fps")) {
+            this->pngRenderer->FPS.set(this->result["fps"].asFloat());
+        }
+
+        if (result.isMember("blend")) {
+            this->pngRenderer->numBlendFrames.set(this->result["blend"].asInt());
+        }
+
+        if (result.isMember("scale")) {
+            this->pngRenderer->displayScaleParam.set(this->result["scale"].asFloat());
+        }
 
         for (int i = 0; i < result["data"].size(); i++) {
             ShaderPass *pass = new ShaderPass();
             pass->LoadFromJson(result["data"][i], this->pngRenderer->resolutionX, this->pngRenderer->resolutionY);
             this->passes.push_back(pass);
         }
+
         this->passesGui->Setup(&this->passes);
         SetupGui();
 		UpdateResolutionIfChanged(true);
     }
     else {
+        updateStatusText("Error parsing JSON");
         ofLogError("ofApp::setup")  << "Failed to parse JSON" << endl;
     }
 }
+
 void ShaderChain::LoadPassFromFile(string filepath) {
     auto relativeFileName = filepath.substr(filepath.find("data") + 5);
     auto relativeFileNameWithoutExtension = relativeFileName.substr(0,relativeFileName.find("frag")-1);
@@ -383,21 +387,15 @@ void ShaderChain::WriteToJson() {
     this->result["res"]["x"] = (float)this->pngRenderer->resolutionX;
     this->result["res"]["y"] = (float)this->pngRenderer->resolutionY;
 
-    this->result["campos"]["x"] = camera.getX();
-    this->result["campos"]["y"] = camera.getY();
-    this->result["campos"]["z"] = camera.getZ();
-
-    glm::vec3 rot = camera.getOrientationEulerDeg();
-    this->result["camrot"]["x"] = rot.x;
-    this->result["camrot"]["y"] = rot.y;
-    this->result["camrot"]["z"] = rot.z;
+    this->result["duration"] = (float)this->pngRenderer->animduration;
+    this->result["fps"] = (float)this->pngRenderer->FPS;
+    this->result["blend"] = (float)this->pngRenderer->numBlendFrames;
+    this->result["scale"] = (float)this->pngRenderer->displayScaleParam;
 
     for (int i = 0; i < this->passes.size(); i++) {
         this->result["data"][i]["shaderName"] = this->passes[i]->filePath;
-        this->result["data"][i]["wantsCamera"] = this->passes[i]->wantsCamera;
 
         for (int j = 0; j < this->passes[i]->params.size(); j++) {
-            cout << j << endl;
             this->result["data"][i]["parameters"][j]["name"] = this->passes[i]->params[j]->uniform;
             this->passes[i]->params[j]->UpdateJson((this->result["data"][i]["parameters"][j]));
         }
@@ -411,7 +409,6 @@ void ShaderChain::WriteToJson() {
 }
 
 void ShaderChain::removed(RemovedElementData& data) {
-	cout << "removed " + ofToString(data.index) + "\n";
     passes.erase(passes.begin() + data.index);
     freeUnusedResources();
     SetupGui();
@@ -419,7 +416,6 @@ void ShaderChain::removed(RemovedElementData& data) {
 
 void ShaderChain::moved(MovingElementData &data) {
     iter_swap(passes.begin() + data.old_index, passes.begin() + data.new_index);
-	cout << "moved " + data.name + " from index " + ofToString(data.old_index) + " to index " + ofToString(data.new_index) + "\n";
     SetupGui();
 }
 
@@ -465,6 +461,7 @@ void ShaderChain::saveVideo(string outputFilename) {
 
     cout << "Creating mp4 " << outputFilename << endl;
     string outputMp4Filename = outputFilename + ".mp4";
+    outputMp4Filename = createUniqueFilePath(outputMp4Filename);
     string fpsString = to_string(pngRenderer->FPS);
     string totalZerosString = to_string((int)floor(log10 (((float)totalFrames)))+1);
 
@@ -475,6 +472,7 @@ void ShaderChain::saveVideo(string outputFilename) {
 
     if (fft.currentState == InputStateSoundFile) {
         string outputMp4AudioFilename = outputFilename + "_audio.mp4";
+        outputMp4AudioFilename = createUniqueFilePath(outputMp4AudioFilename);
         string addSoundCommand = "ffmpeg -i " + outputMp4Filename + " -i \"" + fft.soundFilePath + "\" -vcodec copy -acodec aac -shortest " + outputMp4AudioFilename;
         system(addSoundCommand.c_str());
         outputMp4Filename = outputMp4AudioFilename;
@@ -492,6 +490,7 @@ void ShaderChain::saveVideo(string outputFilename) {
         file.close();
 
         string outputLoopedFilename = outputFilename + "_looped.mp4";
+        outputLoopedFilename = createUniqueFilePath(outputLoopedFilename);
 
         ffmpegCommand = "ffmpeg -f concat -safe 0 -i list.txt -c copy " + outputLoopedFilename;
         system(ffmpegCommand.c_str());
@@ -527,7 +526,6 @@ void ShaderChain::encodeGifPressed() {
     string fileWithoutExtension = pngRenderer->presetDisplayName;
     string rendersDirectory = ofFilePath::getAbsolutePath( ofToDataPath("") ) + "/renders/";
     string targetDirectory = rendersDirectory + fileWithoutExtension + "/";
-    cout << "target dir \"" << targetDirectory << "\"" << endl;
     system(("mkdir \"" + targetDirectory + "\"").c_str());
     string moveFilesCommand = "mv " + rendersDirectory + fileWithoutExtension + "_*.png " + targetDirectory;
     system(moveFilesCommand.c_str());
@@ -536,6 +534,7 @@ void ShaderChain::encodeGifPressed() {
     system(ffmpegCommand.c_str());
 
     string targetFilename = targetDirectory + fileWithoutExtension +".gif";
+    targetFilename = createUniqueFilePath(targetFilename);
     ffmpegCommand = "ffmpeg -v warning -thread_queue_size 512 -start_number 0 -i " + targetDirectory + fileWithoutExtension + "_%0" + totalZerosString+"d.png -i "+ targetDirectory + "palette.png -r 30 -lavfi scale=500:-1:flags=\"lanczos [x]; [x][1:v] paletteuse\" -y " + targetFilename;
     system(ffmpegCommand.c_str());
 
@@ -556,13 +555,11 @@ void ShaderChain::startWebcam() {
     vidGrabber.setUseTexture(true);
     vidGrabber.setDesiredFrameRate(30);
     vidGrabber.initGrabber(pngRenderer->resolutionX, pngRenderer->resolutionY);
-    cout << "start webcam" << endl;
 }
 
 void ShaderChain::stopWebcam() {
     if (vidGrabber.isInitialized()) {
     //    vidGrabber.close();
-        cout << "stop webcam" << endl;
     }
 }
 
@@ -586,10 +583,76 @@ void ShaderChain::pauseResourcesForCurrentPlaybackState() {
 
     fft.setPaused(!this->isRunning);
 
-    for (int i = 0; i < this->passes.size(); i++) {
-        for (int j = 0; j < this->passes[i]->params.size(); j++) {
-            passes[i]->params[j]->playbackDidToggleState(!this->isRunning);
-
+    if (!pngRenderer->isCapturing) {
+        for (int i = 0; i < this->passes.size(); i++) {
+            for (int j = 0; j < this->passes[i]->params.size(); j++) {
+                passes[i]->params[j]->playbackDidToggleState(!this->isRunning);
+            }
         }
     }
+}
+
+string ShaderChain::createUniqueFilePath(string path) {
+    bool found = false;
+    auto pathWithoutExtension = path.substr(0, path.find_last_of("."));
+    auto extension = path.substr(path.find_last_of(".") + 1);
+    int tries = 0;
+
+    while (!found) {
+        ofFile file;
+
+        string p = "";
+
+        if (tries == 0) {
+            p = pathWithoutExtension + "." + extension;
+        } else {
+            p = pathWithoutExtension + to_string(tries) + "." + extension;
+        }
+
+        file.open(p, ofFile::ReadWrite, false);
+
+        if (!file.exists()) {
+            found = true;
+            path = p;
+        }
+        file.close();
+        tries++;
+    }
+    return path;
+}
+
+bool ShaderChain::mouseScrolled(ofMouseEventArgs & args) {
+	if (parameterPanel->isMouseOver()) {
+        auto boundarylow = 10;
+        auto boundaryHigh = ofGetHeight() - 10 - parameterPanel->getHeight();
+        auto val = MIN(MAX(parameterPanel->getY() - args.scrollY, boundarylow), boundaryHigh);
+
+        parameterPanel->setPosition(parameterPanel->getX(), val);
+        parameterPanel->updateLayout();
+
+        return true;
+
+    } else {
+		return false;
+	}
+}
+
+void ShaderChain::midiButtonPressed() {
+    midiMapper.show(&gui, &renderStruct);
+}
+
+void ShaderChain::newPresetButtonPressed() {
+    for (int i = 0; i < this->passes.size(); i++) {
+        delete this->passes[i];
+    }
+    this->passes.clear();
+    this->passesGui->Setup(&this->passes);
+    SetupGui();
+}
+
+void ShaderChain::updateShaderJsonPressed() {
+    for (int i = 0; i < this->passes.size(); i++) {
+        passes[i]->updateShaderJson();
+    }
+    updateStatusText("Updated shader json");
 }

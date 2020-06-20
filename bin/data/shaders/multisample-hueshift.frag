@@ -57,7 +57,7 @@ void main()
 
     // This is the radius of the circle
     float taper = texture(_MainTexture, uv).a;
-    float blurVal = 35.;
+    float blurVal = 30.;
     vec2 uv_c = uv * 2.0 - _Resolution;
     for (int i = 0; i < iter; i++) {
 
@@ -66,11 +66,9 @@ void main()
 
         // Calculate the offset
         vec2 offs = vec2(cos(angle + _Time), sin(angle+_Time))*blurVal;
-        if (sign(uv_c.y) < 0) {
-            offs = mix(offs, normalize(uv_c)*22.5, vec2(clamp(1.-taper,0., 1.)));
-        } else {
-            offs *= taper;
-        }
+
+	    offs = mix(offs, normalize(uv_c)*22.5, vec2(clamp(1.-taper,0., 1.)));
+
         // Sample the texture and hue shift it based on the angle around the circle
         vec3 col1 = texture(_MainTexture, uv + offs.xy).rgb;
         result += hueShift(vec3(0.,col1.g,col1.b), angle)*8.;

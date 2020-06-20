@@ -1,22 +1,23 @@
 {
-   "campos" : {
-      "x" : 0,
-      "y" : 0,
-      "z" : 0
-   },
-   "camrot" : {
-      "x" : 45.24757766723633,
-      "y" : -41.65290832519531,
-      "z" : 55.03693771362305
-   },
+   "blend" : 1,
    "data" : [
       {
          "shaderName" : "shaders/shaderchain_logo",
-         "wantsCamera" : false
+         "parameters" : [
+             {
+                "name" : "size",
+                "range" : {
+                   "x" : 0,
+                   "y" : 0.5
+                },
+                "show" : true,
+                "type" : "float",
+                "value" : 0.25
+             }
+         ]
       },
       {
-         "shaderName" : "shaders/multisample-hueshift",
-         "wantsCamera" : false
+         "shaderName" : "shaders/multisample-hueshift"
       },
       {
          "parameters" : [
@@ -41,8 +42,7 @@
                "value" : 0.3913043439388275
             }
          ],
-         "shaderName" : "shaders/blurShader",
-         "wantsCamera" : false
+         "shaderName" : "shaders/blurShader"
       },
       {
          "parameters" : [
@@ -56,13 +56,48 @@
                "type" : "texture"
             }
          ],
-         "shaderName" : "shaders/blendShader",
-         "wantsCamera" : false
+         "shaderName" : "shaders/blendShader"
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "intensity",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.6739130616188049
+            },
+            {
+               "name" : "scale",
+               "range" : {
+                  "x" : 0,
+                  "y" : 2
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.77173912525177
+            },
+            {
+               "filePath" : "",
+               "name" : "lastTex",
+               "show" : true,
+               "targetBufferName" : "",
+               "textureIndex" : 1,
+               "textype" : "Last",
+               "type" : "texture"
+            }
+         ],
+         "shaderName" : "shaders/feedbackShader"
       }
    ],
+   "duration" : 6.283180236816406,
+   "fps" : 30,
    "res" : {
       "x" : 500,
       "y" : 500
-   }
+   },
+   "scale" : 1
 }
-
