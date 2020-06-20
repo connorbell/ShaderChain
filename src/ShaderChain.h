@@ -40,13 +40,14 @@ public:
     void ReadFromJson(std::string path);
     void SetupMidi();
     void dragEvent(ofDragInfo info);
+    void windowResized(int w, int h);
 
 private:
     PNGRenderer *pngRenderer;
     ofxGui gui;
     ofxGuiContainer *guiGlobal;
     PassesGui *passesGui;
-    ofxGuiContainer *parameterPanel;
+    ofxGuiContainer *parameterPanel = nullptr;
     FFTManager fft;
     TextureInputSelectionView textureInputSelectionView;
     ofVideoGrabber vidGrabber;
