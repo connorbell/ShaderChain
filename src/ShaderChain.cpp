@@ -30,7 +30,6 @@ void ShaderChain::Setup(glm::vec2 res) {
 	this->time = 0.0;
     this->parameterPanel = gui.addContainer();
     this->cumulativeShader.load("shaders/internal/vertex.vert","shaders/internal/cumulativeAdd.frag");
-    this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
     this->renderStruct.passes = &this->passes;
     this->renderStruct.time = 0.0;
     this->renderStruct.fft = &this->fft;
@@ -132,10 +131,6 @@ void ShaderChain::BeginSaveFrames() {
 
 void ShaderChain::update() {
 
-    if (frame < 10) {
-        this->parameterPanel->setPosition(ofPoint(ofGetWidth()-220, 10));
-    }
-
     float mouseX = ofMap((float)ofGetMouseX(),
                         ofGetWidth()/2.0-pngRenderer->resolutionX*0.5,
                         ofGetWidth()/2.0+pngRenderer->resolutionX*0.5,
@@ -191,6 +186,7 @@ void ShaderChain::draw() {
                 if (capturingThisFrame) {
                     this->time = this->time + deltaTime;
                     fft.setTime(this->time);
+                    fft.Update();
                 }
                 else {
                     this->time = pngRenderer->preview ? fmod(this->time + deltaTime, pngRenderer->animduration) : this->time + deltaTime;
@@ -287,6 +283,8 @@ void ShaderChain::SetupGui() {
     for (int i = 0; i < this->passes.size(); i++) {
         this->passes[i]->AddToGui(parameterPanel, &textureInputSelectionView);
     }
+
+    this->parameterPanel->setPosition(ofPoint(ofGetWidth()-this->parameterPanel->getWidth(), 10));
 }
 
 void ShaderChain::newMidiMessage(ofxMidiMessage& msg) {
@@ -352,7 +350,17 @@ void ShaderChain::ReadFromJson(std::string filepath) {
 }
 
 void ShaderChain::LoadPassFromFile(string filepath) {
-    auto relativeFileName = filepath.substr(filepath.find("data") + 5);
+    // Try to serialize the file path data relative to the data path
+    auto dataPathIndex = filepath.rfind("data");
+    string relativeFileName = "";
+
+    if (dataPathIndex != std::string::npos || dataPathIndex < filepath.size()) {
+        relativeFileName = filepath.substr(dataPathIndex + 5);
+    } else {
+        relativeFileName = filepath;
+    }
+    cout << relativeFileName << endl;
+
     auto relativeFileNameWithoutExtension = relativeFileName.substr(0,relativeFileName.find("frag")-1);
     ShaderPass *pass = new ShaderPass(relativeFileNameWithoutExtension, glm::vec2(this->pngRenderer->resolutionX,this->pngRenderer->resolutionY) );
     pass->LoadJsonParametersFromLoadedShader();
@@ -624,7 +632,7 @@ bool ShaderChain::mouseScrolled(ofMouseEventArgs & args) {
 	if (parameterPanel->isMouseOver()) {
         auto boundarylow = 10;
         auto boundaryHigh = ofGetHeight() - 10 - parameterPanel->getHeight();
-        auto val = MIN(MAX(parameterPanel->getY() - args.scrollY, boundarylow), boundaryHigh);
+        auto val = MIN(MAX(parameterPanel->getY() + args.scrollY, boundaryHigh), boundarylow);
 
         parameterPanel->setPosition(parameterPanel->getX(), val);
         parameterPanel->updateLayout();
