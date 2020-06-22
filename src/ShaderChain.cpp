@@ -190,7 +190,7 @@ void ShaderChain::draw() {
                 }
                 else {
                     this->time = pngRenderer->preview ? fmod(this->time + deltaTime, pngRenderer->animduration) : this->time + deltaTime;
-				}
+                }
 
                 this->renderStruct.time = this->time;
 
@@ -350,6 +350,7 @@ void ShaderChain::ReadFromJson(std::string filepath) {
 }
 
 void ShaderChain::LoadPassFromFile(string filepath) {
+
     // Try to serialize the file path data relative to the data path
     auto dataPathIndex = filepath.rfind("data");
     string relativeFileName = "";
@@ -662,4 +663,10 @@ void ShaderChain::updateShaderJsonPressed() {
         passes[i]->updateShaderJson();
     }
     updateStatusText("Updated shader json");
+}
+
+void ShaderChain::windowResized(int w, int h) {
+    if (this->parameterPanel != nullptr) {
+        this->parameterPanel->setPosition(ofPoint(w-220, 10));
+    }
 }
