@@ -191,10 +191,11 @@ void ShaderChain::draw() {
                 if (capturingThisFrame) {
                     this->time = this->time + deltaTime;
                     fft.setTime(this->time);
+                    fft.Update();
                 }
                 else {
                     this->time = pngRenderer->preview ? fmod(this->time + deltaTime, pngRenderer->animduration) : this->time + deltaTime;
-				}
+                }
 
                 this->renderStruct.time = this->time;
 
@@ -352,7 +353,18 @@ void ShaderChain::ReadFromJson(std::string filepath) {
 }
 
 void ShaderChain::LoadPassFromFile(string filepath) {
-    auto relativeFileName = filepath.substr(filepath.find("data") + 5);
+
+    // Try to serialize the file path data relative to the data path
+    auto dataPathIndex = filepath.rfind("data");
+    string relativeFileName = "";
+
+    if (dataPathIndex != std::string::npos || dataPathIndex < filepath.size()) {
+        relativeFileName = filepath.substr(dataPathIndex + 5);
+    } else {
+        relativeFileName = filepath;
+    }
+    cout << relativeFileName << endl;
+
     auto relativeFileNameWithoutExtension = relativeFileName.substr(0,relativeFileName.find("frag")-1);
     ShaderPass *pass = new ShaderPass(relativeFileNameWithoutExtension, glm::vec2(this->pngRenderer->resolutionX,this->pngRenderer->resolutionY) );
     pass->LoadJsonParametersFromLoadedShader();
@@ -654,4 +666,10 @@ void ShaderChain::updateShaderJsonPressed() {
         passes[i]->updateShaderJson();
     }
     updateStatusText("Updated shader json");
+}
+
+void ShaderChain::windowResized(int w, int h) {
+    if (this->parameterPanel != nullptr) {
+        this->parameterPanel->setPosition(ofPoint(w-220, 10));
+    }
 }

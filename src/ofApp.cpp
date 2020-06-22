@@ -64,7 +64,7 @@ void ofApp::mouseReleased(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-
+    this->shaderChain.windowResized(w, h);
 }
 
 //--------------------------------------------------------------
