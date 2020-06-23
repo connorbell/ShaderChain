@@ -115,8 +115,20 @@ void PNGRenderer::Start() {
 }
 
 void PNGRenderer::updatePath(string s) {
+    if (s == "") return;
+
     string file = s.substr(s.find_last_of("/") + 1);
-    string fileWithoutExtension = file.substr(0, file.find_last_of("."));
+
+    // add json extension if needed
+    int indexOfPeriod = file.find_last_of(".");
+    if (indexOfPeriod == std::string::npos) {
+        file += ".json";
+        s += ".json";
+        indexOfPeriod = file.find_last_of(".");
+    }
+
+    string fileWithoutExtension = file.substr(0, indexOfPeriod);
+
     presetDisplayName.set(fileWithoutExtension);
     presetDisplayNameLabel.set("Preset: " + presetDisplayName.get());
     presetFilePath = s;

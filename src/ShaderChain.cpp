@@ -650,12 +650,22 @@ void ShaderChain::midiButtonPressed() {
 }
 
 void ShaderChain::newPresetButtonPressed() {
-    for (int i = 0; i < this->passes.size(); i++) {
-        delete this->passes[i];
+    if (!isShowingFileDialogue) {
+        isShowingFileDialogue = true;
+
+        string result = ofSystemTextBoxDialog("New Preset name", "");
+        result = ofToDataPath("presets/" + result);
+
+        for (int i = 0; i < this->passes.size(); i++) {
+            delete this->passes[i];
+        }
+        this->passes.clear();
+        this->passesGui->Setup(&this->passes);
+        SetupGui();
+        pngRenderer->updatePath(result);
+
+        isShowingFileDialogue = false;
     }
-    this->passes.clear();
-    this->passesGui->Setup(&this->passes);
-    SetupGui();
 }
 
 void ShaderChain::updateShaderJsonPressed() {
