@@ -1,0 +1,292 @@
+{
+   "blend" : 1,
+   "data" : [
+      {
+         "parameters" : [
+            {
+               "name" : "focalLength",
+               "range" : {
+                  "x" : 0,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 2.5
+            },
+            {
+               "name" : "minDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 0.1000000014901161
+               },
+               "show" : false,
+               "type" : "float",
+               "value" : 0.001000000047497451
+            },
+            {
+               "name" : "maxDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 15
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 7.739362239837646
+            },
+            {
+               "name" : "bgColor",
+               "show" : true,
+               "type" : "color",
+               "value" : {
+                  "a" : 0,
+                  "b" : 0,
+                  "g" : 1,
+                  "r" : 0
+               }
+            },
+            {
+               "name" : "startScale",
+               "range" : {
+                  "x" : 0,
+                  "y" : 2
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.2553191483020782
+            },
+            {
+               "name" : "scaleFactor",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.5957446694374084
+            },
+            {
+               "name" : "offset",
+               "range" : {
+                  "x" : 0,
+                  "y" : 4
+               },
+               "show" : true,
+               "type" : "vec3",
+               "value" : {
+                  "x" : 1.840909123420715,
+                  "y" : 1.136363625526428,
+                  "z" : 2.090909004211426
+               }
+            },
+            {
+               "name" : "spaceSize",
+               "range" : {
+                  "x" : 0,
+                  "y" : 5
+               },
+               "show" : true,
+               "type" : "vec3",
+               "value" : {
+                  "x" : 2.897727251052856,
+                  "y" : 3,
+                  "z" : 3
+               }
+            },
+            {
+               "name" : "distScalar",
+               "range" : {
+                  "x" : 0,
+                  "y" : 2
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.4893617033958435
+            },
+            {
+               "name" : "rotationPhaseX",
+               "range" : {
+                  "x" : 0,
+                  "y" : 7
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0
+            },
+            {
+               "name" : "rotationPhaseY",
+               "range" : {
+                  "x" : 0,
+                  "y" : 7
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 2.941489458084106
+            },
+            {
+               "name" : "animationAmpX",
+               "range" : {
+                  "x" : 0,
+                  "y" : 0.5
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.146276593208313
+            },
+            {
+               "name" : "animationAmpY",
+               "range" : {
+                  "x" : 0,
+                  "y" : 0.5
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.109707422554493
+            },
+            {
+               "name" : "",
+               "type" : "camera",
+               "value" : {
+                  "pos" : {
+                     "x" : 2.942674160003662,
+                     "y" : 2.825608968734741,
+                     "z" : -2.82723593711853
+                  },
+                  "rot" : {
+                     "x" : 43.1596565246582,
+                     "y" : 2.802085876464844,
+                     "z" : -5.233835697174072
+                  }
+               }
+            }
+         ],
+         "shaderName" : "shaders/raymarchKifsShader"
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "startFocusDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.585106372833252
+            },
+            {
+               "name" : "endFocusDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 1.808510541915894
+            },
+            {
+               "name" : "ramp",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.09574468433856964
+            },
+            {
+               "name" : "blurSize",
+               "range" : {
+                  "x" : 0,
+                  "y" : 16
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 4
+            }
+         ],
+         "shaderName" : "shaders/bokehShader"
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "intensity",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.4972826838493347
+            },
+            {
+               "name" : "scale",
+               "range" : {
+                  "x" : 0,
+                  "y" : 2
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 1
+            },
+            {
+               "filePath" : "",
+               "name" : "lastTex",
+               "show" : true,
+               "targetBufferName" : "",
+               "textureIndex" : 1,
+               "textype" : "Last",
+               "type" : "texture"
+            }
+         ],
+         "shaderName" : "shaders/feedbackShader"
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "shift",
+               "range" : {
+                  "x" : 0,
+                  "y" : 6.283180236816406
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 2.97085165977478
+            }
+         ],
+         "shaderName" : "shaders/hueShader"
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "strength",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.6326530575752258
+            },
+            {
+               "name" : "power",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.9021739363670349
+            }
+         ],
+         "shaderName" : "shaders/vignetteShader"
+      }
+   ],
+   "duration" : 6.283180236816406,
+   "fps" : 30,
+   "res" : {
+      "x" : 500,
+      "y" : 500
+   },
+   "scale" : 1
+}
+

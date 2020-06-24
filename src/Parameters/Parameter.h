@@ -44,5 +44,5 @@ public:
     virtual TextureSourceType getTextureSourceType() { return None; }
     virtual void playbackDidToggleState(bool isPaused) {}
     virtual void close() {};
-    virtual Json::Value getDict() {};
+    virtual Json::Value getDict() { return Json::Value(); };
 };

@@ -201,7 +201,7 @@ float smin( float d1, float d2, float k ) {
 }
 
 float map(in vec3 pos) {
-	vec3 originalPos = pos + _CamPos - _CamForward*1.5;
+	vec3 originalPos = pos - _CamPos - _CamForward;
 
 	float scale = startScale;
     vec3 spacesize = spaceSize;
@@ -234,11 +234,11 @@ float map(in vec3 pos) {
 
     // Animate the pos of the icosahedron
     pR(originalPos.xy, .2+sin(_Time)*0.2);
-    pR(originalPos.xz,-_Time);
+    pR(originalPos.xz, _Time);
 
     // Smooth min blend the fractal terrain with itself with a param around zero to give it a scaling effect
     res = smin(res, res, -0.025+ sin(-0.5+_Time-length(vec3(pos.x*0.5,pos.y*0.9,pos.z))*12.)*0.05);
-    res = smin(res, fIcosahedron(originalPos,.25), 0.2);
+    res = smin(res, fIcosahedron(originalPos,.175), 0.1);
 
     return res;
 }
@@ -297,5 +297,5 @@ void main()
     }
 
     color /= float(AA * AA);
-    outputColor = vec4(color.rgb, 1.);
+    outputColor = color;
 }
