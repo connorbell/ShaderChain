@@ -1,0 +1,161 @@
+{
+   "blend" : 1,
+   "data" : [
+      {
+         "parameters" : [
+            {
+               "name" : "midi2",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.22826087474823
+            },
+            {
+               "name" : "phase",
+               "range" : {
+                  "x" : 0,
+                  "y" : 6.28000020980835
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 1
+            },
+            {
+               "name" : "startScale",
+               "range" : {
+                  "x" : 0.1000000014901161,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.5
+            },
+            {
+               "name" : "scalingFactor",
+               "range" : {
+                  "x" : 0.1000000014901161,
+                  "y" : 2
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 1.48369562625885
+            },
+            {
+               "name" : "offset",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : "vec2",
+               "value" : {
+                  "x" : 0.6704545617103577,
+                  "y" : 1
+               }
+            },
+            {
+               "accumulate" : true,
+               "expFactor" : 2,
+               "frequencyRange" : {
+                  "x" : 10,
+                  "y" : 200
+               },
+               "name" : "audioac",
+               "range" : {
+                  "x" : 0,
+                  "y" : 6.283185482025146
+               },
+               "scaleFactor" : 0.2000000029802322,
+               "show" : true,
+               "type" : "audioFloat",
+               "value" : 0
+            }
+         ],
+         "shaderName" : "shaders\\2d_kifs_audio"
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "intensity",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.8586956262588501
+            },
+            {
+               "name" : "scale",
+               "range" : {
+                  "x" : 0,
+                  "y" : 2
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 1
+            },
+            {
+               "name" : "lastColMult",
+               "show" : true,
+               "type" : "color",
+               "value" : {
+                  "a" : 72,
+                  "b" : 115,
+                  "g" : 27,
+                  "r" : 72
+               }
+            },
+            {
+               "name" : "hue",
+               "range" : {
+                  "x" : 0,
+                  "y" : 5
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.679347813129425
+            },
+            {
+               "filePath" : "textures/noise_loop.png",
+               "name" : "_NoiseTexture",
+               "show" : true,
+               "targetBufferName" : "",
+               "textureIndex" : 3,
+               "textype" : "ImageFile",
+               "type" : "texture"
+            },
+            {
+               "filePath" : "",
+               "name" : "audioTex",
+               "show" : true,
+               "targetBufferName" : "",
+               "textureIndex" : 3,
+               "textype" : "Audio",
+               "type" : "texture"
+            },
+            {
+               "filePath" : "",
+               "name" : "lastTex",
+               "show" : true,
+               "targetBufferName" : "",
+               "textureIndex" : 2,
+               "textype" : "Last",
+               "type" : "texture"
+            }
+         ],
+         "shaderName" : "shaders\\feedbackAudioShader"
+      }
+   ],
+   "duration" : 6.283180236816406,
+   "fps" : 30,
+   "res" : {
+      "x" : 1920,
+      "y" : 1080
+   },
+   "scale" : 1
+}
+
