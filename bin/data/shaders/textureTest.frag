@@ -5,8 +5,8 @@
       "name" : "noiseTex",
       "show" : true,
       "type" : "texture",
-      "filePath" : "textures/noise.png",
-      "textureIndex" : 1
+      "filePath" : "textures/noise_loop.png",
+      "textureIndex" : 2
    }
 ]
 }
@@ -26,6 +26,6 @@ out vec4 outputColor;
 void main()
 {
     vec2 texUv = vec2(texCoordVarying.x * noiseTex_res.x, noiseTex_res.y - texCoordVarying.y * noiseTex_res.y);
-    vec4 c = texture(noiseTex,texUv);
-    outputColor = c;
+    vec3 c = texture(noiseTex,texUv).rgb;
+    outputColor = vec4(c, 1.0);
 }

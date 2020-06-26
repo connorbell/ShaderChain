@@ -1,5 +1,7 @@
 #include "PNGRenderer.h"
 #include <math.h>
+#include <algorithm>
+
 #include "ShaderChain.h"
 
 PNGRenderer::PNGRenderer(float animduration, int fps, glm::vec2 resolution) {
@@ -117,7 +119,15 @@ void PNGRenderer::Start() {
 void PNGRenderer::updatePath(string s) {
     if (s == "") return;
 
-    string file = s.substr(s.find_last_of("/") + 1);
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+
+	replace(s.begin(), s.end(), '/', '\\');
+	static const std::string slash = "\\";
+#else
+	static const std::string slash = "/";
+#endif
+
+    string file = s.substr(s.find_last_of(slash) + 1);
 
     // add json extension if needed
     int indexOfPeriod = file.find_last_of(".");

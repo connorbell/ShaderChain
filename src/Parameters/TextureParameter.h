@@ -3,7 +3,6 @@
 #include "Parameter.h"
 #include "ofxGuiExtended2.h"
 #include "ofxGuiTextureInput.h"
-#include "ofGstVideoPlayer.h"
 
 class TextureParameter : public Parameter {
 
@@ -16,7 +15,7 @@ public:
     ofVideoPlayer videoFile;
     string targetBufferName;
     ofxGuiTextureInput *texInput;
-    ofGstVideoPlayer gstreamer;
+//    ofGstVideoPlayer gstreamer;
     void updateTextureFromFile(string &s);
     void wantsWebcamChanged(bool &val);
     void wantsBufferChanged(string &val);

@@ -41,6 +41,13 @@ public:
     void SetupMidi();
     void dragEvent(ofDragInfo info);
     void windowResized(int w, int h);
+	static string getSlash() { 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+		return "\\";
+#else
+		return "/";
+#endif
+	}
 
 private:
     PNGRenderer *pngRenderer;

@@ -36,15 +36,12 @@ void AudioFloatParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStru
     this->value = this->value > this->range.y ? this->range.y : (float)this->value;
     this->value = this->value < this->range.x ? this->range.x : (float)this->value;
   }
-
   shader->setUniform1f(this->uniform, this->value);
 }
 
 void AudioFloatParameter::UpdateJson(Json::Value &val) {
-    cout << "update " << this->uniform << " " << this->value << endl;
-    val["value"] = (float)this->value;
     val["show"] = this->show;
-    val["type"] = "float";
+    val["type"] = "audioFloat";
     val["range"]["x"] = this->range.x;
     val["range"]["y"] = this->range.y;
     val["frequencyRange"]["x"] = this->frequencyRange.x;

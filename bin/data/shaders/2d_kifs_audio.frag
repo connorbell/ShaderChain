@@ -2,17 +2,6 @@
 {
     "parameters" : [
       {
-         "name" : "midi1",
-         "range" : {
-            "x" : 0,
-            "y" : 10
-         },
-         "show" : true,
-         "type" : "float",
-         "midi" : 1,
-         "value" : 5.0
-      },
-      {
          "name" : "midi2",
          "range" : {
             "x" : 0,
@@ -22,17 +11,6 @@
          "type" : "float",
          "midi" : 2,
          "value" : 0.1
-      },
-      {
-         "name" : "midi3",
-         "range" : {
-            "x" : 0,
-            "y" : 10
-         },
-         "show" : true,
-         "type" : "float",
-         "midi" : 3,
-         "value" : 1.0
       },
       {
          "name" : "phase",
@@ -83,6 +61,23 @@
             "x": 7,
             "y": 8
          }
+      },
+	  {
+        "name" : "audioac",
+        "range" : {
+           "x" : 0,
+           "y" : 6.2831853
+        },
+		"frequencyRange" : {
+			"x" : 10,
+			"y" : 200
+		},
+		"scaleFactor" : 0.2,
+		"expFactor" : 2,
+		"accumulate" : true,
+        "show" : true,
+        "type" : "audioFloat",
+        "value" : 0
       }
    ]
 }
@@ -97,14 +92,13 @@ uniform float _Time;
 uniform sampler2DRect _MainTexture;
 uniform vec2 _Resolution;
 
-uniform float midi1;
 uniform float midi2;
-uniform float midi3;
 uniform float midi4;
 uniform float startScale;
 uniform float scalingFactor;
 uniform float phase;
 uniform vec2 offset;
+uniform float audioac;
 
 void pR(inout vec2 p, float a) {
 	p = cos(a)*p + sin(a)*vec2(p.y, -p.x);
@@ -158,7 +152,7 @@ float sdBox( vec2 p, vec2 b )
 float coolBox(vec2 uv, vec2 b)
 {
     float dist = sdBox(uv, b);
-    return smoothstep(0.0085, 0.0, abs(dist));
+    return smoothstep(0.0025, 0.0, abs(dist));
 }
 
 float shape (vec2 uv, float size, float t)
@@ -174,7 +168,7 @@ vec2 opU(vec2 a, vec2 b)
 
 void main() {
     vec2 uv = texCoordVarying;
-    float t = _Time * 0.1;
+    float t = audioac;
 
     vec2 centerOffset =  vec2(cos(t), sin(t))*0.015;
     uv += centerOffset;
@@ -196,7 +190,7 @@ void main() {
 
         vec2 cell = floor(uv / scale);
 
-        offs.xy *= (1. + sin(cell.x+cell.y+float(i)*0.5+_Time)*midi2);
+        offs.xy *= (1. + sin(cell.x+cell.y+float(i)*0.5+t)*midi2);
 
         uv -= offs * scale;
         pR(uv, t + phase + float(i)*0.25+ noise(vec2(cell.x+cell.y+float(i),t))*midi2);

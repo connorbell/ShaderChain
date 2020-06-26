@@ -47,7 +47,7 @@ void FFTManager::Update() {
 
         vector<float>& buffer = fft->getBins();
         int n = MIN(numSamples, buffer.size());
-        unsigned char signal[numSamples*3];
+        unsigned char signal[512*3];
         int audioIndex = 0;
         for (int i = 0; i < numSamples*3; i+=3) {
             float v = MIN(255,buffer.at(audioIndex%buffer.size())) * 255;
@@ -71,7 +71,7 @@ void FFTManager::Update() {
         }
 
         float *buffer = ofSoundGetSpectrum(numSamples);
-        unsigned char signal[1024*3];
+        unsigned char signal[512*3];
         int audioIndex = 0;
         for (int i = 0; i < numSamples*3; i+=3) {
             float v = MIN(255,buffer[audioIndex] * 255 + (float)lastBuffer[audioIndex] * dampening ); // FFT
@@ -97,8 +97,7 @@ void FFTManager::UpdateShader(ofShader *shader, int textureIndex) {
 
 void FFTManager::loadSoundFile(string filePath) {
     soundFilePath = filePath;
-    ofDisableArbTex();
-    audioTexture.allocate(numSamples,1,GL_RGB, false);
+    audioTexture.allocate(numSamples,1,GL_RGB);
     soundPlayer.load(filePath);
     soundPlayer.play();
 

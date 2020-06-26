@@ -3,6 +3,7 @@
 #include "RenderStruct.h"
 
 void ShaderChain::Setup(glm::vec2 res) {
+	ofSetLogLevel(OF_LOG_VERBOSE);
     this->passesGui = new PassesGui();
     ofAddListener(passesGui->passButtons->elementRemoved, this, &ShaderChain::removed);
     ofAddListener(passesGui->passButtons->elementMoved, this, &ShaderChain::moved);
@@ -457,15 +458,23 @@ void ShaderChain::saveVideo(string outputFilename) {
     string f = outputFilename;
 
     int totalFrames = pngRenderer->FPS * pngRenderer->animduration;
-    string rendersDirectory =  + "/renders/";
+    string rendersDirectory = ShaderChain::getSlash() + "renders" + ShaderChain::getSlash();
 
     outputFilename = ofFilePath::getAbsolutePath( ofToDataPath("") ) + rendersDirectory + outputFilename;
 
     string mkdirCommand = "mkdir " + outputFilename;
     system(mkdirCommand.c_str());
-    string moveFilesCommand = "mv " + outputFilename + "_*.png " + outputFilename;
-    system(moveFilesCommand.c_str());
-    outputFilename = outputFilename + "/" + f;
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+	string moveCommand = "move ";
+#else
+	string moveCommand = "mv ";
+#endif
+
+    string moveFilesCommand = moveCommand + outputFilename + "_*.png " + outputFilename;
+	cout << moveFilesCommand << endl;
+	system(moveFilesCommand.c_str());
+    outputFilename = outputFilename + ShaderChain::getSlash() + f;
 
     cout << "Creating mp4 " << outputFilename << endl;
     string outputMp4Filename = outputFilename + ".mp4";
@@ -474,14 +483,15 @@ void ShaderChain::saveVideo(string outputFilename) {
     string totalZerosString = to_string((int)floor(log10 (((float)totalFrames)))+1);
 
     string ffmpegCommand = "ffmpeg -r " + fpsString + " -f image2 -s 1080x1920 -i \"" + outputFilename + "_%0" + totalZerosString + "d.png\" -vcodec libx264 -crf 18 -pix_fmt yuv420p " + outputMp4Filename;
-    system(ffmpegCommand.c_str());
+   
+	system(ffmpegCommand.c_str());
 
     cout << ffmpegCommand << endl;
 
     if (fft.currentState == InputStateSoundFile) {
         string outputMp4AudioFilename = outputFilename + "_audio.mp4";
         outputMp4AudioFilename = createUniqueFilePath(outputMp4AudioFilename);
-        string addSoundCommand = "ffmpeg -i " + outputMp4Filename + " -i \"" + fft.soundFilePath + "\" -vcodec copy -acodec aac -shortest " + outputMp4AudioFilename;
+        string addSoundCommand = "ffmpeg -i \"" + outputMp4Filename + "\" -i \"" + fft.soundFilePath + "\" -vcodec copy -acodec aac -shortest " + outputMp4AudioFilename;
         system(addSoundCommand.c_str());
         outputMp4Filename = outputMp4AudioFilename;
     }
@@ -532,19 +542,27 @@ void ShaderChain::encodeGifPressed() {
     string totalZerosString = to_string((int)floor(log10 (((float)totalFrames)))+1);
 
     string fileWithoutExtension = pngRenderer->presetDisplayName;
-    string rendersDirectory = ofFilePath::getAbsolutePath( ofToDataPath("") ) + "/renders/";
-    string targetDirectory = rendersDirectory + fileWithoutExtension + "/";
+    string rendersDirectory = ofFilePath::getAbsolutePath( ofToDataPath("") ) + ShaderChain::getSlash() + "renders" + ShaderChain::getSlash();
+    string targetDirectory = rendersDirectory + fileWithoutExtension + ShaderChain::getSlash();
     system(("mkdir \"" + targetDirectory + "\"").c_str());
-    string moveFilesCommand = "mv " + rendersDirectory + fileWithoutExtension + "_*.png " + targetDirectory;
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+	string moveCommand = "move ";
+#else
+	string moveCommand = "mv ";
+#endif
+
+    string moveFilesCommand = moveCommand + rendersDirectory + fileWithoutExtension + "_*.png " + targetDirectory;
     system(moveFilesCommand.c_str());
 
-    string ffmpegCommand = "ffmpeg -v warning -start_number 0 -i " + targetDirectory + fileWithoutExtension + "_%0"+totalZerosString+"d.png -vf scale=500:-1:flags=lanczos,palettegen=stats_mode=diff:reserve_transparent=off:max_colors="+to_string(pngRenderer->gifNumColors)+ " -y " + targetDirectory + "palette.png";
-    system(ffmpegCommand.c_str());
+	string ffmpegCommand = "ffmpeg -v warning -start_number 0 -i \"" + targetDirectory + fileWithoutExtension + "_%0" + totalZerosString + "d.png\" -vf scale=500:-1:flags=lanczos,palettegen=stats_mode=diff:reserve_transparent=off:max_colors=" + to_string(pngRenderer->gifNumColors) + " -y " + "\"" + targetDirectory + ShaderChain::getSlash() + "palette.png" + "\"";
 
-    string targetFilename = targetDirectory + fileWithoutExtension +".gif";
-    targetFilename = createUniqueFilePath(targetFilename);
-    ffmpegCommand = "ffmpeg -v warning -thread_queue_size 512 -start_number 0 -i " + targetDirectory + fileWithoutExtension + "_%0" + totalZerosString+"d.png -i "+ targetDirectory + "palette.png -r 30 -lavfi scale=500:-1:flags=\"lanczos [x]; [x][1:v] paletteuse\" -y " + targetFilename;
-    system(ffmpegCommand.c_str());
+	system(ffmpegCommand.c_str());
+
+	string targetFilename = targetDirectory + fileWithoutExtension + ".gif";
+	targetFilename = createUniqueFilePath(targetFilename);
+	ffmpegCommand = "ffmpeg -v warning -thread_queue_size 512 -start_number 0 -i \"" + targetDirectory + fileWithoutExtension + "_%0" + totalZerosString + "d.png\" -i \"" + targetDirectory + "palette.png\" -r 30 -lavfi scale=500:-1:flags=\"lanczos [x]; [x][1:v] paletteuse\" -y \"" + targetFilename + "\"";
+	system(ffmpegCommand.c_str());
 
     updateStatusText("Gif saved to " + targetFilename);
 }
