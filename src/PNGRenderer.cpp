@@ -74,7 +74,7 @@ float PNGRenderer::Tick() {
 
     this->currentFrame = (this->currentFrame+1) % this->totalFrames;
     this->renderedFrames++;
-    this->statusLabel = ("Rendered " + to_string(renderedFrames) + " frames");
+    this->statusLabel = ("Rendered " + to_string(renderedFrames) / to_string(totalFrames) + " frames");
 
     if (this->renderedFrames == this->totalFrames) {
         this->isCapturing = false;
