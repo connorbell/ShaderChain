@@ -4,14 +4,14 @@
       {
          "parameters" : [
             {
-               "name" : "midi2",
+               "name" : "cellOffset",
                "range" : {
                   "x" : 0,
                   "y" : 1
                },
                "show" : true,
                "type" : "float",
-               "value" : 0.22826087474823
+               "value" : 0.3478260934352875
             },
             {
                "name" : "phase",
@@ -21,7 +21,7 @@
                },
                "show" : true,
                "type" : "float",
-               "value" : 1
+               "value" : 1.228695631027222
             },
             {
                "name" : "startScale",
@@ -31,7 +31,7 @@
                },
                "show" : true,
                "type" : "float",
-               "value" : 0.5
+               "value" : 0.2858695685863495
             },
             {
                "name" : "scalingFactor",
@@ -41,7 +41,7 @@
                },
                "show" : true,
                "type" : "float",
-               "value" : 1.48369562625885
+               "value" : 1.339130520820618
             },
             {
                "name" : "offset",
@@ -52,8 +52,8 @@
                "show" : true,
                "type" : "vec2",
                "value" : {
-                  "x" : 0.6704545617103577,
-                  "y" : 1
+                  "x" : 1,
+                  "y" : 0
                }
             },
             {
@@ -70,11 +70,10 @@
                },
                "scaleFactor" : 0.2000000029802322,
                "show" : true,
-               "type" : "audioFloat",
-               "value" : 0
+               "type" : "audioFloat"
             }
          ],
-         "shaderName" : "shaders\\2d_kifs_audio"
+         "shaderName" : "shaders/2d_kifs_audio"
       },
       {
          "parameters" : [
@@ -86,7 +85,7 @@
                },
                "show" : true,
                "type" : "float",
-               "value" : 0.8586956262588501
+               "value" : 0.79347825050354
             },
             {
                "name" : "scale",
@@ -103,10 +102,10 @@
                "show" : true,
                "type" : "color",
                "value" : {
-                  "a" : 72,
-                  "b" : 115,
-                  "g" : 27,
-                  "r" : 72
+                  "a" : 0,
+                  "b" : 168,
+                  "g" : 113,
+                  "r" : 165
                }
             },
             {
@@ -117,7 +116,7 @@
                },
                "show" : true,
                "type" : "float",
-               "value" : 0.679347813129425
+               "value" : 0.7880434989929199
             },
             {
                "filePath" : "textures/noise_loop.png",
@@ -147,7 +146,7 @@
                "type" : "texture"
             }
          ],
-         "shaderName" : "shaders\\feedbackAudioShader"
+         "shaderName" : "shaders/feedbackAudioShader"
       }
    ],
    "duration" : 6.283180236816406,

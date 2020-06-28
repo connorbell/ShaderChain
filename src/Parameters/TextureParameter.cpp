@@ -5,8 +5,8 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
     this->textureIndex = textureIndex;
     this->filePath = filePath;
     this->uniform = uniform;
-  //  auto player = ofPtr<ofBaseVideoPlayer>(&gstreamer);
-  //  this->videoFile.setPlayer(player);
+    auto player = ofPtr<ofBaseVideoPlayer>(&gstreamer);
+    this->videoFile.setPlayer(player);
     this->show = show;
     this->type = getTypeFromString(texType);
     this->targetBufferName = targetBufferName;
@@ -19,6 +19,7 @@ void TextureParameter::close() {
 void TextureParameter::update(RenderStruct *renderStruct) {
     if (this->type == VideoFile) {
         if (renderStruct->isOfflineRendering) {
+            cout << "update offline" << endl;
             this->videoFile.update();
             this->videoFile.nextFrame();
 
@@ -183,12 +184,17 @@ void TextureParameter::UpdateJson(Json::Value &val) {
 
 void TextureParameter::startOfflineRender() {
     if (type == VideoFile) {
-        //this->videoFile.setPaused(true);
-        //cout << "set paused" << endl;
-      //  gstreamer.setFrameByFrame(true);
         this->videoFile.setPaused(true);
+        cout << "set fbf" << endl;
+        //gstreamer.setFrameByFrame(true);
+        cout << "set paused" << endl;
+
+        //this->videoFile.setPaused(true);
+        cout << "set frame 0" << endl;
+
         this->videoFile.setFrame(0);
         this->videoFile.update();
+
     }
 }
 

@@ -2,14 +2,14 @@
 {
     "parameters" : [
       {
-         "name" : "midi2",
+         "name" : "cellOffset",
          "range" : {
             "x" : 0,
             "y" : 1
          },
          "show" : true,
          "type" : "float",
-         "midi" : 2,
+         "midi" : 1,
          "value" : 0.1
       },
       {
@@ -20,7 +20,7 @@
          },
          "show" : true,
          "type" : "float",
-         "midi" : 4,
+         "midi" : 2,
          "value" : 1.0
       },
       {
@@ -31,7 +31,7 @@
          },
          "show" : true,
          "type" : "float",
-         "midi" : 5,
+         "midi" : 3,
          "value" : 0.5
       },
       {
@@ -42,7 +42,7 @@
          },
          "show" : true,
          "type" : "float",
-         "midi" : 6,
+         "midi" : 4,
          "value" : 0.5
       },
       {
@@ -58,8 +58,8 @@
             "y": 0.5
          },
          "midi" : {
-            "x": 7,
-            "y": 8
+            "x": 5,
+            "y": 6
          }
       },
 	  {
@@ -69,7 +69,7 @@
            "y" : 6.2831853
         },
 		"frequencyRange" : {
-			"x" : 10,
+			"x" : 0,
 			"y" : 200
 		},
 		"scaleFactor" : 0.2,
@@ -92,8 +92,7 @@ uniform float _Time;
 uniform sampler2DRect _MainTexture;
 uniform vec2 _Resolution;
 
-uniform float midi2;
-uniform float midi4;
+uniform float cellOffset;
 uniform float startScale;
 uniform float scalingFactor;
 uniform float phase;
@@ -152,13 +151,13 @@ float sdBox( vec2 p, vec2 b )
 float coolBox(vec2 uv, vec2 b)
 {
     float dist = sdBox(uv, b);
-    return smoothstep(0.0025, 0.0, abs(dist));
+    return smoothstep(0.01, 0.0, abs(dist));
 }
 
 float shape (vec2 uv, float size, float t)
 {
   return mix(coolBox(uv, vec2(size)),
-             smoothstep(0.005, -0.005, max(-(length(uv)-size),length(uv)-size*1.025)), t);
+             smoothstep(0.001, -0.001, max(-(length(uv)-size),length(uv)-size*1.025)), t);
 }
 
 vec2 opU(vec2 a, vec2 b)
@@ -168,7 +167,7 @@ vec2 opU(vec2 a, vec2 b)
 
 void main() {
     vec2 uv = texCoordVarying;
-    float t = audioac;
+    float t = audioac * 2.;
 
     vec2 centerOffset =  vec2(cos(t), sin(t))*0.015;
     uv += centerOffset;
@@ -176,7 +175,7 @@ void main() {
     float scale = startScale;
 
    	vec2 dist = vec2(0., -1.);
-    const int passes = 8;
+    const int passes = 6;
 
     vec2 offs = offset;
     uv = uv * 2.0 - 1.0;
@@ -190,11 +189,11 @@ void main() {
 
         vec2 cell = floor(uv / scale);
 
-        offs.xy *= (1. + sin(cell.x+cell.y+float(i)*0.5+t)*midi2);
+        offs.xy *= (1. + sin(cell.x+cell.y+float(i)*0.5+t)*cellOffset);
 
         uv -= offs * scale;
-        pR(uv, t + phase + float(i)*0.25+ noise(vec2(cell.x+cell.y+float(i),t))*midi2);
-        dist = opU(dist,vec2(shape(uv, scale, midi4*2.), i));
+        pR(uv, t + phase + float(i)*0.25+ noise(vec2(cell.x+cell.y+float(i),t))*cellOffset);
+        dist = opU(dist,vec2(shape(uv, scale, 0.5), i));
     }
 
     vec4 col = vec4(1.);

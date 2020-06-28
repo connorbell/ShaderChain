@@ -26,6 +26,9 @@ out vec4 outputColor;
 void main()
 {
     vec2 texUv = vec2(texCoordVarying.x * noiseTex_res.x, noiseTex_res.y - texCoordVarying.y * noiseTex_res.y);
-    vec3 c = texture(noiseTex,texUv).rgb;
-    outputColor = vec4(c, 1.0);
+    vec4 c = texture(noiseTex,texUv);
+
+        c.rgb = mix(texture(_MainTexture, gl_FragCoord.xy).rgb, c.rgb, c.a);
+        c.a = 1.0;
+    outputColor = c;
 }

@@ -128,7 +128,7 @@ float smin( float d1, float d2, float k ) {
 float map(in vec2 pos) {
 	vec2 noiseUv = mod(abs((pos*0.5+vec2(noiseX, noiseY))) * noiseTex_res, noiseTex_res);
 	float n = texture(noiseTex, noiseUv).r;
-	n += cos(n*25.+ _Time)*0.05;
+	n += cos(n*25.+ _Time*2.)*0.05;
 	n*=0.4;
 	n = min(0.35, n);
 	n = pow(n, 1.5);
@@ -140,11 +140,11 @@ float map2(in vec3 pos) {
 	pos.y += 0.1;
 	pos.x += 0.15;
 	//pos.z += 0.5;
-	//pos = mod(pos - .5, 1.) - .5;
+	pos = mod(pos - .5, 1.) - .5;
     float s = 0.065;
-	pR(pos.xz, _Time*0.125);
+	pR(pos.xz, _Time*0.5);
 	float b = fOctahedron(pos,0.125);
-	b = max(b, -(length(pos)-0.145));
+	//b = max(b, -(length(pos)-0.145));
 	return b;
 }
 float march(in vec3 camPos, in vec3 rayDir) {

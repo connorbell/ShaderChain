@@ -3,7 +3,6 @@
 #include "RenderStruct.h"
 
 void ShaderChain::Setup(glm::vec2 res) {
-	ofSetLogLevel(OF_LOG_VERBOSE);
     this->passesGui = new PassesGui();
     ofAddListener(passesGui->passButtons->elementRemoved, this, &ShaderChain::removed);
     ofAddListener(passesGui->passButtons->elementMoved, this, &ShaderChain::moved);
@@ -483,7 +482,7 @@ void ShaderChain::saveVideo(string outputFilename) {
     string totalZerosString = to_string((int)floor(log10 (((float)totalFrames)))+1);
 
     string ffmpegCommand = "ffmpeg -r " + fpsString + " -f image2 -s 1080x1920 -i \"" + outputFilename + "_%0" + totalZerosString + "d.png\" -vcodec libx264 -crf 18 -pix_fmt yuv420p " + outputMp4Filename;
-   
+
 	system(ffmpegCommand.c_str());
 
     cout << ffmpegCommand << endl;

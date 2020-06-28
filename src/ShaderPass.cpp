@@ -314,7 +314,7 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
             float yRot = json["parameters"][j]["value"]["rot"]["y"].asFloat();
             float zRot = json["parameters"][j]["value"]["rot"]["z"].asFloat();
 
-            glm::vec3 rot = glm::vec3(xPos, yPos, zPos);
+            glm::vec3 rot = glm::vec3(xRot, yRot, zRot);
 
             addCameraParameter(pos, rot);
         } else if (type == "audioFloat") {
@@ -341,7 +341,7 @@ void ShaderPass::LoadParametersFromJson(Json::Value &json) {
             if (json["parameters"][j].isMember("midi")) {
                 midi = json["parameters"][j]["midi"].asInt();
             }
-            
+
             AddAudioFloatParameter(name, val, glm::vec2(x, y), glm::vec2(fx, fy), scaleFactor, expFactor, accumulate, show, midi);
         }
     }

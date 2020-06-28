@@ -96,7 +96,7 @@ void main()
     float a = atan(uv_c.y, uv_c.x);
     vec2 uv_c_p = uv_c;
     uv_c_p.x *= _Resolution.x / _Resolution.y;
-    float angleNoise = texture(_NoiseTexture, vec2((sin(a*3.14159*4.)*0.5+0.5)*400, (sin(-_Time*10.5 + length(uv_c_p)*0.25)*0.5+0.5)*126)).r;
+    float angleNoise = texture(_NoiseTexture, vec2((sin(1.57+a*2)*0.5+0.5)*400, (sin(-_Time*10.5 + length(uv_c_p)*0.25)*0.5+0.5)*126)).r;
 
     float audio = texture(audioTex, vec2(angleNoise*audioTex_res.x, 0.)).r * clamp(length(uv_c)-0.125, 0., 1.)*4.;
     float l = length(uv_c)*0.5*(1.-audio*0.015);
