@@ -1,0 +1,75 @@
+{
+   "blend" : 111,
+   "data" : [
+      {
+         "parameters" : [
+            {
+               "name" : "focalLength",
+               "range" : {
+                  "x" : 0,
+                  "y" : 10
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 1.14130437374115
+            },
+            {
+               "name" : "minDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 0.1000000014901161
+               },
+               "show" : false,
+               "type" : "float",
+               "value" : 0.001000000047497451
+            },
+            {
+               "name" : "maxDist",
+               "range" : {
+                  "x" : 0,
+                  "y" : 15
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 12.30978298187256
+            },
+            {
+               "name" : "bgColor",
+               "show" : true,
+               "type" : "color",
+               "value" : {
+                  "a" : 0,
+                  "b" : 255,
+                  "g" : 255,
+                  "r" : 255
+               }
+            },
+            {
+               "name" : "",
+               "type" : "camera",
+               "value" : {
+                  "pos" : {
+                     "x" : -161.3583984375,
+                     "y" : 91.020751953125,
+                     "z" : 384.1139526367188
+                  },
+                  "rot" : {
+                     "x" : -174.9026794433594,
+                     "y" : 0.6369463205337524,
+                     "z" : 7.324815273284912
+                  }
+               }
+            }
+         ],
+         "shaderName" : "shaders/raymarchObjectShader"
+      }
+   ],
+   "duration" : 6.283180236816406,
+   "fps" : 30,
+   "res" : {
+      "x" : 500,
+      "y" : 500
+   },
+   "scale" : 1
+}
+
