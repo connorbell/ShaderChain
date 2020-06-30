@@ -1,0 +1,51 @@
+{
+   "blend" : 1,
+   "data" : [
+      {
+         "parameters" : [
+            {
+               "filePath" : "textures/gradient.png",
+               "name" : "gradientTex",
+               "show" : true,
+               "targetBufferName" : "",
+               "textureIndex" : 2,
+               "textype" : "ImageFile",
+               "type" : "texture"
+            },
+            {
+               "name" : "freq",
+               "range" : {
+                  "x" : 0,
+                  "y" : 50
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 2.98913049697876
+            }
+         ],
+         "shaderName" : "shaders/moon_mist_noise"
+      },
+      {
+         "parameters" : [
+            {
+               "filePath" : "/home/connor/Projects/of_v0.11.0_linux64gcc6_release/apps/ShaderChain/bin/data/textures/donations.png",
+               "name" : "noiseTex",
+               "show" : true,
+               "targetBufferName" : "",
+               "textureIndex" : 2,
+               "textype" : "ImageFile",
+               "type" : "texture"
+            }
+         ],
+         "shaderName" : "shaders/textureTest"
+      }
+   ],
+   "duration" : 2,
+   "fps" : 30,
+   "res" : {
+      "x" : 500,
+      "y" : 500
+   },
+   "scale" : 1
+}
+
