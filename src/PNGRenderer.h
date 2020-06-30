@@ -40,7 +40,8 @@ public:
     ofParameterGroup gifMenuGroup;
     ofParameterGroup vidMenuGroup;
     ofParameter<int> gifNumColors;
-
+    ofParameter<float> gifResolutionScale;
+    
     PNGRenderer(float animduration, int fps, glm::vec2 resolution);
     string presetFilePath;
 

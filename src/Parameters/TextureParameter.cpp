@@ -5,8 +5,8 @@ TextureParameter::TextureParameter(string uniform, string filePath, int textureI
     this->textureIndex = textureIndex;
     this->filePath = filePath;
     this->uniform = uniform;
-    auto player = ofPtr<ofBaseVideoPlayer>(&gstreamer);
-    this->videoFile.setPlayer(player);
+  //  auto player = ofPtr<ofBaseVideoPlayer>(&gstreamer);
+    //this->videoFile.setPlayer(player);
     this->show = show;
     this->type = getTypeFromString(texType);
     this->targetBufferName = targetBufferName;

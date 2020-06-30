@@ -13,6 +13,7 @@ PNGRenderer::PNGRenderer(float animduration, int fps, glm::vec2 resolution) {
     this->totalFrames = animduration * fps;
     this->resolutionX = resolution.x;
     this->resolutionY = resolution.y;
+    this->gifResolutionScale = 1.0;
     this->displayScaleParam = 1.0;
     this->renderedFrames = 1;
     this->frameskip = 1;
@@ -52,10 +53,10 @@ void PNGRenderer::AddToGui(ofxGuiContainer *panel, FFTManager *fft) {
     gifMenuGroup.add(gifNumColors.set("Colors", gifNumColors, 1, 255));
 
     ofxGuiMenu* renderingMenu = panel->addMenu(renderParameterGroup);
-    renderingMenu->add<ofxGuiFloatInputField>(resolutionX.set("Res x", resolutionX, 0, 4096));
-    renderingMenu->add<ofxGuiFloatInputField>(resolutionY.set("Res y", resolutionY, 0, 4096));
+    renderingMenu->add<ofxGuiFloatInputField>(resolutionX.set("Res x", resolutionX, 1, 4096));
+    renderingMenu->add<ofxGuiFloatInputField>(resolutionY.set("Res y", resolutionY, 1, 4096));
     renderingMenu->add<ofxGuiFloatInputField>(animduration.set("Duration          ", animduration, 0, 10000000));
-    renderingMenu->add<ofxGuiIntInputField>(FPS.set("FPS", FPS, 0, 1000));
+    renderingMenu->add<ofxGuiIntInputField>(FPS.set("FPS", FPS, 1, 1000));
     renderingMenu->add(numBlendFrames.set("Blend Frames", numBlendFrames, 1, 128));
     renderingMenu->add(frameskip.set("Frameskip", frameskip, 1, 10));
     renderingMenu->add(preview.set("Preview", preview));
@@ -65,6 +66,7 @@ void PNGRenderer::AddToGui(ofxGuiContainer *panel, FFTManager *fft) {
 
     ofxGuiMenu* gifGroup = renderingMenu->addMenu(gifMenuGroup);
     ofxGuiMenu* vidGroup = renderingMenu->addMenu(vidMenuGroup);
+    gifGroup->add<ofxGuiFloatInputField>(gifResolutionScale.set("Scale", gifResolutionScale, 0.0, 1.0));
     gifGroup->add(encodeGifButton.set("Encode gif"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
     vidGroup->add(encodeMp4Button.set("Encode mp4"), ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
 }

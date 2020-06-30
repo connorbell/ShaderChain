@@ -3,6 +3,11 @@
 #include "RenderStruct.h"
 
 void ShaderChain::Setup(glm::vec2 res) {
+
+#if __APPLE__
+    loadFfmpegPath();
+#endif
+    ofSystem(ffmpegCommand);
     this->passesGui = new PassesGui();
     ofAddListener(passesGui->passButtons->elementRemoved, this, &ShaderChain::removed);
     ofAddListener(passesGui->passButtons->elementMoved, this, &ShaderChain::moved);
@@ -54,6 +59,18 @@ ShaderChain::~ShaderChain() {
   ofRemoveListener(passesGui->passButtons->elementRemoved, this, &ShaderChain::removed);
   ofRemoveListener(passesGui->passButtons->elementMoved, this, &ShaderChain::moved);
   delete this->passesGui;
+}
+
+void ShaderChain::loadFfmpegPath() {
+    std::string file = ofToDataPath("config.json");
+    ofxJSONElement result;
+
+    bool parsingSuccessful = result.open(file);
+
+    if (parsingSuccessful)
+    {
+        ffmpegCommand = result["ffmpeg"].asString();
+    }
 }
 
 void ShaderChain::openDefaultPreset() {
@@ -158,10 +175,10 @@ void ShaderChain::update() {
 void ShaderChain::draw() {
     bool capturingThisFrame = pngRenderer->isCapturing;
     renderStruct.frame = pngRenderer->currentFrame;
+    UpdateResolutionIfChanged(false);
 
     ofClear(25);
     if (this->passes.size() > 0) {
-        UpdateResolutionIfChanged(false);
         fft.Update();
 
         ofFloatColor black;
@@ -481,7 +498,7 @@ void ShaderChain::saveVideo(string outputFilename) {
     string fpsString = to_string(pngRenderer->FPS);
     string totalZerosString = to_string((int)floor(log10 (((float)totalFrames)))+1);
 
-    string ffmpegCommand = "ffmpeg -r " + fpsString + " -f image2 -s 1080x1920 -i \"" + outputFilename + "_%0" + totalZerosString + "d.png\" -vcodec libx264 -crf 18 -pix_fmt yuv420p " + outputMp4Filename;
+    string ffmpegCommand = this->ffmpegCommand + " -r " + fpsString + " -f image2 -s 1080x1920 -i \"" + outputFilename + "_%0" + totalZerosString + "d.png\" -vcodec libx264 -crf 18 -pix_fmt yuv420p " + outputMp4Filename;
 
 	system(ffmpegCommand.c_str());
 
@@ -490,7 +507,7 @@ void ShaderChain::saveVideo(string outputFilename) {
     if (fft.currentState == InputStateSoundFile) {
         string outputMp4AudioFilename = outputFilename + "_audio.mp4";
         outputMp4AudioFilename = createUniqueFilePath(outputMp4AudioFilename);
-        string addSoundCommand = "ffmpeg -i \"" + outputMp4Filename + "\" -i \"" + fft.soundFilePath + "\" -vcodec copy -acodec aac -shortest " + outputMp4AudioFilename;
+        string addSoundCommand = this->ffmpegCommand + " -i \"" + outputMp4Filename + "\" -i \"" + fft.soundFilePath + "\" -vcodec copy -acodec aac -shortest " + outputMp4AudioFilename;
         system(addSoundCommand.c_str());
         outputMp4Filename = outputMp4AudioFilename;
     }
@@ -509,7 +526,7 @@ void ShaderChain::saveVideo(string outputFilename) {
         string outputLoopedFilename = outputFilename + "_looped.mp4";
         outputLoopedFilename = createUniqueFilePath(outputLoopedFilename);
 
-        ffmpegCommand = "ffmpeg -f concat -safe 0 -i list.txt -c copy " + outputLoopedFilename;
+        ffmpegCommand = this->ffmpegCommand + " -f concat -safe 0 -i list.txt -c copy " + outputLoopedFilename;
         system(ffmpegCommand.c_str());
 
         //remove("list.txt");
@@ -554,13 +571,17 @@ void ShaderChain::encodeGifPressed() {
     string moveFilesCommand = moveCommand + rendersDirectory + fileWithoutExtension + "_*.png " + targetDirectory;
     system(moveFilesCommand.c_str());
 
-	string ffmpegCommand = "ffmpeg -v warning -start_number 0 -i \"" + targetDirectory + fileWithoutExtension + "_%0" + totalZerosString + "d.png\" -vf scale=500:-1:flags=lanczos,palettegen=stats_mode=diff:reserve_transparent=off:max_colors=" + to_string(pngRenderer->gifNumColors) + " -y " + "\"" + targetDirectory + ShaderChain::getSlash() + "palette.png" + "\"";
+	string ffmpegCommand = this->ffmpegCommand + " -v warning -start_number 0 -i \"" + targetDirectory + fileWithoutExtension + "_%0" + totalZerosString + "d.png\" -vf scale=500:-1:flags=lanczos,palettegen=stats_mode=diff:reserve_transparent=off:max_colors=" + to_string(pngRenderer->gifNumColors) + " -y " + "\"" + targetDirectory + ShaderChain::getSlash() + "palette.png" + "\"";
 
 	system(ffmpegCommand.c_str());
 
 	string targetFilename = targetDirectory + fileWithoutExtension + ".gif";
 	targetFilename = createUniqueFilePath(targetFilename);
-	ffmpegCommand = "ffmpeg -v warning -thread_queue_size 512 -start_number 0 -i \"" + targetDirectory + fileWithoutExtension + "_%0" + totalZerosString + "d.png\" -i \"" + targetDirectory + "palette.png\" -r 30 -lavfi scale=500:-1:flags=\"lanczos [x]; [x][1:v] paletteuse\" -y \"" + targetFilename + "\"";
+    
+    int resX = (float)pngRenderer->resolutionX * pngRenderer->gifResolutionScale;
+    int resY = (float)pngRenderer->resolutionY * pngRenderer->gifResolutionScale;
+    
+	ffmpegCommand = this->ffmpegCommand + " -v warning -thread_queue_size 512 -start_number 0 -i \"" + targetDirectory + fileWithoutExtension + "_%0" + totalZerosString + "d.png\" -i \"" + targetDirectory + "palette.png\" -r 30 -lavfi scale="+to_string(resX)+":"+to_string(resY)+":flags=\"lanczos [x]; [x][1:v] paletteuse\" -y \"" + targetFilename + "\"";
 	system(ffmpegCommand.c_str());
 
     updateStatusText("Gif saved to " + targetFilename);

@@ -58,7 +58,8 @@ private:
     FFTManager fft;
     TextureInputSelectionView textureInputSelectionView;
     ofVideoGrabber vidGrabber;
-
+    string ffmpegCommand = "ffmpeg";
+    
     float mouseMoveSpeed = 10.0;
 
     bool showGui;
@@ -90,7 +91,7 @@ private:
     void pauseResourcesForCurrentPlaybackState();
     string createUniqueFilePath(string path);
     bool mouseScrolled(ofMouseEventArgs & args);
-
+    void loadFfmpegPath();
     void midiButtonPressed();
     MidiMapper midiMapper;
 
