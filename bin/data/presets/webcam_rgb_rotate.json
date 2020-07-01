@@ -1,0 +1,56 @@
+{
+   "blend" : 1,
+   "data" : [
+      {
+         "parameters" : [
+            {
+               "filePath" : "",
+               "name" : "noiseTex",
+               "show" : true,
+               "targetBufferName" : "",
+               "textureIndex" : 1,
+               "textype" : "Webcam",
+               "type" : "texture"
+            }
+         ],
+         "shaderName" : "shaders/webcam"
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "colMult",
+               "range" : {
+                  "x" : 0,
+                  "y" : 20
+               },
+               "show" : true,
+               "type" : "vec3",
+               "value" : {
+                  "x" : 10.1136360168457,
+                  "y" : 14.20454502105713,
+                  "z" : 12.95454502105713
+               }
+            },
+            {
+               "name" : "phase",
+               "range" : {
+                  "x" : 0,
+                  "y" : 20
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0
+            }
+         ],
+         "shaderName" : "shaders/rgbRotateShader"
+      }
+   ],
+   "duration" : 6.283180236816406,
+   "fps" : 30,
+   "res" : {
+      "x" : 640,
+      "y" : 480
+   },
+   "scale" : 1.299479246139526
+}
+

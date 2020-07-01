@@ -5,21 +5,21 @@
       "name" : "colMult",
       "range" : {
          "x" : 0,
-         "y" : 6.28318
+         "y" : 20
       },
       "show" : true,
       "type" : "vec3",
       "value" : {
-        "x" : 0.66,
-        "y" : 0.33,
-        "z" : 1.0
+        "x" : 2.5,
+        "y" : 5.0,
+        "z" : 10.0
       }
    },
    {
       "name" : "phase",
       "range" : {
          "x" : 0,
-         "y" : 7
+         "y" : 20
       },
       "show" : true,
       "type" : "float",
