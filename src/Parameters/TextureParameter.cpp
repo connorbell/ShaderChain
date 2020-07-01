@@ -1,4 +1,4 @@
-m#include "TextureParameter.h"
+#include "TextureParameter.h"
 #include "ShaderPass.h"
 
 TextureParameter::TextureParameter(string uniform, string filePath, int textureIndex, bool show, string texType, string targetBufferName) {
