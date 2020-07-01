@@ -126,8 +126,16 @@ void TextureParameter::onHideSelectionView() {
 }
 
 void TextureParameter::updateTextureFromFile(string &s) {
+    
+    auto dataPathIndex = s.rfind("data");
+    string relativeFileName = "";
+
+    if (dataPathIndex != std::string::npos) {
+        s = s.substr(dataPathIndex + 5);
+    }
+    
     auto extension = s.substr(s.find_last_of(".") + 1);
-    cout << "Loading " << s << endl;
+    
     if (extension == "png" || extension == "jpg" || extension == "jpeg" || extension == "bmp" || extension == "gif") {
         this->value.load(s);
         updateToNewType(ImageFile);
