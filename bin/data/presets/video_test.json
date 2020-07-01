@@ -1,0 +1,64 @@
+{
+   "blend" : 1,
+   "data" : [
+      {
+         "parameters" : [
+            {
+               "filePath" : "textures/video.mp4",
+               "name" : "noiseTex",
+               "show" : true,
+               "targetBufferName" : "",
+               "textureIndex" : 2,
+               "textype" : "VideoFile",
+               "type" : "texture"
+            }
+         ],
+         "shaderName" : "shaders/textureTest"
+      },
+      {
+         "parameters" : [
+            {
+               "name" : "intensity",
+               "range" : {
+                  "x" : 0,
+                  "y" : 1
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.1793478280305862
+            },
+            {
+               "name" : "scale",
+               "range" : {
+                  "x" : 0,
+                  "y" : 2
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.532608687877655
+            },
+            {
+               "filePath" : "",
+               "name" : "lastTex",
+               "show" : true,
+               "targetBufferName" : "",
+               "textureIndex" : 1,
+               "textype" : "Last",
+               "type" : "texture"
+            }
+         ],
+         "shaderName" : "shaders/feedbackShader"
+      },
+      {
+         "shaderName" : "shaders/invertShader"
+      }
+   ],
+   "duration" : 6.283180236816406,
+   "fps" : 30,
+   "res" : {
+      "x" : 500,
+      "y" : 500
+   },
+   "scale" : 1
+}
+
