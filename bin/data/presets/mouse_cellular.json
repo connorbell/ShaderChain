@@ -1,0 +1,38 @@
+{
+   "blend" : 1,
+   "data" : [
+      {
+         "parameters" : [
+            {
+               "name" : "periods",
+               "range" : {
+                  "x" : 1,
+                  "y" : 15
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 11.1195650100708
+            },
+            {
+               "name" : "hueAmp",
+               "range" : {
+                  "x" : 1,
+                  "y" : 15
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 5.793478488922119
+            }
+         ],
+         "shaderName" : "shaders/mouse_cellular"
+      }
+   ],
+   "duration" : 6.283180236816406,
+   "fps" : 30,
+   "res" : {
+      "x" : 1920,
+      "y" : 1080
+   },
+   "scale" : 0.635937511920929
+}
+
