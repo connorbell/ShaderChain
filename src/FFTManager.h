@@ -28,6 +28,7 @@ public:
     ofParameter<float> volume;
     ofParameter<bool> isMicrophoneEnabled;
     ofParameter<float> dampening;
+    ofParameter<void> removeTrackButton;
 
     void Stop();
     void Update();
@@ -42,8 +43,12 @@ public:
 private:
     bool isPaused = true;
     float soundFileDuration = 0.0;
+    ofxGuiMenu* audioMenu = nullptr;
 
     void micToggled(bool &val);
     void volumeToggled(float &val);
     void stopMicInput();
+    void removeAudioTrack();
+    void reloadAudioMenu();
+    ofxGuiButton *removeTrackGuiButton;
 };

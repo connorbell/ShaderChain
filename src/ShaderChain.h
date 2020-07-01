@@ -53,6 +53,8 @@ private:
     PNGRenderer *pngRenderer;
     ofxGui gui;
     ofxGuiContainer *guiGlobal;
+    ofxGuiContainer *statusContainer;
+
     PassesGui *passesGui;
     ofxGuiContainer *parameterPanel = nullptr;
     FFTManager fft;

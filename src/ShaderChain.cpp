@@ -16,7 +16,11 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->isRunning.set("isRunning", true);
     this->isRunning.addListener(this, &ShaderChain::playingChanged);
     this->guiGlobal = gui.addContainer();
-    this->pngRenderer->AddToGui(this->guiGlobal, &this->fft);
+    this->statusContainer = gui.addContainer();
+    ofColor transparentColor;
+    transparentColor.a = 0.0;
+    this->statusContainer->setBackgroundColor(transparentColor);
+    this->pngRenderer->AddToGui(this->guiGlobal, statusContainer, &this->fft);
     this->pngRenderer->mapMidiButton.addListener(this, &ShaderChain::midiButtonPressed);
     this->pngRenderer->savePresetButton.addListener(this, &ShaderChain::WriteToJson);
     this->pngRenderer->openFileButton.addListener(this, &ShaderChain::OpenFilePressed);
@@ -377,7 +381,6 @@ void ShaderChain::LoadPassFromFile(string filepath) {
     } else {
         relativeFileName = filepath;
     }
-    cout << relativeFileName << endl;
 
     auto relativeFileNameWithoutExtension = relativeFileName.substr(0,relativeFileName.find("frag")-1);
     ShaderPass *pass = new ShaderPass(relativeFileNameWithoutExtension, glm::vec2(this->pngRenderer->resolutionX,this->pngRenderer->resolutionY) );
@@ -533,7 +536,15 @@ void ShaderChain::saveVideo(string outputFilename) {
         outputMp4Filename = outputLoopedFilename;
     }
 
-    updateStatusText("Video saved to " + outputMp4Filename);
+    
+    ofFile file;
+    file.open(outputMp4Filename, ofFile::ReadOnly, false);
+    if (file.exists()) {
+        updateStatusText("Video saved to " + outputMp4Filename  );
+    } else {
+        updateStatusText("Error saving video");
+    }
+    file.close();
 }
 
 void ShaderChain::updateStatusText(string s) {
@@ -584,7 +595,14 @@ void ShaderChain::encodeGifPressed() {
 	ffmpegCommand = this->ffmpegCommand + " -v warning -thread_queue_size 512 -start_number 0 -i \"" + targetDirectory + fileWithoutExtension + "_%0" + totalZerosString + "d.png\" -i \"" + targetDirectory + "palette.png\" -r 30 -lavfi scale="+to_string(resX)+":"+to_string(resY)+":flags=\"lanczos [x]; [x][1:v] paletteuse\" -y \"" + targetFilename + "\"";
 	system(ffmpegCommand.c_str());
 
-    updateStatusText("Gif saved to " + targetFilename);
+    ofFile file;
+    file.open(targetFilename, ofFile::ReadOnly, false);
+    if (file.exists()) {
+        updateStatusText("Gif saved to " + targetFilename);
+    } else {
+        updateStatusText("Error saving gif");
+    }
+    file.close();
 }
 
 void ShaderChain::toggleWebcam(bool &val) {

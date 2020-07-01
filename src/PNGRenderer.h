@@ -9,6 +9,8 @@ class PNGRenderer {
 
 public:
     string renderDirectory = "renders/";
+    ofParameter<string> spaceBufferLabel;
+
     ofParameter<string> statusLabel;
 
     ofParameter<float> resolutionX;
@@ -50,7 +52,7 @@ public:
     float Tick();
     void Start();
     void WritePNG(ofFbo *buffer);
-    void AddToGui(ofxGuiContainer *panel, FFTManager *fft);
+    void AddToGui(ofxGuiContainer *panel, ofxGuiContainer *statusLabelPanel, FFTManager *fft);
     void UpdateResolution(int w, int h);
     void updatePath(string s);
     ofParameter<bool> preview;

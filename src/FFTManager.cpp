@@ -2,6 +2,11 @@
 
 FFTManager::FFTManager() {
     fft = nullptr;
+    playingState.set("-");
+    dampening.set("Dampening", dampening, 0.0, 1.0);
+    isMicrophoneEnabled.set("Use Microphone", isMicrophoneEnabled);
+    volume.set("Volume", volume, 0.0, 1.0);
+    removeTrackButton.set("Remove track");
     this->volume = 1.0;
 }
 
@@ -15,29 +20,41 @@ void FFTManager::StartMicInput() {
     fft = new ofxEasyFft();
     fft->setup(1024, OF_FFT_WINDOW_HAMMING);
     fft->setUseNormalization(true);
-    cout << "starting mic input" << endl;
+    playingState.set("Mic Input");
     currentState = InputStateMicInput;
 }
 
 void FFTManager::stopMicInput() {
-    currentState = InputStateNone;
+    if (currentState == InputStateMicInput) {
+        currentState = InputStateNone;
+        playingState.set("-");
+    }
 }
 
 void FFTManager::addToGui(ofxGuiContainer *container) {
     parameterGroup.setName("Audio");
 
-    ofxGuiMenu* audioMenu = container->addMenu(parameterGroup);
+    audioMenu = container->addMenu(parameterGroup);
 
     this->dampening = 0.85;
     this->isMicrophoneEnabled = false;
 
-    audioMenu->add(playingState.set("-"));
-    audioMenu->add(dampening.set("Dampening", dampening, 0.0, 1.0));
-    audioMenu->add(volume.set("Volume", volume, 0.0, 1.0));
-    audioMenu->add(isMicrophoneEnabled.set("Use Microphone", isMicrophoneEnabled));
-
+    reloadAudioMenu();
     this->volume.addListener(this, &FFTManager::volumeToggled);
     this->isMicrophoneEnabled.addListener(this, &FFTManager::micToggled);
+    this->removeTrackButton.addListener(this, &FFTManager::removeAudioTrack);
+}
+
+void FFTManager::reloadAudioMenu() {
+    if (audioMenu != nullptr) {
+        audioMenu->clear();
+        audioMenu->add(playingState);
+        audioMenu->add(dampening);
+        audioMenu->add(volume);
+        audioMenu->add(isMicrophoneEnabled);
+        removeTrackGuiButton = audioMenu->add(removeTrackButton, ofJson({{"type", "fullsize"}, {"text-align", "center"}}));
+        removeTrackGuiButton->setEnabled(false);
+    }
 }
 
 void FFTManager::Update() {
@@ -103,13 +120,26 @@ void FFTManager::loadSoundFile(string filePath) {
 
     soundPlayer.setPosition(0.99999);
     soundFileDuration = soundPlayer.getPositionMS() / 1000;
-    cout << "sound file duration: " << soundFileDuration << endl;
     soundPlayer.setPosition(0.0);
 
     soundPlayer.play();
     soundPlayer.setLoop(true);
     currentState = InputStateSoundFile;
     isPaused = false;
+
+    playingState.set("Playing audio input");
+    removeTrackGuiButton->setEnabled(true);
+
+}
+
+void FFTManager::removeAudioTrack() {
+    if (soundPlayer.isLoaded()) {
+        playingState.set("-");
+        soundPlayer.stop();
+        soundPlayer.unload();
+        currentState = InputStateNone;
+        removeTrackGuiButton->setEnabled(false);
+    }
 }
 
 void FFTManager::setPaused(bool val) {
