@@ -153,14 +153,14 @@ void ShaderChain::BeginSaveFrames() {
 void ShaderChain::update() {
 
     float mouseX = ofMap((float)ofGetMouseX(),
-                        ofGetWidth()/2.0-pngRenderer->resolutionX*0.5,
-                        ofGetWidth()/2.0+pngRenderer->resolutionX*0.5,
+                        ofGetWidth()/2.0-pngRenderer->resolutionX*0.5*pngRenderer->displayScaleParam,
+                        ofGetWidth()/2.0+pngRenderer->resolutionX*0.5*pngRenderer->displayScaleParam,
                         0.0,
                         1.0);
 
     float mouseY = ofMap((float)ofGetMouseY(),
-                        ofGetHeight()/2.0-pngRenderer->resolutionY*0.5,
-                        ofGetHeight()/2.0+pngRenderer->resolutionY*0.5,
+                        ofGetHeight()/2.0-pngRenderer->resolutionY*0.5*pngRenderer->displayScaleParam,
+                        ofGetHeight()/2.0+pngRenderer->resolutionY*0.5*pngRenderer->displayScaleParam,
                         0.0,
                         1.0);
 
