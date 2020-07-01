@@ -1,4 +1,4 @@
-#include "TextureParameter.h"
+m#include "TextureParameter.h"
 #include "ShaderPass.h"
 
 TextureParameter::TextureParameter(string uniform, string filePath, int textureIndex, bool show, string texType, string targetBufferName) {
@@ -19,7 +19,6 @@ void TextureParameter::close() {
 void TextureParameter::update(RenderStruct *renderStruct) {
     if (this->type == VideoFile) {
         if (renderStruct->isOfflineRendering) {
-            cout << "update offline" << endl;
             this->videoFile.update();
             this->videoFile.nextFrame();
 
@@ -126,16 +125,16 @@ void TextureParameter::onHideSelectionView() {
 }
 
 void TextureParameter::updateTextureFromFile(string &s) {
-    
+
     auto dataPathIndex = s.rfind("data");
     string relativeFileName = "";
 
     if (dataPathIndex != std::string::npos) {
         s = s.substr(dataPathIndex + 5);
     }
-    
+
     auto extension = s.substr(s.find_last_of(".") + 1);
-    
+
     if (extension == "png" || extension == "jpg" || extension == "jpeg" || extension == "bmp" || extension == "gif") {
         this->value.load(s);
         updateToNewType(ImageFile);

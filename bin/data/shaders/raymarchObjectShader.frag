@@ -1,67 +1,37 @@
 /*
 {
-"parameters" : [
-	   {
-		  "midi" : 1,
-		  "name" : "focalLength",
-		  "range" : {
-			 "x" : 0,
-			 "y" : 10
-		  },
-		  "show" : true,
-		  "type" : "float",
-		  "value" : 2.5
-	   },
-	   {
-		  "name" : "minDist",
-		  "range" : {
-			 "x" : 0,
-			 "y" : 0.1000000014901161
-		  },
-		  "show" : false,
-		  "type" : "float",
-		  "value" : 0.001000000047497451
-	   },
-	   {
-		  "name" : "maxDist",
-		  "range" : {
-			 "x" : 0,
-			 "y" : 5
-		  },
-		  "show" : false,
-		  "type" : "float",
-		  "value" : 2.5
-	   },
-	   {
-		  "name" : "bgColor",
-		  "range" : {
-			 "x" : 0,
-			 "y" : 1
-		  },
-		  "show" : true,
-		  "type" : "color",
-		  "value" : {
-			 "x" : 0,
-			 "y" : 0,
-			 "z" : 0
-		  }
-	   },
-	   {
-		  "type" : "camera",
-		  "value" : {
-			 "pos" : {
-				"x" : 1.0,
-				"y" : 4.0,
-				"z" : 0.0
-			 },
-			 "rot" : {
-				"x" : 0.0,
-				"y" : 0.0,
-				"z" : 0.0
-			 }
-		  }
-	   }
-	]
+   "parameters" : [
+      {
+         "name" : "focalLength",
+         "range" : {
+            "x" : 0,
+            "y" : 10
+         },
+         "show" : true,
+         "type" : "float",
+         "value" : 1.14130437374115
+      },
+      {
+         "name" : "minDist",
+         "range" : {
+            "x" : 0,
+            "y" : 0.1000000014901161
+         },
+         "show" : false,
+         "type" : "float",
+         "value" : 0.001000000047497451
+      },
+      {
+         "name" : "maxDist",
+         "range" : {
+            "x" : 0,
+            "y" : 15
+         },
+         "show" : true,
+         "type" : "float",
+         "value" : 12.30978298187256
+      }
+   ]
 }
 */
 #version 150
@@ -90,12 +60,9 @@ void pR(inout vec2 p, float a) {
 }
 
 float map(in vec3 pos) {
-	pos += vec3(0.,0.,-1.);
-
-	pR(pos.xz, _Time*0.25);
-	pR(pos.xy, cos(_Time*0.25) * 0.75);
-
-    float dist = fOctahedron(pos , 0.15);
+	pos.z +=  cos(_Time) + smoothstep(1., 5., mod(_Time,6.28318)) * 20.;
+	pos = mod(pos, vec3(1.))-vec3(.5);
+    float dist = fBox(pos, vec3(0.05));
     return dist;
 }
 
@@ -126,7 +93,7 @@ vec4 render(in vec3 camPos, in vec3 rayDir) {
     float dist = march(camPos, rayDir);
     vec3 fPos = camPos + rayDir * dist;
     vec3 nor = calcNormal(fPos);
-    vec3 col = nor * 0.5 + 0.5;
+    vec3 col = vec3(0.);
     float fres = (1.+dot(rayDir, nor));
     col *= fres;
     col = mix(col, bgColor.rgb, clamp(dist/maxDist, 0.0, 1.0));
@@ -140,14 +107,15 @@ void main()
     for (int j = 0; j < AA; j++) {
         for (int k = 0; k < AA; k++)
         {
+			float f = focalLength + sin(_Time);
             vec2 o = vec2(float(j), float(k)) / float(AA);
             vec2 uv = (texCoordVarying + o / _Resolution) * 2. - 1. ;
             uv.x *= _Resolution.x/_Resolution.y;
-            vec3 ray = normalize ((_CamRight) * uv.x +
-                                  (_CamUp) * uv.y +
-                                  (_CamForward) * focalLength);
+            vec3 ray = normalize (vec3(1., 0., 0.) * uv.x +
+                                  vec3(0., 1., 0.) * uv.y +
+                                  vec3(0., 0., 1.) * f);
 
-            color += vec4(render(_CamPos, ray));
+            color += vec4(render(vec3(0.), ray));
         }
     }
 

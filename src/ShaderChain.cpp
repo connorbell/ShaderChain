@@ -536,7 +536,7 @@ void ShaderChain::saveVideo(string outputFilename) {
         outputMp4Filename = outputLoopedFilename;
     }
 
-    
+
     ofFile file;
     file.open(outputMp4Filename, ofFile::ReadOnly, false);
     if (file.exists()) {
@@ -588,10 +588,10 @@ void ShaderChain::encodeGifPressed() {
 
 	string targetFilename = targetDirectory + fileWithoutExtension + ".gif";
 	targetFilename = createUniqueFilePath(targetFilename);
-    
+
     int resX = (float)pngRenderer->resolutionX * pngRenderer->gifResolutionScale;
     int resY = (float)pngRenderer->resolutionY * pngRenderer->gifResolutionScale;
-    
+
 	ffmpegCommand = this->ffmpegCommand + " -v warning -thread_queue_size 512 -start_number 0 -i \"" + targetDirectory + fileWithoutExtension + "_%0" + totalZerosString + "d.png\" -i \"" + targetDirectory + "palette.png\" -r 30 -lavfi scale="+to_string(resX)+":"+to_string(resY)+":flags=\"lanczos [x]; [x][1:v] paletteuse\" -y \"" + targetFilename + "\"";
 	system(ffmpegCommand.c_str());
 
@@ -688,8 +688,9 @@ string ShaderChain::createUniqueFilePath(string path) {
 bool ShaderChain::mouseScrolled(ofMouseEventArgs & args) {
 	if (parameterPanel->isMouseOver()) {
         auto boundarylow = 10;
+        auto speed = 10;
         auto boundaryHigh = ofGetHeight() - 10 - parameterPanel->getHeight();
-        auto val = MIN(MAX(parameterPanel->getY() + args.scrollY, boundaryHigh), boundarylow);
+        auto val = MIN(MAX(parameterPanel->getY() + args.scrollY * speed, boundaryHigh), boundarylow);
 
         parameterPanel->setPosition(parameterPanel->getX(), val);
         parameterPanel->updateLayout();
