@@ -5,7 +5,7 @@
       "name" : "inputTex",
       "show" : true,
       "type" : "texture",
-      "filePath" : "textures/test.jpg",
+      "filePath" : "textures/noise_loop.jpg",
       "textureIndex" : 2
    }
 ]
