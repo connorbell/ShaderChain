@@ -45,6 +45,7 @@ void ShaderPass::LoadDisplayNameFromFileName() {
 void ShaderPass::UpdateResolution(int x, int y) {
     this->targetResolution = glm::vec2(x * scale, y * scale);
     this->buffer.allocate(targetResolution.x, targetResolution.y, GL_RGBA32F);
+    this->renderBuffer.allocate(targetResolution.x, targetResolution.y, GL_RGBA32F);
 
     if (wantsLastBuffer) {
         this->lastBuffer.allocate(targetResolution.x, targetResolution.y, GL_RGBA32F);
@@ -126,7 +127,7 @@ void ShaderPass::Render(ofFbo *previousBuffer, RenderStruct *renderStruct) {
         this->params[i]->UpdateShader(&(this->shader), renderStruct);
     }
 
-    this->plane.draw();
+    this->renderBuffer.draw(0, 0);
     this->shader.end();
     this->buffer.end();
 
@@ -138,7 +139,7 @@ void ShaderPass::Render(ofFbo *previousBuffer, RenderStruct *renderStruct) {
 }
 
 void ShaderPass::SetInputTexture(ofFbo *buffer) {
-  this->shader.setUniformTexture("_MainTexture", buffer->getTexture(), 0);
+  this->shader.setUniformTexture("_MainTexture", buffer->getTexture(), 1);
 }
 
 void ShaderPass::UpdateTime(float time) {

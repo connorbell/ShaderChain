@@ -2,21 +2,33 @@
    "blend" : 1,
    "data" : [
       {
-         "shaderName" : "shaders/shaderchain_logo",
          "parameters" : [
-             {
-                "name" : "size",
-                "range" : {
-                   "x" : 0,
-                   "y" : 0.5
-                },
-                "show" : true,
-                "type" : "float",
-                "value" : 0.25
-             }
-         ]
+            {
+               "name" : "size",
+               "range" : {
+                  "x" : 0,
+                  "y" : 0.5
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 0.25
+            }
+         ],
+         "shaderName" : "shaders/shaderchain_logo"
       },
       {
+         "parameters" : [
+            {
+               "name" : "offsetVal",
+               "range" : {
+                  "x" : 0,
+                  "y" : 40
+               },
+               "show" : true,
+               "type" : "float",
+               "value" : 25.86956405639648
+            }
+         ],
          "shaderName" : "shaders/multisample-hueshift"
       },
       {
@@ -24,7 +36,7 @@
             {
                "name" : "blurSize",
                "range" : {
-                  "x" : 0,
+                  "x" : 1,
                   "y" : 32
                },
                "show" : true,
@@ -39,7 +51,7 @@
                },
                "show" : true,
                "type" : "float",
-               "value" : 0.3913043439388275
+               "value" : 0.5652173757553101
             }
          ],
          "shaderName" : "shaders/blurShader"
@@ -51,7 +63,7 @@
                "name" : "blendTex",
                "show" : true,
                "targetBufferName" : "multisample-hueshift",
-               "textureIndex" : 1,
+               "textureIndex" : 2,
                "textype" : "Buffer",
                "type" : "texture"
             }
@@ -68,7 +80,7 @@
                },
                "show" : true,
                "type" : "float",
-               "value" : 0.6739130616188049
+               "value" : 0.5978260636329651
             },
             {
                "name" : "scale",
@@ -78,14 +90,14 @@
                },
                "show" : true,
                "type" : "float",
-               "value" : 0.77173912525177
+               "value" : 0.8804348111152649
             },
             {
                "filePath" : "",
                "name" : "lastTex",
                "show" : true,
                "targetBufferName" : "",
-               "textureIndex" : 1,
+               "textureIndex" : 2,
                "textype" : "Last",
                "type" : "texture"
             }
@@ -101,3 +113,4 @@
    },
    "scale" : 1
 }
+

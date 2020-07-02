@@ -31,16 +31,19 @@
 
 #version 150
 
-uniform sampler2DRect _MainTexture;
+uniform sampler2D _MainTexture;
 uniform vec3 colMult;
 uniform float phase;
 
-in vec2 texCoordVarying;
+in vec2 uv;
+in vec2 texCoord;
+
 out vec4 outputColor;
 
 void main()
 {
-    vec4 color = texture(_MainTexture, (gl_FragCoord.xy));
+    vec4 color = texture(_MainTexture, texCoord);
+    color.a = 1.0;
     color.rgb = sin(color.rgb * colMult + phase) * 0.5 + 0.5;
     outputColor = color;
 }

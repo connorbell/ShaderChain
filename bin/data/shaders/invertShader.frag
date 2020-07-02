@@ -1,13 +1,13 @@
 #version 150
 
-uniform sampler2DRect _MainTexture;
+uniform sampler2D _MainTexture;
 
-in vec2 texCoordVarying;
+in vec2 texCoord;
 out vec4 outputColor;
 
 void main()
 {
-    vec4 color = texture(_MainTexture, (gl_FragCoord.xy));
+    vec4 color = texture(_MainTexture, texCoord);
     color.rgb = 1.-color.rgb;
     outputColor = color;
 }

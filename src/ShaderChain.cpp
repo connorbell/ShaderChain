@@ -3,7 +3,7 @@
 #include "RenderStruct.h"
 
 void ShaderChain::Setup(glm::vec2 res) {
-
+    ofDisableArbTex();
 #if __APPLE__
     loadFfmpegPath();
 #endif
@@ -117,6 +117,7 @@ void ShaderChain::UpdateResolutionIfChanged(bool force) {
         ofFloatColor black;
 
         cumulativeBuffer.allocate(this->pngRenderer->resolutionX, this->pngRenderer->resolutionY, GL_RGBA32F);
+        cumulativeDrawBuffer.allocate(this->pngRenderer->resolutionX, this->pngRenderer->resolutionY, GL_RGBA32F);
         cumulativeBufferSwap.allocate(this->pngRenderer->resolutionX, this->pngRenderer->resolutionY, GL_RGBA32F);
         cumulativeBufferSwap.clearColorBuffer(black);
         cumulativeBuffer.clearColorBuffer(black);
@@ -165,7 +166,7 @@ void ShaderChain::update() {
                         1.0);
 
     mouseX = MIN(1.0, MAX(0.0, mouseX));
-    mouseY = MIN(1.0, MAX(0.0, 1.0 - mouseY));
+    mouseY = MIN(1.0, MAX(0.0, 1-mouseY));
 
     renderStruct.mousePosition = glm::vec2(mouseX, mouseY);
 
@@ -224,9 +225,9 @@ void ShaderChain::draw() {
                 ofClear(0, 0, 0, 255);
                 int idx = this->passes.size()-1;
                 this->cumulativeShader.setUniform1f("factor", (1./pngRenderer->numBlendFrames));
-                this->cumulativeShader.setUniformTexture("_CumulativeTexture", this->cumulativeBufferSwap.getTexture(), 0);
-                this->cumulativeShader.setUniformTexture("_IncomingTexture", this->passes[idx]->buffer.getTexture(), 1);
-                this->cumulativeRenderPlane.draw();
+                this->cumulativeShader.setUniformTexture("_CumulativeTexture", this->cumulativeBufferSwap.getTexture(), 1);
+                this->cumulativeShader.setUniformTexture("_IncomingTexture", this->passes[idx]->buffer.getTexture(), 2);
+                this->cumulativeDrawBuffer.draw(0,0);
                 this->cumulativeShader.end();
                 this->cumulativeBuffer.end();
 

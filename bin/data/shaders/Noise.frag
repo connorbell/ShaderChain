@@ -38,13 +38,13 @@
 #version 150
 #pragma include "includes/hue.glsl"
 
-uniform sampler2DRect _MainTexture;
+uniform sampler2D _MainTexture;
 uniform vec2 _Resolution;
 uniform float edges;
 uniform float periods;
 uniform float octaves;
 
-in vec2 texCoordVarying;
+in vec2 uv;
 out vec4 outputColor;
 
 // 2D Random
@@ -91,6 +91,6 @@ float fbm(in vec2 st, in float edges) {
 
 void main()
 {
-    float n = fbm(texCoordVarying*round(periods), round(edges));
+    float n = fbm(uv*round(periods), round(edges));
     outputColor = vec4(vec3(n), 1.0);
 }

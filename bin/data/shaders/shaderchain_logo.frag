@@ -19,7 +19,7 @@
 uniform float size;
 uniform float _Time;
 
-in vec2 texCoordVarying;
+in vec2 uv;
 out vec4 outputColor;
 
 float box(vec2 uv, vec2 s) {
@@ -34,8 +34,8 @@ void pR(inout vec2 p, float a) {
 void main()
 {
     vec4 color = vec4(0., 0., 0., 1.);
-    vec2 uv = texCoordVarying * 2. - 1.;
-	float angle = atan(uv.y, uv.x);
+    vec2 uv = uv * 2.0 - 1.0;
+    float angle = atan(uv.y, uv.x);
 	pR(uv, -0.1+sin(_Time*2. + length(uv)*4. + angle*4.) * 0.05);
 
     float circleSize = size;

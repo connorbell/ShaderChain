@@ -162,7 +162,7 @@
 #version 150
 #pragma include "includes/hg_sdfs.glsl"
 
-uniform sampler2DRect tex0;
+uniform sampler2D tex0;
 uniform float _Time;
 uniform vec2 _Resolution;
 uniform vec3 _CamPos;
@@ -189,7 +189,7 @@ uniform vec3 spaceSize;
 
 uniform vec4 bgColor;
 
-in vec2 texCoordVarying;
+in vec2 uv;
 out vec4 outputColor;
 
 void pR(inout vec2 p, float a) {
@@ -286,7 +286,7 @@ void main()
         for (int k = 0; k < AA; k++)
         {
             vec2 o = vec2(float(j), float(k)) / float(AA);
-            vec2 uv = (texCoordVarying + o / _Resolution) * 2. - 1. ;
+            vec2 uv = (uv + o / _Resolution) * 2. - 1. ;
             uv.x *= _Resolution.x/_Resolution.y;
             vec3 ray = normalize (_CamRight * uv.x +
                                   _CamUp * uv.y +

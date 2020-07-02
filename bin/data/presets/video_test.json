@@ -5,7 +5,7 @@
          "parameters" : [
             {
                "filePath" : "textures/video.mp4",
-               "name" : "noiseTex",
+               "name" : "inputTex",
                "show" : true,
                "targetBufferName" : "",
                "textureIndex" : 2,
@@ -42,7 +42,7 @@
                "name" : "lastTex",
                "show" : true,
                "targetBufferName" : "",
-               "textureIndex" : 1,
+               "textureIndex" : 2,
                "textype" : "Last",
                "type" : "texture"
             }
@@ -61,4 +61,3 @@
    },
    "scale" : 1
 }
-

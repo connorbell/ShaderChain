@@ -12,13 +12,14 @@
 */
 #version 150
 
-uniform sampler2DRect _MainTexture;
+uniform sampler2D _MainTexture;
 uniform vec2 _Resolution;
 
-uniform sampler2DRect blendTex;
+uniform sampler2D blendTex;
 uniform vec2 blendTex_res;
 
-in vec2 texCoordVarying;
+in vec2 uv;
+in vec2 texCoord;
 out vec4 outputColor;
 
 float blendSoftLight(float base, float blend) {
@@ -31,10 +32,8 @@ vec3 blendSoftLight(vec3 base, vec3 blend) {
 
 void main()
 {
-    vec2 blendUv = vec2(texCoordVarying.x * blendTex_res.x, blendTex_res.y - texCoordVarying.y * blendTex_res.y);
-
-    vec4 mainCol = texture(_MainTexture, (gl_FragCoord.xy));
-    vec4 blendCol = texture(blendTex, blendUv);
+    vec4 mainCol = texture(_MainTexture, texCoord);
+    vec4 blendCol = texture(blendTex, texCoord);
 
     outputColor = vec4(blendSoftLight(mainCol.rgb, blendCol.rgb), 1.0);
 }

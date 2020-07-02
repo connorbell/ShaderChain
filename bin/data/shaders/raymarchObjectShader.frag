@@ -37,7 +37,7 @@
 #version 150
 #pragma include "includes/hg_sdfs.glsl"
 
-uniform sampler2DRect tex0;
+uniform sampler2D tex0;
 uniform float _Time;
 uniform vec2 _Resolution;
 uniform vec3 _CamPos;
@@ -52,7 +52,7 @@ uniform float maxDist;
 
 uniform vec4 bgColor;
 
-in vec2 texCoordVarying;
+in vec2 uv;
 out vec4 outputColor;
 
 void pR(inout vec2 p, float a) {
@@ -109,10 +109,10 @@ void main()
         {
 			float f = focalLength + sin(_Time);
             vec2 o = vec2(float(j), float(k)) / float(AA);
-            vec2 uv = (texCoordVarying + o / _Resolution) * 2. - 1. ;
-            uv.x *= _Resolution.x/_Resolution.y;
-            vec3 ray = normalize (vec3(1., 0., 0.) * uv.x +
-                                  vec3(0., 1., 0.) * uv.y +
+            vec2 uv_c = uv * 2. - 1. ;
+            uv_c.x *= _Resolution.x/_Resolution.y;
+            vec3 ray = normalize (vec3(1., 0., 0.) * uv_c.x +
+                                  vec3(0., 1., 0.) * uv_c.y +
                                   vec3(0., 0., 1.) * f);
 
             color += vec4(render(vec3(0.), ray));

@@ -32,7 +32,7 @@ void CameraParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStruct *
         float yDelta = ofGetMouseY() - ofGetPreviousMouseY();
 
         camera.panDeg(xDelta * ofGetLastFrameTime() * mouseMoveSpeed);
-        camera.tiltDeg(yDelta * ofGetLastFrameTime() * mouseMoveSpeed);
+        camera.tiltDeg(- yDelta * ofGetLastFrameTime() * mouseMoveSpeed);
     }
 
     shader->setUniform3f("_CamPos", camera.getPosition());

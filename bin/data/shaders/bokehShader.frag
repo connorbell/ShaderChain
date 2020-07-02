@@ -47,10 +47,10 @@
 
 #version 150
 
-uniform sampler2DRect _MainTexture;
+uniform sampler2D _MainTexture;
 uniform vec2 _Resolution;
 
-in vec2 texCoordVarying;
+in vec2 uv;
 out vec4 outputColor;
 
 uniform float startFocusDist;
@@ -65,7 +65,6 @@ float normpdf(in float x, in float sigma) {
 }
 
 void main() {
-    vec2 uv = (gl_FragCoord.xy);
     vec3 base = vec3(0.);
 
     // Gaussian blur by mrharicot https://www.shadertoy.com/view/XdfGDH
@@ -79,6 +78,7 @@ void main() {
     float sigma = blurSize*((1.-smoothstep(startFocusDist, startFocusDist + ramp, depth) + smoothstep(endFocusDist - ramp, endFocusDist, depth)));
 	sigma = max(0.001, sigma);
     float Z = .0;
+	vec2 texelSize = vec2(1.) / _Resolution;
 
     for (int j = 0; j <= kSize; ++j) {
         kernel[kSize+j] = kernel[kSize-j] = normpdf(float(j), sigma);
@@ -94,7 +94,7 @@ void main() {
     {
         for (int j=-kSize; j <= kSize; ++j)
         {
-            base += kernel[kSize+j]*kernel[kSize+i]*texture(_MainTexture, (gl_FragCoord.xy+vec2(float(i),float(j))) ).rgb;
+            base += kernel[kSize+j]*kernel[kSize+i]*texture(_MainTexture, (uv+vec2(float(i),float(j))*texelSize) ).rgb;
         }
     }
    	vec4 b = vec4(base/(Z*Z), 1.0);

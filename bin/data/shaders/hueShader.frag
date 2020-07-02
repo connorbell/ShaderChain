@@ -20,17 +20,17 @@
 #version 150
 #pragma include "includes/hue.glsl"
 
-uniform sampler2DRect _MainTexture;
+uniform sampler2D _MainTexture;
 uniform vec2 _Resolution;
 
 uniform float shift;
 
-in vec2 texCoordVarying;
+in vec2 texCoord;
 out vec4 outputColor;
 
 void main()
 {
-    vec4 c = texture(_MainTexture, (gl_FragCoord.xy));
+    vec4 c = texture(_MainTexture, texCoord);
     c.rgb = hueShift(c.rgb, shift);
     outputColor = c;
 }

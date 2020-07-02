@@ -68,7 +68,7 @@
 		  "show" : true,
 		  "type" : "texture",
 		  "filePath" : "textures/noise_loop.png",
-		  "textureIndex" : 1
+		  "textureIndex" : 2
 	   },
 	   {
 		  "type" : "camera",
@@ -94,7 +94,6 @@
 #pragma include "includes/hg_sdfs.glsl"
 #pragma include "includes/hue.glsl"
 
-uniform sampler2DRect tex0;
 uniform float _Time;
 uniform vec2 _Resolution;
 uniform vec3 _CamPos;
@@ -109,12 +108,13 @@ uniform float maxDist;
 uniform float noiseX;
 uniform float noiseY;
 
-uniform sampler2DRect noiseTex;
-uniform vec2 noiseTex_res;
+uniform sampler2D noiseTex;
 
 uniform vec4 bgColor;
 
-in vec2 texCoordVarying;
+in vec2 uv;
+in vec2 texCoord;
+
 out vec4 outputColor;
 
 void pR(inout vec2 p, float a) {
@@ -126,18 +126,18 @@ float smin( float d1, float d2, float k ) {
 }
 
 float map(in vec2 pos) {
-	vec2 noiseUv = mod(abs((pos*0.5+vec2(noiseX, noiseY))) * noiseTex_res, noiseTex_res);
+	vec2 noiseUv = mod(abs((pos*0.5+vec2(noiseX, noiseY))), vec2(1.));
 	float n = texture(noiseTex, noiseUv).r;
 	n += cos(n*25.+ _Time*2.)*0.05;
 	n*=0.4;
 	n = min(0.35, n);
 	n = pow(n, 1.5);
-    float dist = -0.0 - n;
+    float dist =  -n ;
 	return dist;
 }
 
 float map2(in vec3 pos) {
-	pos.y += 0.1;
+	//pos.y += 0.1;
 	pos.x += 0.15;
 	//pos.z += 0.5;
 	pos = mod(pos - .5, 1.) - .5;
@@ -232,7 +232,7 @@ void main()
         for (int k = 0; k < AA; k++)
         {
             vec2 o = vec2(float(j), float(k)) / float(AA);
-            vec2 uv = (texCoordVarying + o/_Resolution) * 2. - 1. ;
+            vec2 uv = (uv + o/_Resolution) * 2. - 1. ;
             uv.x *= _Resolution.x/_Resolution.y;
 
             vec3 ray = normalize ((_CamRight) * uv.x +

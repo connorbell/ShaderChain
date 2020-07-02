@@ -8,7 +8,7 @@
                "name" : "noiseTex",
                "show" : true,
                "targetBufferName" : "",
-               "textureIndex" : 1,
+               "textureIndex" : 2,
                "textype" : "Webcam",
                "type" : "texture"
             }
@@ -53,4 +53,3 @@
    },
    "scale" : 1.299479246139526
 }
-

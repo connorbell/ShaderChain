@@ -9,7 +9,8 @@ in vec2 texcoord;
 in vec4 normal;
 in vec4 color;
 
-out vec2 texCoordVarying;
+out vec2 texCoord;
+out vec2 uv;
 
 void main()
 {
@@ -18,6 +19,9 @@ void main()
     normal = vec4(1.0); // for intel HD cards
     #endif
 
-    texCoordVarying = texcoord;
+    uv = texcoord;
+    texCoord = texcoord;
+    uv.y = 1. - uv.y;
+
 	gl_Position = modelViewProjectionMatrix * position;
 }

@@ -26,7 +26,7 @@
           "show" : true,
           "type" : "texture",
           "textype" : "Last",
-          "textureIndex" : 1
+          "textureIndex" : 2
        }
     ]
 }
@@ -34,14 +34,14 @@
 
 #version 150
 
-uniform sampler2DRect _MainTexture;
-uniform sampler2DRect lastTex;
+uniform sampler2D _MainTexture;
+uniform sampler2D lastTex;
 uniform float intensity;
 uniform float scale;
 uniform float _Time;
 uniform vec2 _Resolution;
 
-in vec2 texCoordVarying;
+in vec2 texCoord;
 out vec4 outputColor;
 
 void pR(inout vec2 p, float a) {
@@ -50,13 +50,13 @@ void pR(inout vec2 p, float a) {
 
 void main()
 {
-    vec4 color = texture(_MainTexture, gl_FragCoord.xy);
+    vec4 color = texture(_MainTexture, texCoord);
 
-    vec2 uv = (gl_FragCoord.xy/_Resolution);
+    vec2 uv = texCoord;
 
     uv = (uv - 0.5) * scale + 0.5;
 
-    vec4 lastColor = texture(lastTex, uv*_Resolution);
+    vec4 lastColor = texture(lastTex, uv);
     color.rgb += lastColor.rgb * intensity; // * (1. + audio*.4);
     outputColor = clamp(vec4(color), vec4(0.0), vec4(1.0));
 }

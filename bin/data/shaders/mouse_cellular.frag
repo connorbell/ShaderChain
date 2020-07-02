@@ -28,7 +28,7 @@
 #version 150
 #pragma include "includes/hue.glsl"
 
-uniform sampler2DRect _MainTexture;
+uniform sampler2D _MainTexture;
 uniform vec2 _Resolution;
 uniform float _Time;
 uniform vec2 _Mouse;
@@ -36,7 +36,7 @@ uniform vec2 _Mouse;
 uniform float periods;
 uniform float hueAmp;
 
-in vec2 texCoordVarying;
+in vec2 uv;
 out vec4 outputColor;
 
 // 2D Random by Patricio Gonzalez Vivo https://thebookofshaders.com/12/
@@ -67,7 +67,7 @@ float cellNoise(in vec2 st) {
 
 void main()
 {
-    float n = cellNoise(texCoordVarying * round(periods));
+    float n = cellNoise(uv * round(periods));
     vec3 col = hueShift(vec3(1.0, 0.25, 0.25), _Time + n*hueAmp);
     outputColor = vec4(col, 1.0);
 }

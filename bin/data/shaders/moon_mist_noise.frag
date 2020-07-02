@@ -24,16 +24,15 @@
 #version 150
 #pragma include "includes/noise.glsl"
 
-uniform sampler2DRect _MainTexture;
+uniform sampler2D _MainTexture;
 uniform vec2 _Resolution;
 uniform float _Time;
 
-uniform sampler2DRect gradientTex;
-uniform vec2 gradientTex_res;
+uniform sampler2D gradientTex;
 
 uniform float freq;
 
-in vec2 texCoordVarying;
+in vec2 uv;
 out vec4 outputColor;
 
 vec3 curl(vec3 pos) {
@@ -76,10 +75,10 @@ vec3 curl(vec3 pos) {
 
 void main()
 {
-    vec2 uv = texCoordVarying;
+    vec2 uv = uv;
     uv.x *= _Resolution.x / _Resolution.y;
     vec3 p = vec3(uv, _Time*0.05 );
     vec3 c = curl(p*freq);
-    c = texture(gradientTex, vec2(mod(length(c)*500. + _Time*500*.5, 500.), 0.)).rgb;
+    c = texture(gradientTex, vec2(mod(length(c) + _Time*.5, 500.), 0.)).rgb;
     outputColor = vec4(c, 1.0);
 }

@@ -233,7 +233,7 @@
                "name" : "lastTex",
                "show" : true,
                "targetBufferName" : "",
-               "textureIndex" : 1,
+               "textureIndex" : 2,
                "textype" : "Last",
                "type" : "texture"
             }
@@ -289,4 +289,3 @@
    },
    "scale" : 1
 }
-

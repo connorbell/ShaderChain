@@ -23,7 +23,7 @@ public:
 
 private:
     ofNode camera;
-    float mouseMoveSpeed = 2.0;
+    float mouseMoveSpeed = 6.0;
 
 
 };

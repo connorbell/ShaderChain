@@ -85,11 +85,11 @@
 
 #version 150
 
-in vec2 texCoordVarying;
+in vec2 uv;
 out vec4 outputColor;
 
 uniform float _Time;
-uniform sampler2DRect _MainTexture;
+uniform sampler2D _MainTexture;
 uniform vec2 _Resolution;
 
 uniform float cellOffset;
@@ -166,7 +166,7 @@ vec2 opU(vec2 a, vec2 b)
 }
 
 void main() {
-    vec2 uv = texCoordVarying;
+    vec2 uv = uv;
     float t = audioac * 2.;
 
     vec2 centerOffset =  vec2(cos(t), sin(t))*0.015;

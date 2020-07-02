@@ -36,6 +36,7 @@ class ShaderPass {
     ofxGuiGroup2 *parameterGroup;
     ofFbo buffer;
     ofFbo lastBuffer;
+    ofFbo renderBuffer;
     ofPlanePrimitive plane;
     bool wantsLastBuffer = false;
     ShaderPass();
