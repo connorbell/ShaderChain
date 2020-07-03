@@ -5,7 +5,7 @@
       "name" : "webcamTex",
       "show" : true,
       "type" : "texture",
-      "textureIndex" : 1,
+      "textureIndex" : 2,
       "textype": "Webcam"
    }
 ]

@@ -5,7 +5,7 @@
          "parameters" : [
             {
                "filePath" : "",
-               "name" : "noiseTex",
+               "name" : "webcamTex",
                "show" : true,
                "targetBufferName" : "",
                "textureIndex" : 2,

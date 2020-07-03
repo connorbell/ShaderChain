@@ -624,7 +624,7 @@ void ShaderChain::startWebcam() {
 
 void ShaderChain::stopWebcam() {
     if (vidGrabber.isInitialized()) {
-    //    vidGrabber.close();
+        vidGrabber.close();
     }
 }
 
