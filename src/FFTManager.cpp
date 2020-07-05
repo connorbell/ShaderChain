@@ -118,8 +118,10 @@ void FFTManager::loadSoundFile(string filePath) {
     soundPlayer.load(filePath);
     soundPlayer.play();
 
-    soundPlayer.setPosition(0.99999);
-    soundFileDuration = soundPlayer.getPositionMS() / 1000;
+    soundPlayer.setPosition(0.5);
+    soundFileDuration = (soundPlayer.getPositionMS() / 1000) * 2.0;
+
+    cout << "duration " << soundFileDuration << endl;
     soundPlayer.setPosition(0.0);
 
     soundPlayer.play();
