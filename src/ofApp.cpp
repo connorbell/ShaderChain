@@ -13,6 +13,7 @@ ofApp::~ofApp() {
 void ofApp::setup(){
     glm::vec2 res = glm::vec2(480, 270);
     ofSetWindowShape(1920, 1080);
+    ofSetWindowPosition(0, 0);
     ofSetWindowTitle("ShaderChain");
     this->shaderChain.Setup(res);
 }

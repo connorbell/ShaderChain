@@ -21,12 +21,15 @@ void AudioFloatParameter::UpdateShader(ofxAutoReloadedShader *shader, RenderStru
 
   // sum the bins that correspond to the specified frequency range
   for(int i=binx;i<biny;i++) {
-    sum += buffer[i];
+      sum += buffer[i];
   }
   // divide by the total number of bins to get the average volume
   // then apply exponential scaling and finally linear scaling coefficient
   sum = pow(sum/(biny-binx), this->expFactor)*this->scaleFactor;
 
+    // Divide the sum by the current number of blend frames
+    sum /= renderStruct->numBlendFrames;
+    
   // either accumulate, OR scale value (roughly) to range, then clip
   if(this->accumulate) {
     this->value += sum;

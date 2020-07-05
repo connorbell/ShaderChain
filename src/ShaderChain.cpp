@@ -7,7 +7,6 @@ void ShaderChain::Setup(glm::vec2 res) {
 #if __APPLE__
     loadFfmpegPath();
 #endif
-    ofSystem(ffmpegCommand);
     this->passesGui = new PassesGui();
     ofAddListener(passesGui->passButtons->elementRemoved, this, &ShaderChain::removed);
     ofAddListener(passesGui->passButtons->elementMoved, this, &ShaderChain::moved);
@@ -16,6 +15,7 @@ void ShaderChain::Setup(glm::vec2 res) {
     this->isRunning.set("isRunning", true);
     this->isRunning.addListener(this, &ShaderChain::playingChanged);
     this->guiGlobal = gui.addContainer();
+    this->guiGlobal->setPosition(ofPoint(0, 10));
     this->statusContainer = gui.addContainer();
     ofColor transparentColor;
     transparentColor.a = 0.0;
@@ -180,11 +180,11 @@ void ShaderChain::update() {
 void ShaderChain::draw() {
     bool capturingThisFrame = pngRenderer->isCapturing;
     renderStruct.frame = pngRenderer->currentFrame;
+    renderStruct.numBlendFrames = pngRenderer->numBlendFrames;
     UpdateResolutionIfChanged(false);
 
     ofClear(25);
     if (this->passes.size() > 0) {
-        fft.Update();
 
         ofFloatColor black;
         black.a = 1;
@@ -203,6 +203,8 @@ void ShaderChain::draw() {
             ofClear(0,0,0,255);
             this->cumulativeBufferSwap.end();
 
+            float blendFactor = (1./pngRenderer->numBlendFrames);
+            
             for (unsigned int i = 0; i < pngRenderer->numBlendFrames; i++) {
 
                 if (capturingThisFrame) {
@@ -212,6 +214,7 @@ void ShaderChain::draw() {
                 }
                 else {
                     this->time = pngRenderer->preview ? fmod(this->time + deltaTime, pngRenderer->animduration) : this->time + deltaTime;
+                    fft.Update();
                 }
 
                 this->renderStruct.time = this->time;
@@ -224,7 +227,7 @@ void ShaderChain::draw() {
                 this->cumulativeShader.begin();
                 ofClear(0, 0, 0, 255);
                 int idx = this->passes.size()-1;
-                this->cumulativeShader.setUniform1f("factor", (1./pngRenderer->numBlendFrames));
+                this->cumulativeShader.setUniform1f("factor", blendFactor);
                 this->cumulativeShader.setUniformTexture("_CumulativeTexture", this->cumulativeBufferSwap.getTexture(), 1);
                 this->cumulativeShader.setUniformTexture("_IncomingTexture", this->passes[idx]->buffer.getTexture(), 2);
                 this->cumulativeDrawBuffer.draw(0,0);
@@ -284,6 +287,7 @@ void ShaderChain::KeyPressed(int key) {
         guiGlobal->setEnabled(this->showGui);
         parameterPanel->setEnabled(this->showGui);
         passesGui->panel->setEnabled(this->showGui);
+        statusContainer->setEnabled(this->showGui);
     }
     if (key == 'f') {
         ofToggleFullscreen();
@@ -735,6 +739,6 @@ void ShaderChain::updateShaderJsonPressed() {
 
 void ShaderChain::windowResized(int w, int h) {
     if (this->parameterPanel != nullptr) {
-        this->parameterPanel->setPosition(ofPoint(w-220, 10));
+        this->parameterPanel->setPosition(ofPoint(w-this->parameterPanel->getWidth(), 10));
     }
 }

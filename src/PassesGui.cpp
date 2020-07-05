@@ -3,7 +3,7 @@
 PassesGui::PassesGui() {
     this->panel = gui.addContainer();
     passButtons = panel->add<ofxSortableList>("Passes");
-    this->panel->setPosition(ofPoint(10, 210));
+    this->panel->setPosition(ofPoint(0, 210));
 }
 
 PassesGui::~PassesGui() {

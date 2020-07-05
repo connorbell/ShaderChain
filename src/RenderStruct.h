@@ -6,6 +6,7 @@ class ShaderPass;
 struct RenderStruct {
     float time;
     int frame;
+    int numBlendFrames;
     FFTManager *fft;
     ofVideoGrabber *vidGrabber;
     std::vector<ShaderPass*> *passes;
