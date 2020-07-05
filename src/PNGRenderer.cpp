@@ -112,6 +112,7 @@ void PNGRenderer::Start() {
         this->isCapturing = false;
         return;
     }
+    this->currentFrame = 0;
     this->renderedFrames = 0;
     this->totalFrames = animduration * FPS;
     this->isCapturing = true;
